@@ -20,14 +20,14 @@ export class EventService {
       chefId: event.chefId,
       chefName: event.chef.name,
       chefPhoto: event.chef.profile?.avatarUrl,
-      date: event.date,
+      date: event.date, // Keep as Date object - Next.js will serialize properly
       estimatedDuration: event.duration,
       maxCapacity: event.maxCapacity,
       currentReservations: event.reservations.reduce((sum, res) => sum + res.guestCount, 0),
       estimatedCostPerPerson: event.estimatedCostPerPerson,
       cuisineType: event.cuisineTypes ? JSON.parse(event.cuisineTypes) : [],
       dietaryAccommodations: event.dietaryAccommodations ? JSON.parse(event.dietaryAccommodations) : [],
-      status: event.status,
+      status: event.status as any, // Type assertion for enum
       reservationDeadline: event.reservationDeadline,
       location: event.location ? {
         address: event.location.showFullAddress ? event.location.address : undefined,

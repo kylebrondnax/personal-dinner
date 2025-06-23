@@ -52,11 +52,45 @@ export function RSVPFlow({ event, isOpen, onClose, onSuccess }: RSVPFlowProps) {
   const handleSubmit = async () => {
     setIsSubmitting(true)
     
-    // Simulate API call delay
-    await new Promise(resolve => setTimeout(resolve, 1500))
-    
-    onSuccess(formData)
-    setIsSubmitting(false)
+    try {
+      const response = await fetch('/api/reservations', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          eventId: event.id,
+          attendeeName: formData.attendeeName,
+          attendeeEmail: formData.attendeeEmail,
+          phoneNumber: formData.phoneNumber,
+          guestCount: formData.guestCount,
+          dietaryRestrictions: formData.dietaryRestrictions || undefined,
+        })
+      })
+
+      const result = await response.json()
+
+      if (!response.ok) {
+        throw new Error(result.message || 'Failed to create reservation')
+      }
+
+      if (result.success) {
+        onSuccess({
+          ...formData,
+          reservationId: result.data.id,
+          status: result.data.status,
+          message: result.message
+        })
+      } else {
+        throw new Error(result.message || 'Reservation failed')
+      }
+    } catch (error) {
+      console.error('Reservation error:', error)
+      // Show error to user instead of calling onSuccess
+      alert(error instanceof Error ? error.message : 'Failed to create reservation. Please try again.')
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   const isStep1Valid = formData.attendeeName.trim() && formData.attendeeEmail.trim()

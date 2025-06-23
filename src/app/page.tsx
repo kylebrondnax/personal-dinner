@@ -1,10 +1,15 @@
+import { ThemeToggle } from '@/components/ThemeToggle'
+
 export default function Home() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 transition-colors">
       {/* Hero Section */}
-      <div className="max-w-7xl mx-auto px-4 pt-16 pb-20">
+      <div className="max-w-7xl mx-auto px-4 pt-16 pb-20 relative">
+        <div className="absolute top-4 right-4">
+          <ThemeToggle />
+        </div>
         <div className="text-center">
-          <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6">
+          <h1 className="text-5xl md:text-6xl font-bold text-gray-900 dark:text-white mb-6">
             Share Amazing
             <span className="text-blue-600 block">Family Dinners</span>
           </h1>
@@ -47,11 +52,11 @@ export default function Home() {
       </div>
 
       {/* How It Works */}
-      <div className="bg-white py-20">
+      <div className="bg-white dark:bg-gray-800 py-20">
         <div className="max-w-7xl mx-auto px-4">
           <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">How Family Dinner Works</h2>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+            <h2 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">How Family Dinner Works</h2>
+            <p className="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
               Simple, transparent, and delicious. Here's how we bring people together over incredible food.
             </p>
           </div>
@@ -59,34 +64,34 @@ export default function Home() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-16">
             {/* For Attendees */}
             <div>
-              <h3 className="text-2xl font-semibold text-gray-900 mb-8 text-center">For Food Lovers</h3>
+              <h3 className="text-2xl font-semibold text-gray-900 dark:text-white mb-8 text-center">For Food Lovers</h3>
               <div className="space-y-6">
                 <div className="flex gap-4">
                   <div className="w-8 h-8 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center font-semibold">1</div>
                   <div>
-                    <h4 className="font-semibold text-gray-900 mb-2">Browse Amazing Dinners</h4>
-                    <p className="text-gray-600">Discover unique dining experiences from talented home chefs in your area.</p>
+                    <h4 className="font-semibold text-gray-900 dark:text-white mb-2">Browse Amazing Dinners</h4>
+                    <p className="text-gray-600 dark:text-gray-300">Discover unique dining experiences from talented home chefs in your area.</p>
                   </div>
                 </div>
                 <div className="flex gap-4">
                   <div className="w-8 h-8 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center font-semibold">2</div>
                   <div>
-                    <h4 className="font-semibold text-gray-900 mb-2">Reserve Your Spot</h4>
-                    <p className="text-gray-600">See exactly what you'll pay upfront. No hidden fees, no surprises.</p>
+                    <h4 className="font-semibold text-gray-900 dark:text-white mb-2">Reserve Your Spot</h4>
+                    <p className="text-gray-600 dark:text-gray-300">See exactly what you'll pay upfront. No hidden fees, no surprises.</p>
                   </div>
                 </div>
                 <div className="flex gap-4">
                   <div className="w-8 h-8 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center font-semibold">3</div>
                   <div>
-                    <h4 className="font-semibold text-gray-900 mb-2">Enjoy & Connect</h4>
-                    <p className="text-gray-600">Share an incredible meal and make new friends around the dinner table.</p>
+                    <h4 className="font-semibold text-gray-900 dark:text-white mb-2">Enjoy & Connect</h4>
+                    <p className="text-gray-600 dark:text-gray-300">Share an incredible meal and make new friends around the dinner table.</p>
                   </div>
                 </div>
                 <div className="flex gap-4">
                   <div className="w-8 h-8 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center font-semibold">4</div>
                   <div>
-                    <h4 className="font-semibold text-gray-900 mb-2">Pay Your Fair Share</h4>
-                    <p className="text-gray-600">Split costs automatically based on actual ingredients. Fair and transparent.</p>
+                    <h4 className="font-semibold text-gray-900 dark:text-white mb-2">Pay Your Fair Share</h4>
+                    <p className="text-gray-600 dark:text-gray-300">Split costs automatically based on actual ingredients. Fair and transparent.</p>
                   </div>
                 </div>
               </div>
@@ -94,34 +99,34 @@ export default function Home() {
 
             {/* For Chefs */}
             <div>
-              <h3 className="text-2xl font-semibold text-gray-900 mb-8 text-center">For Home Chefs</h3>
+              <h3 className="text-2xl font-semibold text-gray-900 dark:text-white mb-8 text-center">For Home Chefs</h3>
               <div className="space-y-6">
                 <div className="flex gap-4">
                   <div className="w-8 h-8 bg-green-100 text-green-600 rounded-full flex items-center justify-center font-semibold">1</div>
                   <div>
-                    <h4 className="font-semibold text-gray-900 mb-2">Create Your Dinner</h4>
-                    <p className="text-gray-600">Plan your menu, set capacity, and estimate costs for your guests.</p>
+                    <h4 className="font-semibold text-gray-900 dark:text-white mb-2">Create Your Dinner</h4>
+                    <p className="text-gray-600 dark:text-gray-300">Plan your menu, set capacity, and estimate costs for your guests.</p>
                   </div>
                 </div>
                 <div className="flex gap-4">
                   <div className="w-8 h-8 bg-green-100 text-green-600 rounded-full flex items-center justify-center font-semibold">2</div>
                   <div>
-                    <h4 className="font-semibold text-gray-900 mb-2">Welcome Your Guests</h4>
-                    <p className="text-gray-600">Host amazing people who appreciate good food and great company.</p>
+                    <h4 className="font-semibold text-gray-900 dark:text-white mb-2">Welcome Your Guests</h4>
+                    <p className="text-gray-600 dark:text-gray-300">Host amazing people who appreciate good food and great company.</p>
                   </div>
                 </div>
                 <div className="flex gap-4">
                   <div className="w-8 h-8 bg-green-100 text-green-600 rounded-full flex items-center justify-center font-semibold">3</div>
                   <div>
-                    <h4 className="font-semibold text-gray-900 mb-2">Upload Your Receipt</h4>
-                    <p className="text-gray-600">Simply take a photo of your grocery receipt. We'll handle the rest.</p>
+                    <h4 className="font-semibold text-gray-900 dark:text-white mb-2">Upload Your Receipt</h4>
+                    <p className="text-gray-600 dark:text-gray-300">Simply take a photo of your grocery receipt. We'll handle the rest.</p>
                   </div>
                 </div>
                 <div className="flex gap-4">
                   <div className="w-8 h-8 bg-green-100 text-green-600 rounded-full flex items-center justify-center font-semibold">4</div>
                   <div>
-                    <h4 className="font-semibold text-gray-900 mb-2">Get Paid Instantly</h4>
-                    <p className="text-gray-600">Automatic Venmo requests sent to guests. No awkward money conversations.</p>
+                    <h4 className="font-semibold text-gray-900 dark:text-white mb-2">Get Paid Instantly</h4>
+                    <p className="text-gray-600 dark:text-gray-300">Automatic Venmo requests sent to guests. No awkward money conversations.</p>
                   </div>
                 </div>
               </div>
@@ -131,36 +136,36 @@ export default function Home() {
       </div>
 
       {/* Why Family Dinner */}
-      <div className="bg-gray-50 py-20">
+      <div className="bg-gray-50 dark:bg-gray-900 py-20">
         <div className="max-w-7xl mx-auto px-4">
           <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">Why Choose Family Dinner?</h2>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+            <h2 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">Why Choose Family Dinner?</h2>
+            <p className="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
               More than just a meal-sharing app. We're building a community of food lovers.
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="bg-white p-8 rounded-xl shadow-sm text-center">
+            <div className="bg-white dark:bg-gray-800 p-8 rounded-xl shadow-sm text-center">
               <div className="text-4xl mb-4">💰</div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-3">Transparent Pricing</h3>
-              <p className="text-gray-600">
+              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-3">Transparent Pricing</h3>
+              <p className="text-gray-600 dark:text-gray-300">
                 See exact costs upfront. Pay only for ingredients, never inflated restaurant prices.
               </p>
             </div>
             
-            <div className="bg-white p-8 rounded-xl shadow-sm text-center">
+            <div className="bg-white dark:bg-gray-800 p-8 rounded-xl shadow-sm text-center">
               <div className="text-4xl mb-4">👥</div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-3">Trusted Community</h3>
-              <p className="text-gray-600">
+              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-3">Trusted Community</h3>
+              <p className="text-gray-600 dark:text-gray-300">
                 Vetted chefs and verified guests. Build lasting friendships over shared meals.
               </p>
             </div>
             
-            <div className="bg-white p-8 rounded-xl shadow-sm text-center">
+            <div className="bg-white dark:bg-gray-800 p-8 rounded-xl shadow-sm text-center">
               <div className="text-4xl mb-4">🍽️</div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-3">Unique Experiences</h3>
-              <p className="text-gray-600">
+              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-3">Unique Experiences</h3>
+              <p className="text-gray-600 dark:text-gray-300">
                 Discover cuisines and cooking styles you'll never find in restaurants.
               </p>
             </div>
@@ -194,17 +199,17 @@ export default function Home() {
       </div>
 
       {/* Chef Tools Section */}
-      <div id="chef-section" className="bg-gray-100 py-20">
+      <div id="chef-section" className="bg-gray-100 dark:bg-gray-800 py-20">
         <div className="max-w-4xl mx-auto px-4">
           <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">Chef Tools</h2>
-            <p className="text-xl text-gray-600">
+            <h2 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">Chef Tools</h2>
+            <p className="text-xl text-gray-600 dark:text-gray-300">
               Everything you need to host amazing dinners and manage payments seamlessly.
             </p>
           </div>
           
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8">
-            <p className="text-center text-gray-600 mb-6">
+          <div className="bg-white dark:bg-gray-700 rounded-xl shadow-sm border border-gray-200 dark:border-gray-600 p-8">
+            <p className="text-center text-gray-600 dark:text-gray-300 mb-6">
               🚧 Chef tools coming soon! Sign up to be notified when they're ready.
             </p>
             <div className="flex justify-center">
