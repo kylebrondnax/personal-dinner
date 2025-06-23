@@ -1,103 +1,135 @@
-import Image from "next/image";
+'use client'
+
+import { useState } from 'react'
+import { VenmoSetup } from '@/components/VenmoSetup'
+import { CostEditor } from '@/components/CostEditor'
+import { PaymentTracker } from '@/components/PaymentTracker'
+import { ReceiptUpload } from '@/components/ReceiptUpload'
+import { DinnerEvent, Ingredient, AttendeePayment, Receipt, CostStatus } from '@/types'
+import { calculatePerPersonCost, calculateTotalCost } from '@/lib/utils'
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  const [chefVenmoUsername, setChefVenmoUsername] = useState('')
+  const [chefVenmoLink, setChefVenmoLink] = useState('')
+  
+  // Mock event data
+  const [event, setEvent] = useState<DinnerEvent>({
+    id: '1',
+    title: 'Italian Night Dinner',
+    date: new Date(),
+    chefId: 'chef1',
+    costStatus: 'estimated' as CostStatus,
+    estimatedIngredients: [
+      { name: 'Pasta', cost: 12.99 },
+      { name: 'Tomatoes', cost: 8.50 },
+      { name: 'Cheese', cost: 15.25 },
+      { name: 'Wine', cost: 25.00 }
+    ],
+    actualIngredients: [],
+    attendeePayments: [
+      { name: 'Alice Johnson', email: 'alice@example.com', paid: false, amount: 15.44 },
+      { name: 'Bob Smith', email: 'bob@example.com', paid: true, amount: 15.44 },
+      { name: 'Carol Davis', email: 'carol@example.com', paid: false, amount: 15.44 },
+      { name: 'David Wilson', email: 'david@example.com', paid: false, amount: 15.44 }
+    ],
+    createdAt: new Date(),
+    updatedAt: new Date()
+  })
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
+  const handleVenmoSave = (username: string, link: string) => {
+    setChefVenmoUsername(username)
+    setChefVenmoLink(link)
+  }
+
+  const handleCostStatusChange = (status: CostStatus) => {
+    setEvent(prev => ({ ...prev, costStatus: status }))
+  }
+
+  const handleIngredientsUpdate = (ingredients: Ingredient[], isActual: boolean) => {
+    const newTotal = calculateTotalCost(ingredients)
+    const perPersonAmount = calculatePerPersonCost(newTotal, event.attendeePayments.length)
+    
+    const updatedPayments = event.attendeePayments.map(payment => ({
+      ...payment,
+      amount: perPersonAmount
+    }))
+
+    setEvent(prev => ({
+      ...prev,
+      [isActual ? 'actualIngredients' : 'estimatedIngredients']: ingredients,
+      attendeePayments: updatedPayments
+    }))
+  }
+
+  const handlePaymentStatusChange = (email: string, paid: boolean) => {
+    setEvent(prev => ({
+      ...prev,
+      attendeePayments: prev.attendeePayments.map(payment =>
+        payment.email === email ? { ...payment, paid } : payment
+      )
+    }))
+  }
+
+  const handleReceiptUpload = (receipt: Receipt) => {
+    console.log('Receipt uploaded:', receipt.filename)
+  }
+
+  const handleReceiptParsed = (parsedIngredients: Ingredient[]) => {
+    handleIngredientsUpdate(parsedIngredients, true)
+    setEvent(prev => ({ ...prev, costStatus: 'actual' }))
+  }
+
+  return (
+    <div className="min-h-screen bg-gray-100">
+      <div className="max-w-4xl mx-auto p-4 space-y-6">
+        <header className="text-center py-8">
+          <h1 className="text-4xl font-bold text-gray-900 mb-3">
+            Family Dinner Planning
+          </h1>
+          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+            Split costs transparently with your trusted circle
+          </p>
+        </header>
+
+        <div className="grid gap-6">
+          {/* Venmo Setup Section */}
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8">
+            <VenmoSetup
+              initialUsername={chefVenmoUsername}
+              onSave={handleVenmoSave}
             />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+          </div>
+
+          {/* Cost Management Section */}
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8">
+            <CostEditor
+              costStatus={event.costStatus}
+              estimatedIngredients={event.estimatedIngredients}
+              actualIngredients={event.actualIngredients}
+              onCostStatusChange={handleCostStatusChange}
+              onIngredientsUpdate={handleIngredientsUpdate}
+            />
+          </div>
+
+          {/* Receipt Upload Section */}
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8">
+            <ReceiptUpload
+              onReceiptUpload={handleReceiptUpload}
+              onReceiptParsed={handleReceiptParsed}
+            />
+          </div>
+
+          {/* Payment Tracking Section */}
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8">
+            <PaymentTracker
+              attendeePayments={event.attendeePayments}
+              chefVenmoUsername={chefVenmoUsername}
+              eventTitle={event.title}
+              onPaymentStatusChange={handlePaymentStatusChange}
+            />
+          </div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+      </div>
     </div>
-  );
+  )
 }
