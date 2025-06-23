@@ -1,6 +1,6 @@
 'use client'
 
-import { useAuth } from '@/contexts/AuthContext'
+import { useAuth } from '@/contexts/ClerkAuthContext'
 import { ThemeToggle } from '@/components/ThemeToggle'
 import Link from 'next/link'
 
