@@ -61,9 +61,8 @@ export default function ChefAuthPage() {
                     card: "shadow-none bg-transparent border-none w-full"
                   }
                 }}
-                redirectUrl="/chef/dashboard"
+                forceRedirectUrl="/chef/dashboard"
                 signUpUrl="#"
-                afterSignInUrl="/chef/dashboard"
               />
             ) : (
               <SignUp 
@@ -73,9 +72,8 @@ export default function ChefAuthPage() {
                     card: "shadow-none bg-transparent border-none w-full"
                   }
                 }}
-                redirectUrl="/chef/dashboard"
+                forceRedirectUrl="/chef/dashboard"
                 signInUrl="#"
-                afterSignUpUrl="/chef/dashboard"
               />
             )}
           </div>
