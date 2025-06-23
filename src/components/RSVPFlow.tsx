@@ -18,6 +18,9 @@ interface ReservationFormData {
   guestCount: number
   agreedToCost: boolean
   phoneNumber?: string
+  reservationId?: string
+  status?: string
+  message?: string
 }
 
 export function RSVPFlow({ event, isOpen, onClose, onSuccess }: RSVPFlowProps) {

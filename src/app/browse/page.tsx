@@ -10,6 +10,7 @@ import { PublicDinnerEvent } from '@/types'
 interface EventsResponse {
   success: boolean
   data: PublicDinnerEvent[]
+  error?: string
   meta?: {
     total: number
     filters: any

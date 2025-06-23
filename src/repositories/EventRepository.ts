@@ -2,7 +2,7 @@
 // This layer can easily be extracted to a separate microservice
 
 import { prisma } from '@/lib/prisma'
-import { Event, EventStatus, Prisma } from '@prisma/client'
+import { EventStatus, Prisma } from '@prisma/client'
 
 export interface EventFilters {
   search?: string
@@ -41,16 +41,16 @@ export class EventRepository {
       status: filters.status || 'OPEN',
       ...(filters.search && {
         OR: [
-          { title: { contains: filters.search, mode: 'insensitive' } },
-          { description: { contains: filters.search, mode: 'insensitive' } },
-          { chef: { name: { contains: filters.search, mode: 'insensitive' } } }
+          { title: { contains: filters.search } },
+          { description: { contains: filters.search } },
+          { chef: { name: { contains: filters.search } } }
         ]
       }),
       ...(filters.maxPrice && {
         estimatedCostPerPerson: { lte: filters.maxPrice }
       }),
       ...(filters.city && {
-        location: { city: { equals: filters.city, mode: 'insensitive' } }
+        location: { city: { equals: filters.city } }
       }),
       ...(filters.dateFrom && { date: { gte: filters.dateFrom } }),
       ...(filters.dateTo && { date: { lte: filters.dateTo } })
@@ -176,11 +176,18 @@ export class EventRepository {
   }
 
   // Update event
-  static async update(id: string, data: Partial<CreateEventData>) {
+  static async update(id: string, data: Partial<Omit<CreateEventData, 'chefId'>> & { status?: EventStatus }) {
     return await prisma.event.update({
       where: { id },
       data: {
-        ...data,
+        ...(data.title && { title: data.title }),
+        ...(data.description && { description: data.description }),
+        ...(data.date && { date: data.date }),
+        ...(data.duration && { duration: data.duration }),
+        ...(data.maxCapacity && { maxCapacity: data.maxCapacity }),
+        ...(data.estimatedCostPerPerson && { estimatedCostPerPerson: data.estimatedCostPerPerson }),
+        ...(data.reservationDeadline && { reservationDeadline: data.reservationDeadline }),
+        ...(data.status && { status: data.status }),
         ...(data.cuisineTypes && {
           cuisineTypes: JSON.stringify(data.cuisineTypes)
         }),
