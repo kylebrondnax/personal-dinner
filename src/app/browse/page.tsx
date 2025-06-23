@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { EventCard } from '@/components/EventCard'
+import { RSVPFlow } from '@/components/RSVPFlow'
 import { PublicDinnerEvent } from '@/types'
 
 // Mock data - will be replaced with API calls
@@ -104,6 +105,8 @@ export default function BrowsePage() {
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedCuisine, setSelectedCuisine] = useState('')
   const [maxPrice, setMaxPrice] = useState<number | null>(null)
+  const [selectedEvent, setSelectedEvent] = useState<PublicDinnerEvent | null>(null)
+  const [showRSVP, setShowRSVP] = useState(false)
 
   // Filter events based on search and filters
   const filteredEvents = mockEvents.filter(event => {
@@ -122,9 +125,24 @@ export default function BrowsePage() {
   const cuisineTypes = Array.from(new Set(mockEvents.flatMap(event => event.cuisineType)))
 
   const handleReservation = (eventId: string) => {
-    // TODO: Implement reservation modal/flow
-    console.log('Reserve spot for event:', eventId)
-    alert('Reservation flow coming soon!')
+    const event = mockEvents.find(e => e.id === eventId)
+    if (event) {
+      setSelectedEvent(event)
+      setShowRSVP(true)
+    }
+  }
+
+  const handleRSVPSuccess = (reservationData: any) => {
+    console.log('Reservation created:', reservationData)
+    setShowRSVP(false)
+    setSelectedEvent(null)
+    // TODO: Show success message and update event capacity
+    alert(`Reservation confirmed for ${selectedEvent?.title}! You'll receive a confirmation email shortly.`)
+  }
+
+  const handleRSVPClose = () => {
+    setShowRSVP(false)
+    setSelectedEvent(null)
   }
 
   return (
@@ -244,6 +262,16 @@ export default function BrowsePage() {
               View all dinners
             </button>
           </div>
+        )}
+
+        {/* RSVP Modal */}
+        {selectedEvent && (
+          <RSVPFlow
+            event={selectedEvent}
+            isOpen={showRSVP}
+            onClose={handleRSVPClose}
+            onSuccess={handleRSVPSuccess}
+          />
         )}
       </div>
     </div>

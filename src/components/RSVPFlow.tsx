@@ -1,0 +1,317 @@
+'use client'
+
+import { useState } from 'react'
+import { PublicDinnerEvent } from '@/types'
+import { cn, formatCurrency } from '@/lib/utils'
+
+interface RSVPFlowProps {
+  event: PublicDinnerEvent
+  isOpen: boolean
+  onClose: () => void
+  onSuccess: (reservationData: ReservationFormData) => void
+}
+
+interface ReservationFormData {
+  attendeeName: string
+  attendeeEmail: string
+  dietaryRestrictions: string
+  guestCount: number
+  agreedToCost: boolean
+  phoneNumber?: string
+}
+
+export function RSVPFlow({ event, isOpen, onClose, onSuccess }: RSVPFlowProps) {
+  const [step, setStep] = useState(1)
+  const [formData, setFormData] = useState<ReservationFormData>({
+    attendeeName: '',
+    attendeeEmail: '',
+    dietaryRestrictions: '',
+    guestCount: 1,
+    agreedToCost: false,
+    phoneNumber: ''
+  })
+  const [isSubmitting, setIsSubmitting] = useState(false)
+
+  const spotsAvailable = event.maxCapacity - event.currentReservations
+  const totalCost = event.estimatedCostPerPerson * formData.guestCount
+
+  if (!isOpen) return null
+
+  const handleInputChange = (field: keyof ReservationFormData, value: string | number | boolean) => {
+    setFormData(prev => ({ ...prev, [field]: value }))
+  }
+
+  const handleNextStep = () => {
+    if (step < 3) setStep(step + 1)
+  }
+
+  const handlePrevStep = () => {
+    if (step > 1) setStep(step - 1)
+  }
+
+  const handleSubmit = async () => {
+    setIsSubmitting(true)
+    
+    // Simulate API call delay
+    await new Promise(resolve => setTimeout(resolve, 1500))
+    
+    onSuccess(formData)
+    setIsSubmitting(false)
+  }
+
+  const isStep1Valid = formData.attendeeName.trim() && formData.attendeeEmail.trim()
+  const isStep2Valid = formData.guestCount >= 1 && formData.guestCount <= spotsAvailable
+  const isStep3Valid = formData.agreedToCost
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+      <div className="bg-white rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+        {/* Header */}
+        <div className="flex items-center justify-between p-6 border-b border-gray-200">
+          <div>
+            <h2 className="text-2xl font-bold text-gray-900">Reserve Your Spot</h2>
+            <p className="text-gray-600">{event.title} by {event.chefName}</p>
+          </div>
+          <button
+            onClick={onClose}
+            className="text-gray-400 hover:text-gray-600 text-xl font-bold"
+          >
+            ×
+          </button>
+        </div>
+
+        {/* Progress Indicator */}
+        <div className="px-6 py-4 bg-gray-50">
+          <div className="flex items-center">
+            {[1, 2, 3].map((stepNum) => (
+              <div key={stepNum} className="flex items-center">
+                <div className={cn(
+                  'w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium',
+                  step >= stepNum 
+                    ? 'bg-blue-600 text-white' 
+                    : 'bg-gray-200 text-gray-600'
+                )}>
+                  {stepNum}
+                </div>
+                {stepNum < 3 && (
+                  <div className={cn(
+                    'h-1 w-16 mx-2',
+                    step > stepNum ? 'bg-blue-600' : 'bg-gray-200'
+                  )} />
+                )}
+              </div>
+            ))}
+          </div>
+          <div className="flex justify-between mt-2 text-xs text-gray-600">
+            <span>Your Info</span>
+            <span>Party Size</span>
+            <span>Confirm</span>
+          </div>
+        </div>
+
+        {/* Step Content */}
+        <div className="p-6">
+          {step === 1 && (
+            <div className="space-y-6">
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">Tell us about yourself</h3>
+                
+                <div className="space-y-4">
+                  <div>
+                    <label htmlFor="name" className="block text-sm font-medium text-gray-900 mb-2">
+                      Full Name *
+                    </label>
+                    <input
+                      id="name"
+                      type="text"
+                      value={formData.attendeeName}
+                      onChange={(e) => handleInputChange('attendeeName', e.target.value)}
+                      placeholder="Your full name"
+                      className="w-full px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 placeholder-gray-500 bg-white"
+                    />
+                  </div>
+
+                  <div>
+                    <label htmlFor="email" className="block text-sm font-medium text-gray-900 mb-2">
+                      Email Address *
+                    </label>
+                    <input
+                      id="email"
+                      type="email"
+                      value={formData.attendeeEmail}
+                      onChange={(e) => handleInputChange('attendeeEmail', e.target.value)}
+                      placeholder="your.email@example.com"
+                      className="w-full px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 placeholder-gray-500 bg-white"
+                    />
+                  </div>
+
+                  <div>
+                    <label htmlFor="phone" className="block text-sm font-medium text-gray-900 mb-2">
+                      Phone Number (Optional)
+                    </label>
+                    <input
+                      id="phone"
+                      type="tel"
+                      value={formData.phoneNumber}
+                      onChange={(e) => handleInputChange('phoneNumber', e.target.value)}
+                      placeholder="(555) 123-4567"
+                      className="w-full px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 placeholder-gray-500 bg-white"
+                    />
+                  </div>
+
+                  <div>
+                    <label htmlFor="dietary" className="block text-sm font-medium text-gray-900 mb-2">
+                      Dietary Restrictions or Allergies
+                    </label>
+                    <textarea
+                      id="dietary"
+                      value={formData.dietaryRestrictions}
+                      onChange={(e) => handleInputChange('dietaryRestrictions', e.target.value)}
+                      placeholder="Please let the chef know about any allergies or dietary restrictions..."
+                      rows={3}
+                      className="w-full px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 placeholder-gray-500 bg-white resize-none"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {step === 2 && (
+            <div className="space-y-6">
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">How many people?</h3>
+                
+                <div className="bg-gray-50 rounded-lg p-4 mb-6">
+                  <p className="text-sm text-gray-600 mb-2">Available spots: {spotsAvailable}</p>
+                  <p className="text-sm text-gray-600">Cost per person: {formatCurrency(event.estimatedCostPerPerson)}</p>
+                </div>
+
+                <div>
+                  <label htmlFor="guestCount" className="block text-sm font-medium text-gray-900 mb-2">
+                    Number of people (including yourself)
+                  </label>
+                  <select
+                    id="guestCount"
+                    value={formData.guestCount}
+                    onChange={(e) => handleInputChange('guestCount', Number(e.target.value))}
+                    className="w-full px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 bg-white"
+                  >
+                    {Array.from({ length: spotsAvailable }, (_, i) => i + 1).map(num => (
+                      <option key={num} value={num}>
+                        {num} {num === 1 ? 'person' : 'people'} - {formatCurrency(event.estimatedCostPerPerson * num)}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="mt-6 p-4 bg-blue-50 rounded-lg">
+                  <div className="flex justify-between items-center">
+                    <span className="font-medium text-gray-900">Total estimated cost:</span>
+                    <span className="text-xl font-bold text-blue-600">{formatCurrency(totalCost)}</span>
+                  </div>
+                  <p className="text-sm text-gray-600 mt-1">
+                    Final amount may vary based on actual ingredient costs
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {step === 3 && (
+            <div className="space-y-6">
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">Confirm your reservation</h3>
+
+                {/* Summary */}
+                <div className="bg-gray-50 rounded-lg p-6 mb-6">
+                  <h4 className="font-medium text-gray-900 mb-3">Reservation Summary</h4>
+                  <div className="space-y-2 text-sm">
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Event:</span>
+                      <span className="text-gray-900">{event.title}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Date:</span>
+                      <span className="text-gray-900">
+                        {new Intl.DateTimeFormat('en-US', {
+                          weekday: 'long',
+                          month: 'long',
+                          day: 'numeric',
+                          hour: 'numeric',
+                          minute: '2-digit'
+                        }).format(event.date)}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Party size:</span>
+                      <span className="text-gray-900">{formData.guestCount} {formData.guestCount === 1 ? 'person' : 'people'}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Name:</span>
+                      <span className="text-gray-900">{formData.attendeeName}</span>
+                    </div>
+                    <div className="flex justify-between font-medium pt-2 border-t border-gray-200">
+                      <span className="text-gray-900">Estimated total:</span>
+                      <span className="text-blue-600">{formatCurrency(totalCost)}</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Agreement */}
+                <div className="space-y-4">
+                  <label className="flex items-start gap-3">
+                    <input
+                      type="checkbox"
+                      checked={formData.agreedToCost}
+                      onChange={(e) => handleInputChange('agreedToCost', e.target.checked)}
+                      className="mt-1 w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
+                    />
+                    <span className="text-sm text-gray-700">
+                      I understand that the final cost may vary based on actual ingredient prices and agree to pay my fair share via Venmo after the dinner.
+                    </span>
+                  </label>
+
+                  <div className="text-xs text-gray-500 space-y-1">
+                    <p>• Cancellations must be made at least 24 hours in advance</p>
+                    <p>• Payment will be requested after the dinner based on actual costs</p>
+                    <p>• By reserving, you agree to our terms of service</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Footer Actions */}
+        <div className="flex justify-between p-6 border-t border-gray-200">
+          <button
+            onClick={step === 1 ? onClose : handlePrevStep}
+            className="px-6 py-3 text-gray-600 hover:text-gray-800 font-medium"
+          >
+            {step === 1 ? 'Cancel' : 'Back'}
+          </button>
+
+          <button
+            onClick={step === 3 ? handleSubmit : handleNextStep}
+            disabled={
+              (step === 1 && !isStep1Valid) ||
+              (step === 2 && !isStep2Valid) ||
+              (step === 3 && (!isStep3Valid || isSubmitting))
+            }
+            className={cn(
+              'px-6 py-3 rounded-lg font-medium transition-colors',
+              (step === 1 && isStep1Valid) ||
+              (step === 2 && isStep2Valid) ||
+              (step === 3 && isStep3Valid && !isSubmitting)
+                ? 'bg-blue-600 text-white hover:bg-blue-700'
+                : 'bg-gray-200 text-gray-500 cursor-not-allowed'
+            )}
+          >
+            {isSubmitting ? 'Reserving...' : step === 3 ? 'Confirm Reservation' : 'Continue'}
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
