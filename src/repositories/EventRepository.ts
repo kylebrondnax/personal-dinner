@@ -12,6 +12,7 @@ export interface EventFilters {
   status?: EventStatus
   dateFrom?: Date
   dateTo?: Date
+  chefId?: string
 }
 
 export interface CreateEventData {
@@ -38,7 +39,8 @@ export class EventRepository {
   // Get events with filters (like Laravel Eloquent scopes)
   static async findMany(filters: EventFilters = {}) {
     const where: Prisma.EventWhereInput = {
-      status: filters.status || 'OPEN',
+      ...(filters.status ? { status: filters.status } : (filters.chefId ? {} : { status: 'OPEN' })),
+      ...(filters.chefId && { chefId: filters.chefId }),
       ...(filters.search && {
         OR: [
           { title: { contains: filters.search } },

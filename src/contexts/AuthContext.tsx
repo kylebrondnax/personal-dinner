@@ -63,31 +63,28 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       setIsLoading(true)
       
-      // TODO: Replace with actual API call
-      // For now, simulate API call with demo users
-      await new Promise(resolve => setTimeout(resolve, 1000))
-      
-      // Demo chef user
-      if (email === 'chef@example.com' && password === 'password') {
-        const demoUser: User = {
-          id: 'chef1',
-          email: 'chef@example.com',
-          name: 'Sarah Johnson',
-          role: 'CHEF',
-          profile: {
-            avatarUrl: '/api/placeholder/48/48',
-            bio: 'Passionate home chef specializing in comfort food and international cuisine.',
-            phone: '+1 (555) 123-4567',
-            venmoUsername: 'sarah-chef'
-          }
-        }
-        
-        setUser(demoUser)
-        localStorage.setItem('family-dinner-user', JSON.stringify(demoUser))
+      // Make API call to login endpoint
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password })
+      })
+
+      const result = await response.json()
+
+      if (!response.ok) {
+        return { success: false, error: result.message || 'Login failed' }
+      }
+
+      if (result.success) {
+        setUser(result.data)
+        localStorage.setItem('family-dinner-user', JSON.stringify(result.data))
         return { success: true }
       }
       
-      return { success: false, error: 'Invalid email or password' }
+      return { success: false, error: result.message || 'Login failed' }
     } catch (error) {
       console.error('Login error:', error)
       return { success: false, error: 'Login failed. Please try again.' }
@@ -100,26 +97,28 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       setIsLoading(true)
       
-      // TODO: Replace with actual API call
-      // For now, simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000))
-      
-      // Create new user
-      const newUser: User = {
-        id: `user_${Date.now()}`,
-        email: data.email,
-        name: data.name,
-        role: data.role,
-        profile: {
-          bio: data.bio,
-          phone: data.phone,
-          venmoUsername: data.venmoUsername
-        }
+      // Make API call to signup endpoint
+      const response = await fetch('/api/auth/signup', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data)
+      })
+
+      const result = await response.json()
+
+      if (!response.ok) {
+        return { success: false, error: result.message || 'Signup failed' }
+      }
+
+      if (result.success) {
+        setUser(result.data)
+        localStorage.setItem('family-dinner-user', JSON.stringify(result.data))
+        return { success: true }
       }
       
-      setUser(newUser)
-      localStorage.setItem('family-dinner-user', JSON.stringify(newUser))
-      return { success: true }
+      return { success: false, error: result.message || 'Signup failed' }
     } catch (error) {
       console.error('Signup error:', error)
       return { success: false, error: 'Signup failed. Please try again.' }

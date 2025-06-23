@@ -95,6 +95,7 @@ export class EventService {
   // Get events by chef
   static async getEventsByChef(chefId: string) {
     return await EventRepository.findMany({
+      chefId: chefId
       // No status filter - chef sees all their events
     })
   }

@@ -43,41 +43,27 @@ export default function ChefDashboard() {
   const loadChefEvents = async () => {
     try {
       setIsLoading(true)
-      // TODO: Replace with actual API call
-      // For now, use mock data
-      await new Promise(resolve => setTimeout(resolve, 500))
       
-      const mockEvents: DashboardEvent[] = [
-        {
-          id: '1',
-          title: 'Prime Rib Dinner',
-          date: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
-          maxCapacity: 8,
-          currentReservations: 5,
-          status: 'OPEN',
-          estimatedCostPerPerson: 65.00,
-          location: {
-            neighborhood: 'Capitol Hill',
-            city: 'Seattle'
-          }
-        },
-        {
-          id: '2',
-          title: 'Thanksgiving Prep Dinner',
-          date: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
-          maxCapacity: 6,
-          currentReservations: 6,
-          status: 'COMPLETED',
-          estimatedCostPerPerson: 45.00,
-          actualCostPerPerson: 42.50,
-          location: {
-            neighborhood: 'Capitol Hill',
-            city: 'Seattle'
-          }
-        }
-      ]
+      // Fetch chef's events from API
+      const response = await fetch(`/api/chef/events?chefId=${user!.id}`)
+      const result = await response.json()
       
-      setEvents(mockEvents)
+      if (!response.ok) {
+        throw new Error(result.message || 'Failed to load events')
+      }
+      
+      if (result.success) {
+        // Convert date strings back to Date objects
+        const eventsWithDates = result.data.map((event: any) => ({
+          ...event,
+          date: new Date(event.date),
+          createdAt: new Date(event.createdAt),
+          updatedAt: new Date(event.updatedAt)
+        }))
+        setEvents(eventsWithDates)
+      } else {
+        throw new Error(result.message || 'Failed to load events')
+      }
     } catch (error) {
       console.error('Error loading events:', error)
     } finally {

@@ -137,11 +137,42 @@ export default function CreateEventPage() {
         throw new Error('Reservation deadline must be before the event date')
       }
 
-      // TODO: Replace with actual API call
-      await new Promise(resolve => setTimeout(resolve, 1000))
+      // Prepare API request data
+      const eventData = {
+        title: formData.title,
+        description: formData.description,
+        date: `${formData.date}T${formData.time}`,
+        duration: formData.duration,
+        maxCapacity: formData.maxCapacity,
+        estimatedCostPerPerson: formData.estimatedCostPerPerson,
+        chefId: user!.id, // From auth context
+        cuisineTypes: formData.cuisineTypes,
+        dietaryAccommodations: formData.dietaryAccommodations,
+        reservationDeadline: formData.reservationDeadline,
+        location: formData.location
+      }
 
-      // For now, just redirect to dashboard with success
-      router.push('/chef/dashboard?created=true')
+      // Create event via API
+      const response = await fetch('/api/events', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(eventData)
+      })
+
+      const result = await response.json()
+
+      if (!response.ok) {
+        throw new Error(result.message || 'Failed to create event')
+      }
+
+      if (result.success) {
+        // Redirect to dashboard with success
+        router.push('/chef/dashboard?created=true')
+      } else {
+        throw new Error(result.message || 'Failed to create event')
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to create event')
     } finally {
