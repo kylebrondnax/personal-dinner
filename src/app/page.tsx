@@ -86,12 +86,26 @@ export default function Home() {
           <h1 className="text-4xl font-bold text-gray-900 mb-3">
             Family Dinner Planning
           </h1>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+          <p className="text-lg text-gray-600 max-w-2xl mx-auto mb-6">
             Split costs transparently with your trusted circle
           </p>
+          <div className="flex gap-4 justify-center">
+            <a
+              href="/browse"
+              className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors shadow-sm font-medium"
+            >
+              Browse Dinners
+            </a>
+            <a
+              href="#chef-tools"
+              className="px-6 py-3 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors font-medium"
+            >
+              Chef Tools
+            </a>
+          </div>
         </header>
 
-        <div className="grid gap-6">
+        <div id="chef-tools" className="grid gap-6">
           {/* Venmo Setup Section */}
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8">
             <VenmoSetup

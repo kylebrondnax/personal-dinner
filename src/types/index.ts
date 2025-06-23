@@ -43,3 +43,54 @@ export interface DinnerEvent {
 }
 
 export type CostStatus = 'estimated' | 'actual';
+
+// Attendee-facing event types
+export interface PublicDinnerEvent {
+  id: string;
+  title: string;
+  description: string;
+  chefId: string;
+  chefName: string;
+  chefPhoto?: string;
+  date: Date;
+  estimatedDuration: number; // minutes
+  maxCapacity: number;
+  currentReservations: number;
+  estimatedCostPerPerson: number;
+  cuisineType: string[];
+  dietaryAccommodations: string[];
+  status: 'open' | 'full' | 'cancelled' | 'completed';
+  reservationDeadline: Date;
+  location?: {
+    address?: string;
+    neighborhood: string;
+    city: string;
+  };
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface Reservation {
+  id: string;
+  eventId: string;
+  attendeeId: string;
+  attendeeName: string;
+  attendeeEmail: string;
+  dietaryRestrictions?: string;
+  reservedAt: Date;
+  status: 'confirmed' | 'waitlist' | 'cancelled';
+  guestCount: number;
+}
+
+export interface Attendee {
+  id: string;
+  name: string;
+  email: string;
+  dietaryRestrictions?: string[];
+  preferences?: {
+    cuisineTypes: string[];
+    maxBudget?: number;
+    preferredDays: string[];
+  };
+  createdAt: Date;
+}
