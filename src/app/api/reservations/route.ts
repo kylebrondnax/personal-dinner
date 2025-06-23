@@ -1,6 +1,7 @@
 // Reservations API endpoint (like Laravel ReservationController)
 import { NextRequest, NextResponse } from 'next/server'
 import { ReservationService } from '@/services/ReservationService'
+import { emailService } from '@/lib/email'
 
 // POST /api/reservations - Create new reservation
 export async function POST(request: NextRequest) {
@@ -63,6 +64,33 @@ export async function POST(request: NextRequest) {
       dietaryRestrictions: body.dietaryRestrictions || undefined,
       specialRequests: body.specialRequests || undefined
     })
+
+    // Send confirmation email if reservation was successful (not waitlisted)
+    if (reservation.status === 'CONFIRMED') {
+      try {
+        // Get event details for the email
+        const { EventService } = await import('@/services/EventService')
+        const event = await EventService.getEventDetails(body.eventId)
+        
+        if (event) {
+          const location = event.location 
+            ? `${event.location.neighborhood}, ${event.location.city}` 
+            : 'Location TBD'
+          
+          await emailService.sendReservationConfirmation(
+            userData.email,
+            userData.name,
+            event.title,
+            new Date(event.date),
+            location,
+            Number(body.guestCount)
+          )
+        }
+      } catch (emailError) {
+        console.error('Failed to send confirmation email:', emailError)
+        // Don't fail the reservation if email fails
+      }
+    }
 
     return NextResponse.json({
       success: true,
@@ -174,6 +202,15 @@ async function createOrFindUser(userData: {
         }
       }
     })
+
+    // Send welcome email to new users
+    try {
+      const { emailService } = await import('@/lib/email')
+      await emailService.sendWelcomeEmail(user.email, user.name, user.role as 'CHEF' | 'ATTENDEE')
+    } catch (emailError) {
+      console.error('Failed to send welcome email:', emailError)
+      // Don't fail user creation if email fails
+    }
   }
 
   return user
