@@ -2,10 +2,11 @@
 
 import { useAuth } from '@/contexts/ClerkAuthContext'
 import { ThemeToggle } from '@/components/ThemeToggle'
+import { UserButton } from '@clerk/nextjs'
 import Link from 'next/link'
 
 export function Navigation() {
-  const { user, logout } = useAuth()
+  const { user } = useAuth()
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm border-b border-gray-200 dark:border-gray-700">
@@ -53,13 +54,6 @@ export function Navigation() {
             {user ? (
               <div className="flex items-center space-x-4">
                 <div className="hidden sm:flex items-center space-x-2">
-                  {user.profile?.avatarUrl && (
-                    <img 
-                      src={user.profile.avatarUrl} 
-                      alt={user.name}
-                      className="w-8 h-8 rounded-full object-cover"
-                    />
-                  )}
                   <span className="text-sm font-medium text-gray-900 dark:text-white">
                     {user.name}
                   </span>
@@ -68,12 +62,14 @@ export function Navigation() {
                   </span>
                 </div>
                 
-                <button
-                  onClick={logout}
-                  className="text-sm text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
-                >
-                  Sign Out
-                </button>
+                <UserButton 
+                  afterSignOutUrl="/"
+                  appearance={{
+                    elements: {
+                      avatarBox: "w-8 h-8"
+                    }
+                  }}
+                />
               </div>
             ) : (
               <div className="flex items-center space-x-3">
