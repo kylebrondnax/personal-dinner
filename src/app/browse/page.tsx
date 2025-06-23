@@ -1,11 +1,21 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { EventCard } from '@/components/EventCard'
 import { RSVPFlow } from '@/components/RSVPFlow'
 import { PublicDinnerEvent } from '@/types'
 
-// Mock data - will be replaced with API calls
+// API response type
+interface EventsResponse {
+  success: boolean
+  data: PublicDinnerEvent[]
+  meta?: {
+    total: number
+    filters: any
+  }
+}
+
+// Mock data - keeping as fallback
 const mockEvents: PublicDinnerEvent[] = [
   {
     id: '1',
@@ -107,6 +117,11 @@ export default function BrowsePage() {
   const [maxPrice, setMaxPrice] = useState<number | null>(null)
   const [selectedEvent, setSelectedEvent] = useState<PublicDinnerEvent | null>(null)
   const [showRSVP, setShowRSVP] = useState(false)
+  
+  // API state
+  const [events, setEvents] = useState<PublicDinnerEvent[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
   // Filter events based on search and filters
   const filteredEvents = mockEvents.filter(event => {
