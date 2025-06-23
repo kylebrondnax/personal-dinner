@@ -1,6 +1,7 @@
 // Authentication Login API endpoint
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import bcrypt from 'bcryptjs'
 
 export async function POST(request: NextRequest) {
   try {
@@ -18,35 +19,33 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // For demo purposes, we'll support the demo chef account
-    if (body.email === 'chef@example.com' && body.password === 'password') {
-      // Check if demo chef exists in database, create if not
-      let user = await prisma.user.findUnique({
-        where: { email: 'chef@example.com' },
-        include: { profile: true }
+    // Find user by email
+    const user = await prisma.user.findUnique({
+      where: { email: body.email },
+      include: { profile: true }
+    })
+
+    if (!user) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'Authentication failed',
+          message: 'Invalid email or password'
+        },
+        { status: 401 }
+      )
+    }
+
+    // Special case for demo chef account that might not have a password yet
+    if (body.email === 'chef@example.com' && body.password === 'password' && !user.password) {
+      // Update the demo user with a hashed password
+      const hashedPassword = await bcrypt.hash('password', 12)
+      await prisma.user.update({
+        where: { id: user.id },
+        data: { password: hashedPassword }
       })
-
-      if (!user) {
-        // Create demo chef user
-        user = await prisma.user.create({
-          data: {
-            email: 'chef@example.com',
-            name: 'Sarah Johnson',
-            role: 'CHEF',
-            profile: {
-              create: {
-                bio: 'Passionate home chef specializing in comfort food and international cuisine.',
-                phoneNumber: '+1 (555) 123-4567',
-                venmoUsername: 'sarah-chef',
-                avatarUrl: '/api/placeholder/48/48'
-              }
-            }
-          },
-          include: { profile: true }
-        })
-      }
-
-      // Return user data (in production, you'd use JWT tokens)
+      
+      // Return user data
       return NextResponse.json({
         success: true,
         data: {
@@ -65,16 +64,48 @@ export async function POST(request: NextRequest) {
       })
     }
 
-    // For other accounts, we'd normally check hashed passwords
-    // For now, return invalid credentials
-    return NextResponse.json(
-      {
-        success: false,
-        error: 'Authentication failed',
-        message: 'Invalid email or password'
+    // Verify password for all other users
+    if (!user.password) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'Authentication failed',
+          message: 'Account needs password reset'
+        },
+        { status: 401 }
+      )
+    }
+
+    const isValidPassword = await bcrypt.compare(body.password, user.password)
+    
+    if (!isValidPassword) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'Authentication failed',
+          message: 'Invalid email or password'
+        },
+        { status: 401 }
+      )
+    }
+
+    // Return user data
+    return NextResponse.json({
+      success: true,
+      data: {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        role: user.role,
+        profile: user.profile ? {
+          avatarUrl: user.profile.avatarUrl,
+          bio: user.profile.bio,
+          phone: user.profile.phoneNumber,
+          venmoUsername: user.profile.venmoUsername
+        } : undefined
       },
-      { status: 401 }
-    )
+      message: 'Login successful'
+    })
 
   } catch (error) {
     console.error('Login error:', error)

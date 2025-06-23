@@ -1,6 +1,7 @@
 // Authentication Signup API endpoint
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import bcrypt from 'bcryptjs'
 
 export async function POST(request: NextRequest) {
   try {
@@ -37,11 +38,14 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // Hash the password
+    const hashedPassword = await bcrypt.hash(body.password, 12)
+
     // Create new user
-    // Note: In production, you'd hash the password with bcrypt
     const user = await prisma.user.create({
       data: {
         email: body.email,
+        password: hashedPassword,
         name: body.name,
         role: body.role,
         profile: body.bio || body.phone || body.venmoUsername ? {

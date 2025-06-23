@@ -17,6 +17,7 @@ datasource db {
 model User {
   id        String   @id @default(cuid())
   email     String   @unique
+  password  String?  // Hashed password (optional for existing users)
   name      String
   role      UserRole @default(ATTENDEE)
   createdAt DateTime @default(now())

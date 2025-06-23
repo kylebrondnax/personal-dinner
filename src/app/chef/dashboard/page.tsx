@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/contexts/AuthContext'
-import { ThemeToggle } from '@/components/ThemeToggle'
+import { Navigation } from '@/components/Navigation'
 
 interface DashboardEvent {
   id: string
@@ -21,7 +21,7 @@ interface DashboardEvent {
 }
 
 export default function ChefDashboard() {
-  const { user, isLoading: authLoading, logout } = useAuth()
+  const { user, isLoading: authLoading } = useAuth()
   const router = useRouter()
   const [events, setEvents] = useState<DashboardEvent[]>([])
   const [isLoading, setIsLoading] = useState(true)
@@ -71,10 +71,6 @@ export default function ChefDashboard() {
     }
   }
 
-  const handleLogout = () => {
-    logout()
-    router.push('/')
-  }
 
   const formatDate = (date: Date) => {
     return new Intl.DateTimeFormat('en-US', {
@@ -125,35 +121,25 @@ export default function ChefDashboard() {
 
   return (
     <div className="min-h-screen bg-gray-100 dark:bg-gray-900 transition-colors">
-      <div className="max-w-7xl mx-auto p-4">
+      <Navigation />
+      <div className="max-w-7xl mx-auto p-4 pt-20">
         {/* Header */}
         <header className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 mb-6">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              {user.profile?.avatarUrl && (
-                <img 
-                  src={user.profile.avatarUrl} 
-                  alt={user.name}
-                  className="w-12 h-12 rounded-full object-cover"
-                />
-              )}
-              <div>
-                <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-                  Welcome back, {user.name}!
-                </h1>
-                <p className="text-gray-600 dark:text-gray-400">
-                  Manage your dinners and connect with food lovers
-                </p>
-              </div>
-            </div>
-            <div className="flex items-center space-x-4">
-              <ThemeToggle />
-              <button
-                onClick={handleLogout}
-                className="px-4 py-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
-              >
-                Sign Out
-              </button>
+          <div className="flex items-center space-x-4">
+            {user.profile?.avatarUrl && (
+              <img 
+                src={user.profile.avatarUrl} 
+                alt={user.name}
+                className="w-12 h-12 rounded-full object-cover"
+              />
+            )}
+            <div>
+              <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+                Welcome back, {user.name}!
+              </h1>
+              <p className="text-gray-600 dark:text-gray-400">
+                Manage your dinners and connect with food lovers
+              </p>
             </div>
           </div>
         </header>
