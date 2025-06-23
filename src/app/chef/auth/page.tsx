@@ -50,8 +50,6 @@ export default function ChefAuthPage() {
       } else {
         setError(result.error || 'Authentication failed')
       }
-    } catch (error) {
-      setError('Something went wrong. Please try again.')
     } finally {
       setIsLoading(false)
     }

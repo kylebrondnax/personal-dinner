@@ -2,7 +2,6 @@
 // This contains the domain logic that would be the same in any framework
 
 import { EventRepository, EventFilters, CreateEventData } from '@/repositories/EventRepository'
-import { ReservationRepository } from '@/repositories/ReservationRepository'
 
 export class EventService {
   // Get public events for browse page
@@ -27,7 +26,7 @@ export class EventService {
       estimatedCostPerPerson: event.estimatedCostPerPerson,
       cuisineType: event.cuisineTypes ? JSON.parse(event.cuisineTypes) : [],
       dietaryAccommodations: event.dietaryAccommodations ? JSON.parse(event.dietaryAccommodations) : [],
-      status: event.status as any, // Type assertion for enum
+      status: event.status, // EventStatus enum
       reservationDeadline: event.reservationDeadline,
       location: event.location ? {
         address: event.location.showFullAddress ? event.location.address : undefined,
@@ -111,9 +110,9 @@ export class EventService {
 
     // Auto-update status based on capacity
     if (confirmedReservations >= event.maxCapacity && event.status === 'OPEN') {
-      await EventRepository.update(eventId, { status: 'FULL' } as any)
+      await EventRepository.update(eventId, { status: 'FULL' })
     } else if (confirmedReservations < event.maxCapacity && event.status === 'FULL') {
-      await EventRepository.update(eventId, { status: 'OPEN' } as any)
+      await EventRepository.update(eventId, { status: 'OPEN' })
     }
 
     return { currentReservations: confirmedReservations, maxCapacity: event.maxCapacity }

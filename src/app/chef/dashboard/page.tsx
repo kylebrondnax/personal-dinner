@@ -18,6 +18,8 @@ interface DashboardEvent {
     neighborhood: string
     city: string
   }
+  createdAt: Date
+  updatedAt: Date
 }
 
 export default function ChefDashboard() {
@@ -38,7 +40,7 @@ export default function ChefDashboard() {
     if (user?.role === 'CHEF') {
       loadChefEvents()
     }
-  }, [user])
+  }, [user]) // loadChefEvents recreated when user changes
 
   const loadChefEvents = async () => {
     try {
@@ -54,7 +56,7 @@ export default function ChefDashboard() {
       
       if (result.success) {
         // Convert date strings back to Date objects
-        const eventsWithDates = result.data.map((event: any) => ({
+        const eventsWithDates = result.data.map((event: DashboardEvent) => ({
           ...event,
           date: new Date(event.date),
           createdAt: new Date(event.createdAt),

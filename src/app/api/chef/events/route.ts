@@ -31,8 +31,7 @@ export async function GET(request: NextRequest) {
       title: event.title,
       date: event.date,
       maxCapacity: event.maxCapacity,
-      currentReservations: event.reservations?.reduce((sum, res) => 
-        res.status === 'CONFIRMED' ? sum + res.guestCount : sum, 0) || 0,
+      currentReservations: event.reservations?.reduce((sum, res) => sum + res.guestCount, 0) || 0,
       status: event.status,
       estimatedCostPerPerson: event.estimatedCostPerPerson,
       actualCostPerPerson: event.actualCostPerPerson,

@@ -55,7 +55,7 @@ export default function Home() {
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">How Family Dinner Works</h2>
             <p className="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-              Simple, transparent, and delicious. Here's how we bring people together over incredible food.
+              Simple, transparent, and delicious. Here&apos;s how we bring people together over incredible food.
             </p>
           </div>
 
@@ -75,7 +75,7 @@ export default function Home() {
                   <div className="w-8 h-8 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center font-semibold">2</div>
                   <div>
                     <h4 className="font-semibold text-gray-900 dark:text-white mb-2">Reserve Your Spot</h4>
-                    <p className="text-gray-600 dark:text-gray-300">See exactly what you'll pay upfront. No hidden fees, no surprises.</p>
+                    <p className="text-gray-600 dark:text-gray-300">See exactly what you&apos;ll pay upfront. No hidden fees, no surprises.</p>
                   </div>
                 </div>
                 <div className="flex gap-4">
@@ -117,7 +117,7 @@ export default function Home() {
                   <div className="w-8 h-8 bg-green-100 text-green-600 rounded-full flex items-center justify-center font-semibold">3</div>
                   <div>
                     <h4 className="font-semibold text-gray-900 dark:text-white mb-2">Upload Your Receipt</h4>
-                    <p className="text-gray-600 dark:text-gray-300">Simply take a photo of your grocery receipt. We'll handle the rest.</p>
+                    <p className="text-gray-600 dark:text-gray-300">Simply take a photo of your grocery receipt. We&apos;ll handle the rest.</p>
                   </div>
                 </div>
                 <div className="flex gap-4">
@@ -139,7 +139,7 @@ export default function Home() {
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">Why Choose Family Dinner?</h2>
             <p className="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-              More than just a meal-sharing app. We're building a community of food lovers.
+              More than just a meal-sharing app. We&apos;re building a community of food lovers.
             </p>
           </div>
 
@@ -164,7 +164,7 @@ export default function Home() {
               <div className="text-4xl mb-4">🍽️</div>
               <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-3">Unique Experiences</h3>
               <p className="text-gray-600 dark:text-gray-300">
-                Discover cuisines and cooking styles you'll never find in restaurants.
+                Discover cuisines and cooking styles you&apos;ll never find in restaurants.
               </p>
             </div>
           </div>
@@ -176,7 +176,7 @@ export default function Home() {
         <div className="max-w-4xl mx-auto px-4 text-center">
           <h2 className="text-4xl font-bold text-white mb-4">Ready to Join the Table?</h2>
           <p className="text-xl text-blue-100 mb-8">
-            Whether you're a passionate cook or a food lover, there's a place for you at Family Dinner.
+            Whether you&apos;re a passionate cook or a food lover, there&apos;s a place for you at Family Dinner.
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -208,7 +208,7 @@ export default function Home() {
           
           <div className="bg-white dark:bg-gray-700 rounded-xl shadow-sm border border-gray-200 dark:border-gray-600 p-8">
             <p className="text-center text-gray-600 dark:text-gray-300 mb-6">
-              🚧 Chef tools coming soon! Sign up to be notified when they're ready.
+              🚧 Chef tools coming soon! Sign up to be notified when they&apos;re ready.
             </p>
             <div className="flex justify-center">
               <a

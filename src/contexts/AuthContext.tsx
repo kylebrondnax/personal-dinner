@@ -6,7 +6,7 @@ export interface User {
   id: string
   email: string
   name: string
-  role: 'CHEF' | 'GUEST'
+  role: 'CHEF' | 'ATTENDEE'
   profile?: {
     avatarUrl?: string
     bio?: string
@@ -28,7 +28,7 @@ interface SignupData {
   email: string
   password: string
   name: string
-  role: 'CHEF' | 'GUEST'
+  role: 'CHEF' | 'ATTENDEE'
   phone?: string
   bio?: string
   venmoUsername?: string

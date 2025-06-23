@@ -13,7 +13,7 @@ interface EventsResponse {
   error?: string
   meta?: {
     total: number
-    filters: any
+    filters: Record<string, unknown>
   }
 }
 
@@ -170,7 +170,7 @@ export default function BrowsePage() {
   // Fetch events on component mount and when filters change
   useEffect(() => {
     fetchEvents()
-  }, [searchTerm, selectedCuisine, maxPrice])
+  }, [searchTerm, selectedCuisine, maxPrice]) // fetchEvents recreated when dependencies change
 
   // Filter events based on search and filters (client-side for now)
   const filteredEvents = events.filter(event => {
@@ -196,7 +196,7 @@ export default function BrowsePage() {
     }
   }
 
-  const handleRSVPSuccess = (reservationData: any) => {
+  const handleRSVPSuccess = (reservationData: { message?: string; status?: string }) => {
     console.log('Reservation created:', reservationData)
     setShowRSVP(false)
     setSelectedEvent(null)
