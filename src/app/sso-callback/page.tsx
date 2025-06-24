@@ -24,10 +24,8 @@ function SSOCallbackContent() {
         } else if (redirectUrl) {
           const url = new URL(redirectUrl)
           router.push(url.pathname)
-        } else if (user.role === 'CHEF') {
-          router.push('/chef/dashboard')
         } else {
-          router.push('/browse')
+          router.push('/dashboard')
         }
       } else {
         // If not authenticated, redirect to home

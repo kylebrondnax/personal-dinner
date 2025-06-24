@@ -28,16 +28,16 @@ export default function ChefDashboard() {
   const [events, setEvents] = useState<DashboardEvent[]>([])
   const [isLoading, setIsLoading] = useState(true)
 
-  // Redirect if not authenticated or not a chef
+  // Redirect if not authenticated
   useEffect(() => {
-    if (!authLoading && (!user || user.role !== 'CHEF')) {
-      router.push('/chef/auth')
+    if (!authLoading && !user) {
+      router.push('/auth/login')
     }
   }, [user, authLoading, router])
 
   // Load chef's events
   useEffect(() => {
-    if (user?.role === 'CHEF') {
+    if (user) {
       loadChefEvents()
     }
   }, [user]) // loadChefEvents recreated when user changes
@@ -117,7 +117,7 @@ export default function ChefDashboard() {
     )
   }
 
-  if (!user || user.role !== 'CHEF') {
+  if (!user) {
     return null // Will redirect
   }
 

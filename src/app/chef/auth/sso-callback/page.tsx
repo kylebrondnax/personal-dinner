@@ -12,11 +12,7 @@ export default function SSOCallbackPage() {
     if (!isLoading) {
       if (isAuthenticated && user) {
         // Redirect based on user role
-        if (user.role === 'CHEF') {
-          router.push('/chef/dashboard')
-        } else {
-          router.push('/browse')
-        }
+        router.push('/dashboard')
       } else {
         // If not authenticated, redirect to chef auth
         router.push('/chef/auth')

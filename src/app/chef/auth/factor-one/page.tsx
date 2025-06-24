@@ -12,11 +12,7 @@ export default function FactorOnePage() {
   // Redirect if already authenticated
   useEffect(() => {
     if (!isLoading && isAuthenticated && user) {
-      if (user.role === 'CHEF') {
-        router.push('/chef/dashboard')
-      } else {
-        router.push('/browse')
-      }
+      router.push('/dashboard')
     }
   }, [isAuthenticated, isLoading, user, router])
 

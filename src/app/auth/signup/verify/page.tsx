@@ -27,10 +27,8 @@ function VerifyContent() {
         } else if (signInFallbackRedirectUrl) {
           const url = new URL(signInFallbackRedirectUrl)
           router.push(url.pathname)
-        } else if (user.role === 'CHEF') {
-          router.push('/chef/dashboard')
         } else {
-          router.push('/browse')
+          router.push('/dashboard')
         }
       } else {
         // Check for client mismatch or other error statuses

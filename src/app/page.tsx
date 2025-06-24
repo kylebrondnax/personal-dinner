@@ -28,7 +28,7 @@ export default function Home() {
 							Find a Dinner
 						</a>
 						<a
-							href='/chef/auth'
+							href='/create-event'
 							className='px-8 py-4 bg-white text-blue-600 text-lg font-semibold rounded-xl hover:bg-gray-50 transition-colors border-2 border-blue-600'
 						>
 							Host a Dinner
@@ -279,7 +279,7 @@ export default function Home() {
 							Find Your Next Dinner
 						</a>
 						<a
-							href='/chef/auth'
+							href='/create-event'
 							className='px-8 py-4 bg-blue-700 text-white text-lg font-semibold rounded-xl hover:bg-blue-800 transition-colors border-2 border-blue-400'
 						>
 							Start Hosting
@@ -311,10 +311,10 @@ export default function Home() {
 						</p>
 						<div className='flex justify-center'>
 							<a
-								href='/chef/auth'
+								href='/auth/signup'
 								className='px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors'
 							>
-								Sign Up as Chef
+								Sign Up to Host
 							</a>
 						</div>
 					</div>

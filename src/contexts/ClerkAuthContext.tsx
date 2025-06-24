@@ -7,7 +7,6 @@ export interface User {
 	id: string;
 	email: string;
 	name: string;
-	role: 'CHEF' | 'ATTENDEE';
 	profile?: {
 		avatarUrl?: string;
 		bio?: string;
@@ -35,9 +34,6 @@ export function ClerkAuthProvider({ children }: { children: ReactNode }) {
 				id: clerkUser.id,
 				email: clerkUser.emailAddresses[0]?.emailAddress || '',
 				name: clerkUser.fullName || clerkUser.firstName || 'User',
-				role:
-					(clerkUser.publicMetadata?.role as 'CHEF' | 'ATTENDEE') ||
-					'ATTENDEE',
 				profile: {
 					avatarUrl: clerkUser.imageUrl,
 					bio: clerkUser.publicMetadata?.bio as string,

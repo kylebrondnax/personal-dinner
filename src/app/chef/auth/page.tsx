@@ -12,10 +12,10 @@ export default function ChefAuthPage() {
   const { isAuthenticated, isLoading, user } = useAuth()
   const router = useRouter()
 
-  // Redirect if already authenticated and is a chef
+  // Redirect if already authenticated
   useEffect(() => {
-    if (!isLoading && isAuthenticated && user?.role === 'CHEF') {
-      router.push('/chef/dashboard')
+    if (!isLoading && isAuthenticated && user) {
+      router.push('/dashboard')
     }
   }, [isAuthenticated, isLoading, user, router])
 
@@ -61,7 +61,7 @@ export default function ChefAuthPage() {
                     card: "shadow-none bg-transparent border-none w-full"
                   }
                 }}
-                forceRedirectUrl="/chef/dashboard"
+                forceRedirectUrl="/dashboard"
                 signUpUrl="#"
               />
             ) : (
@@ -72,7 +72,7 @@ export default function ChefAuthPage() {
                     card: "shadow-none bg-transparent border-none w-full"
                   }
                 }}
-                forceRedirectUrl="/chef/dashboard"
+                forceRedirectUrl="/dashboard"
                 signInUrl="#"
               />
             )}

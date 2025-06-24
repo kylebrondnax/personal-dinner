@@ -29,19 +29,19 @@ export function Navigation() {
               Browse Dinners
             </Link>
             
-            {user?.role === 'CHEF' && (
+            {user && (
               <>
                 <Link 
-                  href="/chef/dashboard" 
+                  href="/dashboard" 
                   className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
                 >
-                  Dashboard
+                  My Dinners
                 </Link>
                 <Link 
-                  href="/chef/create-event" 
+                  href="/create-event" 
                   className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
                 >
-                  Create Event
+                  Host a Dinner
                 </Link>
               </>
             )}
@@ -56,9 +56,6 @@ export function Navigation() {
                 <div className="hidden sm:flex items-center space-x-2">
                   <span className="text-sm font-medium text-gray-900 dark:text-white">
                     {user.name}
-                  </span>
-                  <span className="text-xs text-gray-500 dark:text-gray-400 px-2 py-1 bg-gray-100 dark:bg-gray-800 rounded-full">
-                    {user.role}
                   </span>
                 </div>
                 
