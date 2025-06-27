@@ -36,18 +36,23 @@ async function cleanup() {
         console.log(`Deleted ${deletedReservations.count} reservations for "${event.title}"`)
 
         // Delete ingredients
-        const deletedIngredients = await prisma.ingredient.deleteMany({
+        const deletedIngredients = await prisma.eventIngredient.deleteMany({
           where: {
             eventId: event.id
           }
         })
         console.log(`Deleted ${deletedIngredients.count} ingredients for "${event.title}"`)
 
-        // Delete location
-        if (event.locationId) {
-          await prisma.location.delete({
+        // Delete location (will cascade when event is deleted, but we'll do it explicitly)
+        const eventLocation = await prisma.eventLocation.findUnique({
+          where: {
+            eventId: event.id
+          }
+        })
+        if (eventLocation) {
+          await prisma.eventLocation.delete({
             where: {
-              id: event.locationId
+              id: eventLocation.id
             }
           })
           console.log(`Deleted location for "${event.title}"`)
@@ -78,11 +83,16 @@ async function cleanup() {
       console.log(`Found ${seedUsers.length} seed users to clean up`)
 
       for (const user of seedUsers) {
-        // Delete user profile
-        if (user.profileId) {
+        // Delete user profile (it will cascade when user is deleted, but we'll do it explicitly)
+        const userProfile = await prisma.userProfile.findUnique({
+          where: {
+            userId: user.id
+          }
+        })
+        if (userProfile) {
           await prisma.userProfile.delete({
             where: {
-              id: user.profileId
+              id: userProfile.id
             }
           })
           console.log(`Deleted profile for "${user.name}"`)
