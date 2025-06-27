@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useAuth } from '@/contexts/ClerkAuthContext'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
@@ -71,7 +71,7 @@ export default function DashboardPage() {
     }
   }
 
-  const formatLocation = (location: any) => {
+  const formatLocation = (location: string | { neighborhood?: string; city?: string } | null) => {
     if (typeof location === 'string') {
       return location
     }
@@ -90,7 +90,7 @@ export default function DashboardPage() {
     }
   }, [user, isLoading, router])
 
-  const loadUserEvents = async () => {
+  const loadUserEvents = useCallback(async () => {
     if (!user) return
 
     try {
@@ -119,11 +119,11 @@ export default function DashboardPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [user])
 
   useEffect(() => {
     loadUserEvents()
-  }, [user])
+  }, [loadUserEvents])
 
   if (isLoading || !user) {
     return (

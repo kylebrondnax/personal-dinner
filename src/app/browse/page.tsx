@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { EventCard } from '@/components/EventCard'
 import { RSVPFlow } from '@/components/RSVPFlow'
 import { Navigation } from '@/components/Navigation'
@@ -31,7 +31,7 @@ export default function BrowsePage() {
   const [error, setError] = useState<string | null>(null)
 
   // Fetch events from API
-  const fetchEvents = async () => {
+  const fetchEvents = useCallback(async () => {
     try {
       setLoading(true)
       setError(null)
@@ -75,12 +75,12 @@ export default function BrowsePage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [searchTerm, selectedCuisine, maxPrice])
 
   // Fetch events on component mount and when filters change
   useEffect(() => {
     fetchEvents()
-  }, [searchTerm, selectedCuisine, maxPrice]) // fetchEvents recreated when dependencies change
+  }, [fetchEvents])
 
   // Filter events based on search and filters (client-side for now)
   const filteredEvents = events.filter(event => {

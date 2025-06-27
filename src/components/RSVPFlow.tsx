@@ -252,7 +252,7 @@ export function RSVPFlow({ event, isOpen, onClose, onSuccess }: RSVPFlowProps) {
                       className="w-full px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 placeholder-gray-500 bg-white resize-none"
                     />
                     {user?.name && user?.email && (
-                      <p className="text-xs text-gray-500 mt-1">Help the chef prepare a meal that's perfect for you.</p>
+                      <p className="text-xs text-gray-500 mt-1">Help the chef prepare a meal that&apos;s perfect for you.</p>
                     )}
                   </div>
 

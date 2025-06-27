@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/contexts/ClerkAuthContext'
 import { Navigation } from '@/components/Navigation'
@@ -39,14 +39,7 @@ export default function ChefDashboard() {
     }
   }, [user, authLoading, router])
 
-  // Load chef's events
-  useEffect(() => {
-    if (user) {
-      loadChefEvents()
-    }
-  }, [user]) // loadChefEvents recreated when user changes
-
-  const loadChefEvents = async () => {
+  const loadChefEvents = useCallback(async () => {
     try {
       setIsLoading(true)
       
@@ -84,8 +77,14 @@ export default function ChefDashboard() {
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [user])
 
+  // Load chef's events
+  useEffect(() => {
+    if (user) {
+      loadChefEvents()
+    }
+  }, [user, loadChefEvents])
 
   const formatDate = (date: Date) => {
     return new Intl.DateTimeFormat('en-US', {
