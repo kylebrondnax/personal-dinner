@@ -4,10 +4,10 @@ import { EventService } from '@/services/EventService'
 // GET /api/events/[id] - Get individual event details
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const eventId = params.id
+    const { id: eventId } = await params
 
     if (!eventId) {
       return NextResponse.json(
@@ -54,10 +54,10 @@ export async function GET(
 // PATCH /api/events/[id] - Update event
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const eventId = params.id
+    const { id: eventId } = await params
     const body = await request.json()
 
     if (!eventId) {
@@ -122,10 +122,10 @@ export async function PATCH(
 // DELETE /api/events/[id] - Delete event
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const eventId = params.id
+    const { id: eventId } = await params
 
     if (!eventId) {
       return NextResponse.json(

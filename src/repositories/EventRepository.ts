@@ -161,6 +161,9 @@ export class EventRepository {
             }
           },
           orderBy: { createdAt: 'desc' }
+        },
+        proposedDates: {
+          orderBy: { date: 'asc' }
         }
       }
     })

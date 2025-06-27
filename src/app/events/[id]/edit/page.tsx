@@ -71,6 +71,7 @@ export default function EditEventPage() {
     },
     cuisineTypes: [],
     dietaryAccommodations: [],
+    reservationDeadline: '',
     useAvailabilityPoll: false,
     pollDeadline: '',
     pollDateRange: {
@@ -79,18 +80,6 @@ export default function EditEventPage() {
     },
     chefAvailability: []
   })
-
-  // Load event data
-  useEffect(() => {
-    if (!authLoading && !user) {
-      router.push('/auth/login')
-      return
-    }
-
-    if (user && eventId) {
-      loadEventData()
-    }
-  }, [user, authLoading, eventId, router, loadEventData])
 
   const loadEventData = useCallback(async () => {
     try {
@@ -127,6 +116,7 @@ export default function EditEventPage() {
         },
         cuisineTypes: event.cuisineTypes || [],
         dietaryAccommodations: event.dietaryAccommodations || [],
+        reservationDeadline: event.date ? new Date(event.date).toISOString().split('T')[0] : '',
         useAvailabilityPoll: event.useAvailabilityPoll || false,
         pollDeadline: event.pollDeadline ? new Date(event.pollDeadline).toISOString().split('T')[0] : '',
         pollDateRange: {
@@ -143,6 +133,18 @@ export default function EditEventPage() {
       setLoading(false)
     }
   }, [eventId])
+
+  // Load event data
+  useEffect(() => {
+    if (!authLoading && !user) {
+      router.push('/auth/login')
+      return
+    }
+
+    if (user && eventId) {
+      loadEventData()
+    }
+  }, [user, authLoading, eventId, router, loadEventData])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()

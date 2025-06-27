@@ -4,6 +4,7 @@
 import { EventRepository, EventFilters, CreateEventData } from '@/repositories/EventRepository'
 import { ProposedDateTime } from '@/types'
 import { prisma } from '@/lib/prisma'
+import { EventStatus } from '@prisma/client'
 
 export class EventService {
   // Get public events for browse page
@@ -411,7 +412,7 @@ export class EventService {
   }
 
   // Update event status (simple status changes like cancellation)
-  static async updateEventStatus(eventId: string, status?: string) {
+  static async updateEventStatus(eventId: string, status?: EventStatus) {
     if (status) {
       // Simple status update
       return await EventRepository.update(eventId, { status })
