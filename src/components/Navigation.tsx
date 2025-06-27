@@ -24,7 +24,7 @@ export function Navigation() {
           <div className="hidden md:flex items-center space-x-6">
             <Link 
               href="/browse" 
-              className="text-theme-subtle hover:text-theme-primary transition-colors"
+              className="nav-link transition-colors"
             >
               Browse Dinners
             </Link>
@@ -33,13 +33,13 @@ export function Navigation() {
               <>
                 <Link 
                   href="/dashboard" 
-                  className="text-theme-subtle hover:text-theme-primary transition-colors"
+                  className="nav-link transition-colors"
                 >
                   My Dinners
                 </Link>
                 <Link 
                   href="/create-event" 
-                  className="text-theme-subtle hover:text-theme-primary transition-colors"
+                  className="nav-link transition-colors"
                 >
                   Host a Dinner
                 </Link>
@@ -54,7 +54,7 @@ export function Navigation() {
             {user ? (
               <div className="flex items-center space-x-4">
                 <div className="hidden sm:flex items-center space-x-2">
-                  <span className="text-sm font-medium text-gray-900 dark:text-white">
+                  <span className="text-sm font-medium nav-user-text">
                     {user.name}
                   </span>
                 </div>
@@ -72,7 +72,7 @@ export function Navigation() {
               <div className="flex items-center space-x-3">
                 <Link
                   href="/auth/login"
-                  className="text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
+                  className="text-sm font-medium nav-link transition-colors"
                 >
                   Sign In
                 </Link>

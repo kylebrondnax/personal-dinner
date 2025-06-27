@@ -5,6 +5,7 @@ import { useAuth } from '@/contexts/ClerkAuthContext'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { EventShareButton } from '@/components/EventShareButton'
+import { Navigation } from '@/components/Navigation'
 
 interface Event {
   id: string
@@ -37,14 +38,25 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true)
   const [activeTab, setActiveTab] = useState<'hosting' | 'attending'>('hosting')
 
-  const formatDate = (date: string) => {
-    return new Intl.DateTimeFormat('en-US', {
-      weekday: 'long',
-      month: 'long',
-      day: 'numeric',
-      hour: 'numeric',
-      minute: '2-digit'
-    }).format(new Date(date))
+  const formatDate = (date: string | null | undefined) => {
+    if (!date) return 'Date TBD'
+    
+    try {
+      const dateObj = new Date(date)
+      if (isNaN(dateObj.getTime())) {
+        return 'Date TBD'
+      }
+      
+      return new Intl.DateTimeFormat('en-US', {
+        weekday: 'long',
+        month: 'long',
+        day: 'numeric',
+        hour: 'numeric',
+        minute: '2-digit'
+      }).format(dateObj)
+    } catch {
+      return 'Date TBD'
+    }
   }
 
   const formatCurrency = (amount: number) => {
@@ -127,12 +139,15 @@ export default function DashboardPage() {
 
   if (isLoading || !user) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mb-4"></div>
-          <p className="text-gray-600 dark:text-gray-400">Loading...</p>
+      <>
+        <Navigation />
+        <div className="min-h-screen flex items-center justify-center">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mb-4"></div>
+            <p className="text-theme-muted">Loading...</p>
+          </div>
         </div>
-      </div>
+      </>
     )
   }
 
@@ -140,18 +155,20 @@ export default function DashboardPage() {
   const attendingEvents = events.filter(event => event.userRole === 'attendee')
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pt-20">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Header */}
-        <div className="flex justify-between items-center mb-8">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-              My Dinners
-            </h1>
-            <p className="text-gray-600 dark:text-gray-400 mt-2">
-              Manage dinners you&apos;re hosting and attending
-            </p>
-          </div>
+    <>
+      <Navigation />
+      <div className="pt-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          {/* Header */}
+          <div className="flex justify-between items-center mb-8">
+            <div>
+              <h1 className="text-3xl font-bold text-theme-primary">
+                My Dinners
+              </h1>
+              <p className="text-theme-muted mt-2">
+                Manage dinners you&apos;re hosting and attending
+              </p>
+            </div>
           
           <Link
             href="/create-event"
@@ -162,13 +179,11 @@ export default function DashboardPage() {
         </div>
 
         {/* Tabs */}
-        <div className="flex space-x-1 bg-gray-100 dark:bg-gray-800 p-1 rounded-lg mb-8 w-fit">
+        <div className="flex space-x-1 tab-container mb-8 w-fit">
           <button
             onClick={() => setActiveTab('hosting')}
             className={`px-4 py-2 rounded-md font-medium transition-colors ${
-              activeTab === 'hosting'
-                ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm'
-                : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
+              activeTab === 'hosting' ? 'tab-active' : 'tab-inactive'
             }`}
           >
             Hosting ({hostingEvents.length})
@@ -176,9 +191,7 @@ export default function DashboardPage() {
           <button
             onClick={() => setActiveTab('attending')}
             className={`px-4 py-2 rounded-md font-medium transition-colors ${
-              activeTab === 'attending'
-                ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm'
-                : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
+              activeTab === 'attending' ? 'tab-active' : 'tab-inactive'
             }`}
           >
             Attending ({attendingEvents.length})
@@ -188,42 +201,42 @@ export default function DashboardPage() {
         {/* Quick Stats for Hosting Tab */}
         {activeTab === 'hosting' && !loading && hostingEvents.length > 0 && (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+            <div className="stats-card p-6">
               <div className="flex items-center">
                 <div className="p-3 bg-blue-100 dark:bg-blue-900 rounded-lg">
                   <span className="text-2xl">📅</span>
                 </div>
                 <div className="ml-4">
-                  <p className="text-sm text-gray-600 dark:text-gray-400">Active Events</p>
-                  <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                  <p className="text-sm text-theme-subtle">Active Events</p>
+                  <p className="text-2xl font-bold text-theme-primary">
                     {hostingEvents.filter(e => e.status === 'OPEN' || e.status === 'FULL').length || 0}
                   </p>
                 </div>
               </div>
             </div>
 
-            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+            <div className="stats-card p-6">
               <div className="flex items-center">
                 <div className="p-3 bg-green-100 dark:bg-green-900 rounded-lg">
                   <span className="text-2xl">👥</span>
                 </div>
                 <div className="ml-4">
-                  <p className="text-sm text-gray-600 dark:text-gray-400">Total Guests</p>
-                  <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                  <p className="text-sm text-theme-subtle">Total Guests</p>
+                  <p className="text-2xl font-bold text-theme-primary">
                     {hostingEvents.reduce((sum, e) => sum + (e.currentGuests || 0), 0)}
                   </p>
                 </div>
               </div>
             </div>
 
-            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+            <div className="stats-card p-6">
               <div className="flex items-center">
                 <div className="p-3 bg-purple-100 dark:bg-purple-900 rounded-lg">
                   <span className="text-2xl">🍽️</span>
                 </div>
                 <div className="ml-4">
-                  <p className="text-sm text-gray-600 dark:text-gray-400">Completed Dinners</p>
-                  <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                  <p className="text-sm text-theme-subtle">Completed Dinners</p>
+                  <p className="text-2xl font-bold text-theme-primary">
                     {hostingEvents.filter(e => e.status === 'COMPLETED').length || 0}
                   </p>
                 </div>
@@ -263,17 +276,17 @@ export default function DashboardPage() {
                     </Link>
                   </div>
                 ) : (
-                  <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
-                    <div className="p-6 border-b border-gray-200 dark:border-gray-700">
-                      <h2 className="text-xl font-bold text-gray-900 dark:text-white">Your Hosted Dinners</h2>
+                  <div className="event-card">
+                    <div className="p-6 border-b border-theme-primary">
+                      <h2 className="text-xl font-bold text-theme-primary">Your Hosted Dinners</h2>
                     </div>
-                    <div className="divide-y divide-gray-200 dark:divide-gray-700">
+                    <div className="divide-y border-theme-primary">
                       {hostingEvents.map((event) => (
-                        <div key={event.id} className="p-6 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                        <div key={event.id} className="p-6 event-item-hover transition-colors">
                           <div className="flex items-start justify-between">
                             <div className="flex-1">
                               <div className="flex items-center gap-3 mb-2">
-                                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                                <h3 className="text-lg font-semibold text-theme-primary">
                                   {event.useAvailabilityPoll && '📊 '}
                                   {event.title}
                                 </h3>
@@ -284,7 +297,7 @@ export default function DashboardPage() {
                                 )}
                               </div>
                               
-                              <div className="space-y-1 text-sm text-gray-600 dark:text-gray-400">
+                              <div className="space-y-1 text-sm text-theme-muted">
                                 {event.useAvailabilityPoll && event.pollDeadline ? (
                                   <p>🗳️ Poll deadline: {formatDate(event.pollDeadline)}</p>
                                 ) : (
@@ -374,26 +387,27 @@ export default function DashboardPage() {
                 ) : (
                   <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                     {attendingEvents.map((event) => (
-                      <div key={event.id} className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
+                      <div key={event.id} className="event-card overflow-hidden event-item-hover">
                         {event.imageUrl && (
+                          // eslint-disable-next-line @next/next/no-img-element
                           <img src={event.imageUrl} alt={event.title} className="w-full h-48 object-cover" />
                         )}
                         <div className="p-6">
                           <div className="flex items-center justify-between mb-2">
-                            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                            <h3 className="text-lg font-semibold text-theme-primary">
                               {event.title}
                             </h3>
                             <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full">
                               Guest
                             </span>
                           </div>
-                          <p className="text-gray-600 dark:text-gray-400 text-sm mb-2">
+                          <p className="text-theme-muted text-sm mb-2">
                             Hosted by {event.chefName}
                           </p>
-                          <p className="text-gray-600 dark:text-gray-400 text-sm mb-4 line-clamp-2">
+                          <p className="text-theme-muted text-sm mb-4 line-clamp-2">
                             {event.description}
                           </p>
-                          <div className="space-y-2 text-sm text-gray-600 dark:text-gray-400">
+                          <div className="space-y-2 text-sm text-theme-muted">
                             <div className="flex items-center">
                               <span className="w-4 h-4 mr-2">📅</span>
                               {new Date(event.date).toLocaleDateString()} at {event.time}
@@ -425,6 +439,7 @@ export default function DashboardPage() {
           </div>
         )}
       </div>
-    </div>
+      </div>
+    </>
   )
 }

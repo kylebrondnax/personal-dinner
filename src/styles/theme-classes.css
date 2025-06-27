@@ -88,6 +88,21 @@
   @apply border-gray-700;
 }
 
+.nav-link {
+  @apply text-gray-700 hover:text-gray-900;
+}
+.dark .nav-link {
+  @apply text-gray-300 hover:text-white;
+}
+
+/* User button styling in navigation */
+.nav-user-text {
+  @apply text-gray-800;
+}
+.dark .nav-user-text {
+  @apply text-gray-200;
+}
+
 /* Button variants */
 .btn-secondary {
   @apply bg-white text-blue-600 hover:bg-gray-50;
@@ -103,6 +118,13 @@
   @apply bg-gray-800 border-gray-600 text-gray-300 hover:bg-gray-700;
 }
 
+.btn-cancel {
+  @apply bg-gray-200 text-gray-800 hover:bg-gray-300;
+}
+.dark .btn-cancel {
+  @apply bg-gray-600 text-gray-200 hover:bg-gray-500;
+}
+
 /* Card hover effects */
 .card-hover {
   @apply hover:shadow-lg;
@@ -113,8 +135,110 @@
 
 /* Input styles */
 .input-theme {
-  @apply bg-white border-gray-300 text-gray-900 placeholder-gray-500;
+  @apply bg-white border-gray-300 text-gray-900 placeholder-gray-500 focus:ring-blue-500 focus:border-blue-500;
 }
 .dark .input-theme {
-  @apply bg-gray-700 border-gray-600 text-white placeholder-gray-400;
+  @apply bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:ring-blue-500 focus:border-blue-500;
+}
+
+/* Special input types */
+.input-theme[type="date"], 
+.input-theme[type="time"], 
+.input-theme[type="number"] {
+  color-scheme: light;
+}
+.dark .input-theme[type="date"], 
+.dark .input-theme[type="time"], 
+.dark .input-theme[type="number"] {
+  color-scheme: dark;
+}
+
+/* Form elements */
+.form-label {
+  @apply text-gray-700 text-sm font-medium;
+}
+.dark .form-label {
+  @apply text-gray-300;
+}
+
+.form-section {
+  @apply bg-white rounded-lg shadow-sm border border-gray-200 p-6;
+}
+.dark .form-section {
+  @apply bg-gray-800 border-gray-700;
+}
+
+.checkbox-theme {
+  @apply text-blue-600 focus:ring-blue-500 border-gray-300 rounded;
+}
+.dark .checkbox-theme {
+  @apply border-gray-600 bg-gray-700;
+}
+
+/* Tab styles */
+.tab-container {
+  @apply bg-gray-100 p-1 rounded-lg;
+}
+.dark .tab-container {
+  @apply bg-gray-800;
+}
+
+.tab-active {
+  @apply bg-white text-gray-900 shadow-sm;
+}
+.dark .tab-active {
+  @apply bg-gray-700 text-white;
+}
+
+.tab-inactive {
+  @apply text-gray-600 hover:text-gray-900;
+}
+.dark .tab-inactive {
+  @apply text-gray-400 hover:text-white;
+}
+
+/* Stats card styles */
+.stats-card {
+  @apply bg-white border border-gray-200 rounded-xl shadow-sm;
+}
+.dark .stats-card {
+  @apply bg-gray-800 border-gray-700;
+}
+
+/* Event card styles */
+.event-card {
+  @apply bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md;
+}
+.dark .event-card {
+  @apply bg-gray-800 border-gray-700;
+}
+
+.event-item-hover {
+  @apply hover:bg-gray-50;
+}
+.dark .event-item-hover {
+  @apply hover:bg-gray-700;
+}
+
+/* Poll section styles */
+.poll-section {
+  @apply bg-blue-50 border border-blue-200 rounded-lg;
+}
+.dark .poll-section {
+  @apply bg-blue-900/20 border-blue-800;
+}
+
+.poll-details {
+  @apply bg-white border border-gray-200 rounded-lg;
+}
+.dark .poll-details {
+  @apply bg-gray-800 border-gray-700;
+}
+
+/* Calendar time selector specific */
+.calendar-hover {
+  @apply hover:bg-blue-100;
+}
+.dark .calendar-hover {
+  @apply hover:bg-blue-900/20;
 }

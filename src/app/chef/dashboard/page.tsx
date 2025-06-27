@@ -86,14 +86,25 @@ export default function ChefDashboard() {
     }
   }, [user, loadChefEvents])
 
-  const formatDate = (date: Date) => {
-    return new Intl.DateTimeFormat('en-US', {
-      weekday: 'long',
-      month: 'long',
-      day: 'numeric',
-      hour: 'numeric',
-      minute: '2-digit'
-    }).format(date)
+  const formatDate = (date: Date | string | null | undefined) => {
+    if (!date) return 'Date TBD'
+    
+    try {
+      const dateObj = date instanceof Date ? date : new Date(date)
+      if (isNaN(dateObj.getTime())) {
+        return 'Date TBD'
+      }
+      
+      return new Intl.DateTimeFormat('en-US', {
+        weekday: 'long',
+        month: 'long',
+        day: 'numeric',
+        hour: 'numeric',
+        minute: '2-digit'
+      }).format(dateObj)
+    } catch {
+      return 'Date TBD'
+    }
   }
 
   const formatCurrency = (amount: number) => {
@@ -143,6 +154,7 @@ export default function ChefDashboard() {
         <header className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 mb-6">
           <div className="flex items-center space-x-4">
             {user.profile?.avatarUrl && (
+              // eslint-disable-next-line @next/next/no-img-element
               <img 
                 src={user.profile.avatarUrl} 
                 alt={user.name}

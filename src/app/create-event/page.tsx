@@ -233,12 +233,15 @@ export default function CreateEventPage() {
 
   if (authLoading) {
     return (
-      <div className="min-h-screen bg-gray-100 dark:bg-gray-900 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mb-4"></div>
-          <p className="text-gray-600 dark:text-gray-400">Loading...</p>
+      <>
+        <Navigation />
+        <div className="min-h-screen flex items-center justify-center">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mb-4"></div>
+            <p className="text-theme-muted">Loading...</p>
+          </div>
         </div>
-      </div>
+      </>
     )
   }
 
@@ -247,28 +250,33 @@ export default function CreateEventPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 dark:bg-gray-900 transition-colors">
+    <>
       <Navigation />
       <div className="max-w-3xl mx-auto p-4 pt-24">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+          <h1 className="text-3xl font-bold text-theme-primary mb-2">
             Create New Dinner
           </h1>
-          <p className="text-gray-600 dark:text-gray-300">
+          <p className="text-theme-muted">
             Set up your dinner event and start connecting with food lovers
           </p>
         </div>
 
         {/* Form */}
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-8">
+        <div className="form-section">
+          {error && (
+            <div className="mb-6 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+              <p className="text-red-600 dark:text-red-400 text-sm">{error}</p>
+            </div>
+          )}
           <form onSubmit={handleSubmit} className="space-y-8">
             {/* Basic Info */}
             <div>
-              <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">Basic Information</h2>
+              <h2 className="text-xl font-semibold text-theme-primary mb-4">Basic Information</h2>
               <div className="space-y-4">
                 <div>
-                  <label htmlFor="title" className="block text-sm font-medium text-gray-900 dark:text-white mb-2">
+                  <label htmlFor="title" className="block form-label mb-2">
                     Dinner Title *
                   </label>
                   <input
@@ -278,13 +286,13 @@ export default function CreateEventPage() {
                     value={formData.title}
                     onChange={handleInputChange}
                     required
-                    className="w-full px-3 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 bg-white dark:bg-gray-700"
+                    className="w-full px-3 py-3 border rounded-lg input-theme"
                     placeholder="e.g., Homemade Italian Pasta Night"
                   />
                 </div>
 
                 <div>
-                  <label htmlFor="description" className="block text-sm font-medium text-gray-900 dark:text-white mb-2">
+                  <label htmlFor="description" className="block form-label mb-2">
                     Description
                   </label>
                   <textarea
@@ -293,7 +301,7 @@ export default function CreateEventPage() {
                     value={formData.description}
                     onChange={handleInputChange}
                     rows={4}
-                    className="w-full px-3 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 bg-white dark:bg-gray-700"
+                    className="w-full px-3 py-3 border rounded-lg input-theme"
                     placeholder="Describe your dinner, menu highlights, and what guests can expect..."
                   />
                 </div>
@@ -303,10 +311,10 @@ export default function CreateEventPage() {
             {/* Date & Time - Only show if polling is disabled */}
             {!formData.useAvailabilityPoll && (
             <div>
-              <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">Date & Time</h2>
+              <h2 className="text-xl font-semibold text-theme-primary mb-4">Date & Time</h2>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
-                  <label htmlFor="date" className="block text-sm font-medium text-gray-900 dark:text-white mb-2">
+                  <label htmlFor="date" className="block form-label mb-2">
                     Date *
                   </label>
                   <input
@@ -317,12 +325,12 @@ export default function CreateEventPage() {
                     onChange={handleInputChange}
                     required
                     min={new Date().toISOString().split('T')[0]}
-                    className="w-full px-3 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 dark:text-white bg-white dark:bg-gray-700"
+                    className="w-full px-3 py-3 border rounded-lg input-theme"
                   />
                 </div>
 
                 <div>
-                  <label htmlFor="time" className="block text-sm font-medium text-gray-900 dark:text-white mb-2">
+                  <label htmlFor="time" className="block form-label mb-2">
                     Start Time *
                   </label>
                   <input
@@ -332,12 +340,12 @@ export default function CreateEventPage() {
                     value={formData.time}
                     onChange={handleInputChange}
                     required
-                    className="w-full px-3 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 dark:text-white bg-white dark:bg-gray-700"
+                    className="w-full px-3 py-3 border rounded-lg input-theme"
                   />
                 </div>
 
                 <div>
-                  <label htmlFor="duration" className="block text-sm font-medium text-gray-900 dark:text-white mb-2">
+                  <label htmlFor="duration" className="block form-label mb-2">
                     Duration (minutes)
                   </label>
                   <input
@@ -349,7 +357,7 @@ export default function CreateEventPage() {
                     min="60"
                     max="480"
                     step="30"
-                    className="w-full px-3 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 dark:text-white bg-white dark:bg-gray-700"
+                    className="w-full px-3 py-3 border rounded-lg input-theme"
                   />
                 </div>
               </div>
@@ -358,10 +366,10 @@ export default function CreateEventPage() {
 
             {/* Capacity & Pricing */}
             <div>
-              <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">Capacity & Pricing</h2>
+              <h2 className="text-xl font-semibold text-theme-primary mb-4">Capacity & Pricing</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label htmlFor="maxCapacity" className="block text-sm font-medium text-gray-900 dark:text-white mb-2">
+                  <label htmlFor="maxCapacity" className="block form-label mb-2">
                     Max Guests
                   </label>
                   <input
@@ -372,12 +380,12 @@ export default function CreateEventPage() {
                     onChange={handleInputChange}
                     min="2"
                     max="20"
-                    className="w-full px-3 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 dark:text-white bg-white dark:bg-gray-700"
+                    className="w-full px-3 py-3 border rounded-lg input-theme"
                   />
                 </div>
 
                 <div>
-                  <label htmlFor="estimatedCostPerPerson" className="block text-sm font-medium text-gray-900 dark:text-white mb-2">
+                  <label htmlFor="estimatedCostPerPerson" className="block form-label mb-2">
                     Estimated Cost per Person ($)
                   </label>
                   <input
@@ -389,7 +397,7 @@ export default function CreateEventPage() {
                     min="10"
                     max="200"
                     step="5"
-                    className="w-full px-3 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 dark:text-white bg-white dark:bg-gray-700"
+                    className="w-full px-3 py-3 border rounded-lg input-theme"
                   />
                 </div>
               </div>
@@ -397,7 +405,7 @@ export default function CreateEventPage() {
 
             {/* Cuisine Types */}
             <div>
-              <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">Cuisine & Dietary Info</h2>
+              <h2 className="text-xl font-semibold text-theme-primary mb-4">Cuisine & Dietary Info</h2>
               <div className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-900 dark:text-white mb-3">
@@ -410,9 +418,9 @@ export default function CreateEventPage() {
                           type="checkbox"
                           checked={formData.cuisineTypes.includes(cuisine)}
                           onChange={() => handleCheckboxChange('cuisineTypes', cuisine)}
-                          className="rounded border-gray-300 dark:border-gray-600 text-blue-600 focus:ring-blue-500"
+                          className="checkbox-theme"
                         />
-                        <span className="ml-2 text-sm text-gray-900 dark:text-white">{cuisine}</span>
+                        <span className="ml-2 text-sm text-theme-primary">{cuisine}</span>
                       </label>
                     ))}
                   </div>
@@ -429,9 +437,9 @@ export default function CreateEventPage() {
                           type="checkbox"
                           checked={formData.dietaryAccommodations.includes(option)}
                           onChange={() => handleCheckboxChange('dietaryAccommodations', option)}
-                          className="rounded border-gray-300 dark:border-gray-600 text-blue-600 focus:ring-blue-500"
+                          className="checkbox-theme"
                         />
-                        <span className="ml-2 text-sm text-gray-900 dark:text-white">{option}</span>
+                        <span className="ml-2 text-sm text-theme-primary">{option}</span>
                       </label>
                     ))}
                   </div>
@@ -441,11 +449,11 @@ export default function CreateEventPage() {
 
             {/* Location */}
             <div>
-              <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">Location</h2>
+              <h2 className="text-xl font-semibold text-theme-primary mb-4">Location</h2>
               <div className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label htmlFor="location.neighborhood" className="block text-sm font-medium text-gray-900 dark:text-white mb-2">
+                    <label htmlFor="location.neighborhood" className="block form-label mb-2">
                       Neighborhood
                     </label>
                     <input
@@ -454,13 +462,13 @@ export default function CreateEventPage() {
                       name="location.neighborhood"
                       value={formData.location.neighborhood}
                       onChange={handleInputChange}
-                      className="w-full px-3 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 bg-white dark:bg-gray-700"
+                      className="w-full px-3 py-3 border rounded-lg input-theme"
                       placeholder="e.g., Capitol Hill"
                     />
                   </div>
 
                   <div>
-                    <label htmlFor="location.city" className="block text-sm font-medium text-gray-900 dark:text-white mb-2">
+                    <label htmlFor="location.city" className="block form-label mb-2">
                       City
                     </label>
                     <input
@@ -469,14 +477,14 @@ export default function CreateEventPage() {
                       name="location.city"
                       value={formData.location.city}
                       onChange={handleInputChange}
-                      className="w-full px-3 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 bg-white dark:bg-gray-700"
+                      className="w-full px-3 py-3 border rounded-lg input-theme"
                       placeholder="Seattle"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label htmlFor="location.address" className="block text-sm font-medium text-gray-900 dark:text-white mb-2">
+                  <label htmlFor="location.address" className="block form-label mb-2">
                     Full Address (private until booking confirmed)
                   </label>
                   <input
@@ -485,7 +493,7 @@ export default function CreateEventPage() {
                     name="location.address"
                     value={formData.location.address}
                     onChange={handleInputChange}
-                    className="w-full px-3 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 bg-white dark:bg-gray-700"
+                    className="w-full px-3 py-3 border rounded-lg input-theme"
                     placeholder="123 Main St, Seattle, WA 98101"
                   />
                 </div>
@@ -495,9 +503,9 @@ export default function CreateEventPage() {
             {/* Reservation Deadline - Only show if polling is disabled */}
             {!formData.useAvailabilityPoll && (
             <div>
-              <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">Reservation Settings</h2>
+              <h2 className="text-xl font-semibold text-theme-primary mb-4">Reservation Settings</h2>
               <div>
-                <label htmlFor="reservationDeadline" className="block text-sm font-medium text-gray-900 dark:text-white mb-2">
+                <label htmlFor="reservationDeadline" className="block form-label mb-2">
                   Reservation Deadline
                 </label>
                 <input
@@ -507,7 +515,7 @@ export default function CreateEventPage() {
                   value={formData.reservationDeadline}
                   onChange={handleInputChange}
                   max={formData.date}
-                  className="w-full px-3 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 dark:text-white bg-white dark:bg-gray-700"
+                  className="w-full px-3 py-3 border rounded-lg input-theme"
                 />
                 <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
                   Guests must RSVP by this date
@@ -518,7 +526,7 @@ export default function CreateEventPage() {
 
             {/* Availability Polling Section */}
             <div>
-              <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">Availability Polling (Optional)</h2>
+              <h2 className="text-xl font-semibold text-theme-primary mb-4">Availability Polling (Optional)</h2>
               <AvailabilityPollSection
                 enabled={formData.useAvailabilityPoll}
                 onToggle={handlePollToggle}
@@ -558,7 +566,7 @@ export default function CreateEventPage() {
               <button
                 type="button"
                 onClick={() => router.push('/chef/dashboard')}
-                className="py-3 px-6 bg-gray-200 dark:bg-gray-600 text-gray-800 dark:text-gray-200 rounded-lg font-medium hover:bg-gray-300 dark:hover:bg-gray-500 transition-colors"
+                className="py-3 px-6 btn-cancel rounded-lg font-medium transition-colors"
               >
                 Cancel
               </button>
@@ -566,6 +574,6 @@ export default function CreateEventPage() {
           </form>
         </div>
       </div>
-    </div>
+    </>
   )
 }

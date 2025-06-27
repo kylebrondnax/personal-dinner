@@ -127,11 +127,11 @@ export function CalendarTimeSelector({ proposedDates, onChange }: CalendarTimeSe
   return (
     <div className="space-y-6">
       {/* Instructions */}
-      <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
-        <h3 className="font-semibold text-blue-900 dark:text-blue-100 mb-2">
+      <div className="poll-section p-4">
+        <h3 className="font-semibold text-theme-primary mb-2">
           📅 Select your available times
         </h3>
-        <p className="text-sm text-blue-800 dark:text-blue-200">
+        <p className="text-sm text-theme-muted">
           Click and drag to select time slots when you&apos;re available to host. 
           Selected times (in blue) will be offered as options for your guests to vote on.
         </p>
@@ -143,19 +143,19 @@ export function CalendarTimeSelector({ proposedDates, onChange }: CalendarTimeSe
           type="button"
           onClick={goToPreviousWeek}
           disabled={startDate <= today}
-          className="px-3 py-1 text-sm bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          className="px-3 py-1 text-sm btn-cancel rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
           ← Previous Week
         </button>
         
-        <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+        <span className="text-sm font-medium text-theme-primary">
           {formatDate(weekDays[0])} - {formatDate(weekDays[6])}
         </span>
         
         <button
           type="button"
           onClick={goToNextWeek}
-          className="px-3 py-1 text-sm bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
+          className="px-3 py-1 text-sm btn-cancel rounded transition-colors"
         >
           Next Week →
         </button>
@@ -164,19 +164,19 @@ export function CalendarTimeSelector({ proposedDates, onChange }: CalendarTimeSe
       {/* Calendar Grid */}
       <div 
         ref={gridRef}
-        className="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden"
+        className="border border-theme-primary rounded-lg overflow-hidden"
         onMouseUp={handleMouseUp}
         onMouseLeave={handleMouseUp}
       >
         {/* Header with days */}
-        <div className="grid grid-cols-8 bg-gray-50 dark:bg-gray-800">
-          <div className="p-3 text-xs font-medium text-gray-500 dark:text-gray-400 border-r border-gray-200 dark:border-gray-700">
+        <div className="grid grid-cols-8 bg-theme-secondary">
+          <div className="p-3 text-xs font-medium text-theme-subtle border-r border-theme-primary">
             Time
           </div>
           {weekDays.map((day, index) => (
-            <div key={index} className="p-3 text-center text-xs font-medium text-gray-900 dark:text-gray-100 border-r border-gray-200 dark:border-gray-700 last:border-r-0">
+            <div key={index} className="p-3 text-center text-xs font-medium text-theme-primary border-r border-theme-primary last:border-r-0">
               <div>{formatDate(day)}</div>
-              <div className="text-gray-500 dark:text-gray-400 mt-1">
+              <div className="text-theme-subtle mt-1">
                 {day.toLocaleDateString() === today.toLocaleDateString() ? 'Today' : 
                  day < today ? 'Past' : ''}
               </div>
@@ -187,9 +187,9 @@ export function CalendarTimeSelector({ proposedDates, onChange }: CalendarTimeSe
         {/* Time slots */}
         <div className="max-h-96 overflow-y-auto">
           {timeSlots.map(({ hour, minute }, timeIndex) => (
-            <div key={`${hour}-${minute}`} className="grid grid-cols-8 border-t border-gray-100 dark:border-gray-800">
+            <div key={`${hour}-${minute}`} className="grid grid-cols-8 border-t border-theme-primary">
               {/* Time label */}
-              <div className="p-2 text-xs text-gray-600 dark:text-gray-400 border-r border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
+              <div className="p-2 text-xs text-theme-muted border-r border-theme-primary bg-theme-secondary">
                 {formatTime(hour, minute)}
               </div>
               
@@ -206,13 +206,13 @@ export function CalendarTimeSelector({ proposedDates, onChange }: CalendarTimeSe
                   <div
                     key={`${dayIndex}-${timeIndex}`}
                     className={`
-                      p-1 border-r border-gray-200 dark:border-gray-700 last:border-r-0
+                      p-1 border-r border-theme-primary last:border-r-0
                       transition-colors duration-75 select-none
                       ${isSelected 
                         ? 'bg-blue-500 hover:bg-blue-600 cursor-pointer' 
                         : isPastTime
-                          ? 'bg-gray-100 dark:bg-gray-800 cursor-not-allowed opacity-30'
-                          : 'bg-white dark:bg-gray-900 hover:bg-blue-100 dark:hover:bg-blue-900/20 cursor-pointer'
+                          ? 'bg-theme-secondary cursor-not-allowed opacity-30'
+                          : 'bg-theme-primary calendar-hover cursor-pointer'
                       }
                     `}
                     onMouseDown={isPastTime ? undefined : () => handleMouseDown(day, hour, minute)}
@@ -233,12 +233,12 @@ export function CalendarTimeSelector({ proposedDates, onChange }: CalendarTimeSe
       </div>
 
       {/* Selection Summary */}
-      <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
-        <h4 className="font-medium text-gray-900 dark:text-white mb-2">
+      <div className="bg-theme-secondary rounded-lg p-4">
+        <h4 className="font-medium text-theme-primary mb-2">
           Selected Times ({proposedDates.length})
         </h4>
         {proposedDates.length === 0 ? (
-          <p className="text-sm text-gray-500 dark:text-gray-400">
+          <p className="text-sm text-theme-muted">
             No times selected yet. Click and drag on the calendar above to select available times.
           </p>
         ) : (
@@ -256,7 +256,7 @@ export function CalendarTimeSelector({ proposedDates, onChange }: CalendarTimeSe
                 }).format(date)
                 
                 return (
-                  <div key={index} className="text-sm text-gray-700 dark:text-gray-300 flex items-center justify-between bg-white dark:bg-gray-700 px-3 py-2 rounded">
+                  <div key={index} className="text-sm text-theme-secondary flex items-center justify-between bg-theme-card px-3 py-2 rounded">
                     <span>{displayDate}</span>
                     <button
                       type="button"
@@ -275,8 +275,8 @@ export function CalendarTimeSelector({ proposedDates, onChange }: CalendarTimeSe
 
       {/* Validation */}
       {proposedDates.length < 2 && (
-        <div className="bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800 rounded-lg p-3">
-          <p className="text-sm text-orange-800 dark:text-orange-200">
+        <div className="bg-orange-50 border border-orange-200 rounded-lg p-3">
+          <p className="text-sm text-orange-800">
             ⚠️ Please select at least 2 time slots to create a meaningful poll for your guests.
           </p>
         </div>

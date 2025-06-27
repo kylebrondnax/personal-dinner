@@ -51,6 +51,7 @@ export function EventCard({ event, onReserve, className }: EventCardProps) {
             <p className="text-sm text-gray-600 dark:text-gray-400">by {event.chefName}</p>
           </div>
           {event.chefPhoto && (
+            // eslint-disable-next-line @next/next/no-img-element
             <img 
               src={event.chefPhoto} 
               alt={event.chefName}
