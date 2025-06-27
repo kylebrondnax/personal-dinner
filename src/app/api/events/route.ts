@@ -53,8 +53,31 @@ export async function POST(request: NextRequest) {
     // TODO: Add authentication middleware to get current user
     // For now, we'll require chefId in the request body
     
+    // Check if this is a poll-enabled event
+    const useAvailabilityPoll = body.useAvailabilityPoll || false
+    
     // Validation (like Laravel FormRequest)
-    const requiredFields = ['title', 'date', 'duration', 'maxCapacity', 'estimatedCostPerPerson', 'chefId']
+    let requiredFields = ['title', 'duration', 'maxCapacity', 'estimatedCostPerPerson', 'chefId']
+    
+    if (useAvailabilityPoll) {
+      // For polls, we need proposed dates instead of a single date
+      requiredFields = [...requiredFields, 'proposedDates', 'pollDeadline']
+      
+      if (!body.proposedDates || body.proposedDates.length < 2) {
+        return NextResponse.json(
+          {
+            success: false,
+            error: 'Validation failed',
+            message: 'At least 2 proposed dates are required for polling'
+          },
+          { status: 400 }
+        )
+      }
+    } else {
+      // For regular events, we need a single date
+      requiredFields = [...requiredFields, 'date']
+    }
+    
     const missingFields = requiredFields.filter(field => !body[field])
     
     if (missingFields.length > 0) {
@@ -69,7 +92,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Business logic validation
-    if (new Date(body.date) <= new Date()) {
+    if (!useAvailabilityPoll && new Date(body.date) <= new Date()) {
       return NextResponse.json(
         {
           success: false,
@@ -80,26 +103,61 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Create event using service layer
-    const event = await EventService.createEvent({
-      title: body.title,
-      description: body.description,
-      date: new Date(body.date),
-      duration: Number(body.duration),
-      maxCapacity: Number(body.maxCapacity),
-      estimatedCostPerPerson: Number(body.estimatedCostPerPerson),
-      chefId: body.chefId,
-      cuisineTypes: body.cuisineTypes || [],
-      dietaryAccommodations: body.dietaryAccommodations || [],
-      reservationDeadline: new Date(body.reservationDeadline || body.date),
-      location: body.location
-    })
+    if (useAvailabilityPoll && new Date(body.pollDeadline) <= new Date()) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'Validation failed',
+          message: 'Poll deadline must be in the future'
+        },
+        { status: 400 }
+      )
+    }
 
-    return NextResponse.json({
-      success: true,
-      data: event,
-      message: 'Event created successfully'
-    }, { status: 201 })
+    if (useAvailabilityPoll) {
+      // Create event with polling
+      const event = await EventService.createEventWithPoll({
+        title: body.title,
+        description: body.description,
+        duration: Number(body.duration),
+        maxCapacity: Number(body.maxCapacity),
+        estimatedCostPerPerson: Number(body.estimatedCostPerPerson),
+        chefId: body.chefId,
+        cuisineTypes: body.cuisineTypes || [],
+        dietaryAccommodations: body.dietaryAccommodations || [],
+        location: body.location,
+        proposedDates: body.proposedDates,
+        pollDeadline: new Date(body.pollDeadline),
+        pollRecipients: body.pollRecipients || []
+      })
+
+      return NextResponse.json({
+        success: true,
+        data: event,
+        message: 'Event with availability poll created successfully'
+      }, { status: 201 })
+    } else {
+      // Create regular event using existing service layer
+      const event = await EventService.createEvent({
+        title: body.title,
+        description: body.description,
+        date: new Date(body.date),
+        duration: Number(body.duration),
+        maxCapacity: Number(body.maxCapacity),
+        estimatedCostPerPerson: Number(body.estimatedCostPerPerson),
+        chefId: body.chefId,
+        cuisineTypes: body.cuisineTypes || [],
+        dietaryAccommodations: body.dietaryAccommodations || [],
+        reservationDeadline: new Date(body.reservationDeadline || body.date),
+        location: body.location
+      })
+
+      return NextResponse.json({
+        success: true,
+        data: event,
+        message: 'Event created successfully'
+      }, { status: 201 })
+    }
 
   } catch (error) {
     console.error('Error creating event:', error)

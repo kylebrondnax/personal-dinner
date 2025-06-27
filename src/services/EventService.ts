@@ -2,6 +2,8 @@
 // This contains the domain logic that would be the same in any framework
 
 import { EventRepository, EventFilters, CreateEventData } from '@/repositories/EventRepository'
+import { ProposedDateTime, PollRecipient } from '@/types'
+import { prisma } from '@/lib/prisma'
 
 export class EventService {
   // Get public events for browse page
@@ -77,6 +79,109 @@ export class EventService {
     }
 
     return await EventRepository.create(data)
+  }
+
+  // Create new event with availability polling
+  static async createEventWithPoll(data: {
+    title: string
+    description?: string
+    duration: number
+    maxCapacity: number
+    estimatedCostPerPerson: number
+    chefId: string
+    cuisineTypes: string[]
+    dietaryAccommodations: string[]
+    location?: {
+      address: string
+      neighborhood: string
+      city: string
+      showFullAddress: boolean
+    }
+    proposedDates: ProposedDateTime[]
+    pollDeadline: Date
+    pollRecipients: PollRecipient[]
+  }) {
+    // Business logic validation
+    if (data.proposedDates.length < 2) {
+      throw new Error('At least 2 proposed dates are required for polling')
+    }
+
+    if (data.pollDeadline <= new Date()) {
+      throw new Error('Poll deadline must be in the future')
+    }
+
+    if (data.maxCapacity < 1 || data.maxCapacity > 50) {
+      throw new Error('Event capacity must be between 1 and 50')
+    }
+
+    // Validate proposed dates are in the future
+    const now = new Date()
+    for (const proposedDate of data.proposedDates) {
+      const dateTime = new Date(`${proposedDate.date}T${proposedDate.time}`)
+      if (dateTime <= now) {
+        throw new Error('All proposed dates must be in the future')
+      }
+    }
+
+    return await prisma.$transaction(async (tx) => {
+      // Create the event with polling enabled
+      const event = await tx.event.create({
+        data: {
+          title: data.title,
+          description: data.description,
+          date: new Date(`${data.proposedDates[0].date}T${data.proposedDates[0].time}`), // Temporary date
+          duration: data.duration,
+          maxCapacity: data.maxCapacity,
+          estimatedCostPerPerson: data.estimatedCostPerPerson,
+          chefId: data.chefId,
+          cuisineTypes: JSON.stringify(data.cuisineTypes),
+          dietaryAccommodations: JSON.stringify(data.dietaryAccommodations),
+          reservationDeadline: data.pollDeadline, // Will be updated when poll is finalized
+          useAvailabilityPoll: true,
+          pollStatus: 'ACTIVE',
+          pollDeadline: data.pollDeadline,
+          status: 'POLL_ACTIVE',
+          location: data.location ? {
+            create: {
+              address: data.location.address,
+              neighborhood: data.location.neighborhood,
+              city: data.location.city,
+              showFullAddress: data.location.showFullAddress
+            }
+          } : undefined
+        },
+        include: {
+          chef: {
+            include: {
+              profile: true
+            }
+          },
+          location: true
+        }
+      })
+
+      // Create proposed dates
+      const proposedDateRecords = await Promise.all(
+        data.proposedDates.map(proposedDate => 
+          tx.proposedDate.create({
+            data: {
+              eventId: event.id,
+              date: new Date(`${proposedDate.date}T${proposedDate.time}`),
+              time: proposedDate.time
+            }
+          })
+        )
+      )
+
+      // TODO: Send poll invitation emails to recipients
+      // This would be handled here or in a separate email service
+
+      return {
+        ...event,
+        proposedDates: proposedDateRecords,
+        pollRecipients: data.pollRecipients
+      }
+    })
   }
 
   // Check event availability

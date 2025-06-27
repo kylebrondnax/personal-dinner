@@ -33,6 +33,7 @@ model User {
   // Attendee-specific relationships
   reservations Reservation[]
   reviews      Review[]
+  availabilityResponses AvailabilityResponse[]
 
   @@map("users")
 }
@@ -105,11 +106,19 @@ model Event {
   reservationDeadline DateTime
   allowWaitlist      Boolean @default(true)
 
+  // Availability polling
+  useAvailabilityPoll Boolean @default(false)
+  pollStatus         PollStatus?
+  pollDeadline       DateTime?
+  finalizedDate      DateTime? // Different from original date during polling
+
   // Relationships
   reservations Reservation[]
   ingredients  EventIngredient[]
   receipts     Receipt[]
   reviews      Review[]
+  proposedDates ProposedDate[]
+  availabilityResponses AvailabilityResponse[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -152,10 +161,18 @@ model EventIngredient {
 
 enum EventStatus {
   DRAFT
+  POLL_ACTIVE
+  POLL_CLOSED
   OPEN
   FULL
   CANCELLED
   COMPLETED
+}
+
+enum PollStatus {
+  ACTIVE
+  CLOSED
+  FINALIZED
 }
 
 // ================================
@@ -187,6 +204,47 @@ model Reservation {
 
   @@unique([eventId, userId])
   @@map("reservations")
+}
+
+// ================================
+// AVAILABILITY POLLING DOMAIN
+// ================================
+
+model ProposedDate {
+  id       String   @id @default(cuid())
+  eventId  String
+  date     DateTime
+  time     String   // e.g., "18:00"
+  
+  // Relationships
+  event    Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  responses AvailabilityResponse[]
+  
+  createdAt DateTime @default(now())
+  
+  @@map("proposed_dates")
+}
+
+model AvailabilityResponse {
+  id              String  @id @default(cuid())
+  eventId         String
+  proposedDateId  String
+  userId          String?  // Optional for guest responses
+  guestEmail      String?  // For non-registered users
+  guestName       String?
+  available       Boolean
+  tentative       Boolean @default(false)
+  
+  // Relationships
+  event           Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  proposedDate    ProposedDate @relation(fields: [proposedDateId], references: [id], onDelete: Cascade)
+  user            User? @relation(fields: [userId], references: [id])
+  
+  createdAt       DateTime @default(now())
+  
+  @@unique([proposedDateId, userId])
+  @@unique([proposedDateId, guestEmail])
+  @@map("availability_responses")
 }
 
 enum ReservationStatus {

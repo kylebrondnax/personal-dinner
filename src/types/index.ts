@@ -94,3 +94,68 @@ export interface Attendee {
   };
   createdAt: Date;
 }
+
+// ================================
+// AVAILABILITY POLLING TYPES
+// ================================
+
+export interface ProposedDateTime {
+  id?: string;
+  date: string; // YYYY-MM-DD
+  time: string; // HH:MM
+}
+
+export interface PollRecipient {
+  email: string;
+  name?: string;
+  userId?: string;
+}
+
+export interface AvailabilityResponse {
+  id: string;
+  proposedDateId: string;
+  userId?: string;
+  guestEmail?: string;
+  guestName?: string;
+  available: boolean;
+  tentative: boolean;
+  respondedAt: Date;
+}
+
+export interface AvailabilityPollData {
+  id: string;
+  eventTitle: string;
+  description?: string;
+  proposedDates: (ProposedDateTime & { responses: AvailabilityResponse[] })[];
+  pollDeadline: Date;
+  responses: AvailabilityResponse[];
+  status: 'ACTIVE' | 'CLOSED' | 'FINALIZED';
+  chefName: string;
+}
+
+// Extended event form data for creation with polling
+export interface EventFormDataWithPolling {
+  // Basic event fields
+  title: string;
+  description: string;
+  date: string;
+  time: string;
+  duration: number;
+  maxCapacity: number;
+  estimatedCostPerPerson: number;
+  cuisineTypes: string[];
+  dietaryAccommodations: string[];
+  location: {
+    address: string;
+    neighborhood: string;
+    city: string;
+    showFullAddress: boolean;
+  };
+  reservationDeadline: string;
+  
+  // Polling fields
+  useAvailabilityPoll: boolean;
+  proposedDates: ProposedDateTime[];
+  pollDeadline: string;
+  pollRecipients: PollRecipient[];
+}
