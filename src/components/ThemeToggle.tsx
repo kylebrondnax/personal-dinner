@@ -63,7 +63,7 @@ export function ThemeToggle({ className }: { className?: string }) {
     <button
       onClick={toggleTheme}
       className={cn(
-        'relative inline-flex h-10 w-10 items-center justify-center rounded-lg border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700 transition-colors',
+        'relative inline-flex h-10 w-10 items-center justify-center rounded-lg border btn-theme-toggle transition-colors',
         className
       )}
       aria-label={getThemeLabel()}

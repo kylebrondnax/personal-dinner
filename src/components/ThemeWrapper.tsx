@@ -8,8 +8,6 @@ interface ThemeWrapperProps {
 
 export function ThemeWrapper({ children }: ThemeWrapperProps) {
   const { resolvedTheme } = useTheme()
-  
-  console.log('🎨 ThemeWrapper rendering with resolvedTheme:', resolvedTheme)
 
   // Conditionally apply classes based on resolved theme
   const backgroundClasses = resolvedTheme === 'dark' 
