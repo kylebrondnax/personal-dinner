@@ -37,6 +37,8 @@ export default function DashboardPage() {
   const [events, setEvents] = useState<EventWithRole[]>([])
   const [loading, setLoading] = useState(true)
   const [activeTab, setActiveTab] = useState<'hosting' | 'attending'>('hosting')
+  const [showCancelModal, setShowCancelModal] = useState<string | null>(null)
+  const [cancelLoading, setCancelLoading] = useState(false)
 
   const formatDate = (date: string | null | undefined) => {
     if (!date) return 'Date TBD'
@@ -94,6 +96,45 @@ export default function DashboardPage() {
       return parts.join(', ')
     }
     return ''
+  }
+
+  const handleEditEvent = (eventId: string) => {
+    router.push(`/events/${eventId}/edit`)
+  }
+
+  const handleCancelEvent = async (eventId: string) => {
+    setCancelLoading(true)
+    try {
+      const response = await fetch(`/api/events/${eventId}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ status: 'CANCELLED' }),
+      })
+
+      if (response.ok) {
+        // Refresh the events list
+        await loadUserEvents()
+        setShowCancelModal(null)
+      } else {
+        console.error('Failed to cancel event')
+        // TODO: Add toast notification
+      }
+    } catch (error) {
+      console.error('Error cancelling event:', error)
+      // TODO: Add toast notification
+    } finally {
+      setCancelLoading(false)
+    }
+  }
+
+  const handleViewResponses = (eventId: string) => {
+    router.push(`/events/${eventId}/poll/responses`)
+  }
+
+  const handleViewReceipt = (eventId: string) => {
+    router.push(`/events/${eventId}/receipt`)
   }
 
   useEffect(() => {
@@ -325,23 +366,35 @@ export default function DashboardPage() {
                               
                               {event.status === 'OPEN' && (
                                 <>
-                                  <button className="px-3 py-1 text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300">
+                                  <button 
+                                    onClick={() => handleEditEvent(event.id)}
+                                    className="px-3 py-1 text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
+                                  >
                                     Edit
                                   </button>
-                                  <button className="px-3 py-1 text-sm text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300">
+                                  <button 
+                                    onClick={() => setShowCancelModal(event.id)}
+                                    className="px-3 py-1 text-sm text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
+                                  >
                                     Cancel
                                   </button>
                                 </>
                               )}
                               
                               {event.status === 'POLL_ACTIVE' && (
-                                <button className="px-3 py-1 text-sm text-purple-600 hover:text-purple-700 dark:text-purple-400 dark:hover:text-purple-300">
+                                <button 
+                                  onClick={() => handleViewResponses(event.id)}
+                                  className="px-3 py-1 text-sm text-purple-600 hover:text-purple-700 dark:text-purple-400 dark:hover:text-purple-300"
+                                >
                                   View Responses
                                 </button>
                               )}
                               
                               {event.status === 'COMPLETED' && (
-                                <button className="px-3 py-1 text-sm text-green-600 hover:text-green-700 dark:text-green-400 dark:hover:text-green-300">
+                                <button 
+                                  onClick={() => handleViewReceipt(event.id)}
+                                  className="px-3 py-1 text-sm text-green-600 hover:text-green-700 dark:text-green-400 dark:hover:text-green-300"
+                                >
                                   View Receipt
                                 </button>
                               )}
@@ -440,6 +493,37 @@ export default function DashboardPage() {
         )}
       </div>
       </div>
+
+      {/* Cancel Event Modal */}
+      {showCancelModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-theme-card rounded-lg p-6 max-w-md w-full mx-4">
+            <h3 className="text-lg font-semibold text-theme-primary mb-4">
+              Cancel Event
+            </h3>
+            <p className="text-theme-muted mb-6">
+              Are you sure you want to cancel this event? This action cannot be undone. 
+              All attendees will be notified of the cancellation.
+            </p>
+            <div className="flex space-x-4 justify-end">
+              <button
+                onClick={() => setShowCancelModal(null)}
+                disabled={cancelLoading}
+                className="btn-cancel px-4 py-2 rounded-lg transition-colors"
+              >
+                Keep Event
+              </button>
+              <button
+                onClick={() => handleCancelEvent(showCancelModal)}
+                disabled={cancelLoading}
+                className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors disabled:opacity-50"
+              >
+                {cancelLoading ? 'Cancelling...' : 'Cancel Event'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   )
 }

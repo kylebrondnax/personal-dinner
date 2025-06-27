@@ -246,8 +246,178 @@ export class EventService {
     })
   }
 
-  // Update event capacity when reservation changes
-  static async updateEventStatus(eventId: string) {
+  // Get event by ID for editing
+  static async getEventById(eventId: string) {
+    const event = await EventRepository.findById(eventId)
+    if (!event) return null
+
+    return {
+      id: event.id,
+      title: event.title,
+      description: event.description,
+      date: event.date,
+      time: event.date.toTimeString().slice(0, 5), // Convert to HH:MM format
+      duration: event.duration,
+      maxCapacity: event.maxCapacity,
+      estimatedCostPerPerson: event.estimatedCostPerPerson,
+      actualCostPerPerson: event.actualCostPerPerson,
+      chefId: event.chefId,
+      chefName: event.chef.name,
+      status: event.status,
+      location: event.location ? {
+        neighborhood: event.location.neighborhood,
+        city: event.location.city,
+        address: event.location.address,
+        showFullAddress: event.location.showFullAddress
+      } : null,
+      cuisineTypes: event.cuisineTypes ? JSON.parse(event.cuisineTypes) : [],
+      dietaryAccommodations: event.dietaryAccommodations ? JSON.parse(event.dietaryAccommodations) : [],
+      useAvailabilityPoll: event.useAvailabilityPoll,
+      pollStatus: event.pollStatus,
+      pollDeadline: event.pollDeadline,
+      pollDateRange: event.useAvailabilityPoll ? {
+        startDate: new Date(event.date.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], // Default: week before
+        endDate: new Date(event.date.getTime() + 14 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]  // Default: 2 weeks after
+      } : null,
+      chefAvailability: event.proposedDates?.map(pd => ({
+        date: pd.date.toISOString().split('T')[0],
+        time: pd.time
+      })) || [],
+      currentGuests: event.reservations
+        .filter(r => r.status === 'CONFIRMED')
+        .reduce((sum, res) => sum + res.guestCount, 0),
+      createdAt: event.createdAt,
+      updatedAt: event.updatedAt
+    }
+  }
+
+  // Update event
+  static async updateEvent(eventId: string, data: Partial<{
+    title: string
+    description: string
+    date: Date
+    time: string
+    duration: number
+    maxCapacity: number
+    estimatedCostPerPerson: number
+    location: {
+      neighborhood: string
+      city: string
+      address?: string
+      showFullAddress?: boolean
+    }
+    cuisineTypes: string[]
+    dietaryAccommodations: string[]
+    useAvailabilityPoll: boolean
+    pollDeadline: Date
+    pollDateRange: {
+      startDate: string
+      endDate: string
+    }
+    chefAvailability: ProposedDateTime[]
+  }>) {
+    // Business logic validation
+    if (data.date && data.date <= new Date()) {
+      throw new Error('Event date must be in the future')
+    }
+
+    if (data.maxCapacity && (data.maxCapacity < 1 || data.maxCapacity > 50)) {
+      throw new Error('Event capacity must be between 1 and 50')
+    }
+
+    return await prisma.$transaction(async (tx) => {
+      // Prepare update data
+      const updateData: Record<string, unknown> = {}
+      
+      if (data.title) updateData.title = data.title
+      if (data.description !== undefined) updateData.description = data.description
+      if (data.date && data.time) {
+        const [hours, minutes] = data.time.split(':').map(Number)
+        const eventDate = new Date(data.date)
+        eventDate.setHours(hours, minutes, 0, 0)
+        updateData.date = eventDate
+      }
+      if (data.duration) updateData.duration = data.duration
+      if (data.maxCapacity) updateData.maxCapacity = data.maxCapacity
+      if (data.estimatedCostPerPerson) updateData.estimatedCostPerPerson = data.estimatedCostPerPerson
+      if (data.cuisineTypes) updateData.cuisineTypes = JSON.stringify(data.cuisineTypes)
+      if (data.dietaryAccommodations) updateData.dietaryAccommodations = JSON.stringify(data.dietaryAccommodations)
+      if (data.useAvailabilityPoll !== undefined) updateData.useAvailabilityPoll = data.useAvailabilityPoll
+      if (data.pollDeadline) updateData.pollDeadline = data.pollDeadline
+
+      // Update the event
+      const event = await tx.event.update({
+        where: { id: eventId },
+        data: updateData,
+        include: {
+          chef: {
+            include: {
+              profile: true
+            }
+          },
+          location: true,
+          proposedDates: true
+        }
+      })
+
+      // Update location if provided
+      if (data.location) {
+        if (event.location) {
+          await tx.eventLocation.update({
+            where: { eventId: eventId },
+            data: {
+              neighborhood: data.location.neighborhood,
+              city: data.location.city,
+              address: data.location.address,
+              showFullAddress: data.location.showFullAddress
+            }
+          })
+        } else {
+          await tx.eventLocation.create({
+            data: {
+              eventId: eventId,
+              neighborhood: data.location.neighborhood,
+              city: data.location.city,
+              address: data.location.address,
+              showFullAddress: data.location.showFullAddress
+            }
+          })
+        }
+      }
+
+      // Update chef availability for poll events
+      if (data.chefAvailability && data.useAvailabilityPoll) {
+        // Delete existing proposed dates
+        await tx.proposedDate.deleteMany({
+          where: { eventId: eventId }
+        })
+
+        // Create new proposed dates
+        await Promise.all(
+          data.chefAvailability.map(availability => 
+            tx.proposedDate.create({
+              data: {
+                eventId: eventId,
+                date: new Date(`${availability.date}T${availability.time}`),
+                time: availability.time
+              }
+            })
+          )
+        )
+      }
+
+      return event
+    })
+  }
+
+  // Update event status (simple status changes like cancellation)
+  static async updateEventStatus(eventId: string, status?: string) {
+    if (status) {
+      // Simple status update
+      return await EventRepository.update(eventId, { status })
+    }
+
+    // Auto-update status based on capacity (existing logic)
     const event = await EventRepository.findById(eventId)
     if (!event) return
 
@@ -263,5 +433,24 @@ export class EventService {
     }
 
     return { currentReservations: confirmedReservations, maxCapacity: event.maxCapacity }
+  }
+
+  // Delete event
+  static async deleteEvent(eventId: string) {
+    const event = await EventRepository.findById(eventId)
+    if (!event) {
+      throw new Error('Event not found')
+    }
+
+    // Check if event has confirmed reservations
+    const confirmedReservations = event.reservations.filter(r => r.status === 'CONFIRMED')
+    if (confirmedReservations.length > 0) {
+      throw new Error('Cannot delete event with confirmed reservations. Cancel the event instead.')
+    }
+
+    // Delete the event (cascade will handle related data)
+    return await prisma.event.delete({
+      where: { id: eventId }
+    })
   }
 }
