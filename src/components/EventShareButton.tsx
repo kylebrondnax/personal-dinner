@@ -156,7 +156,7 @@ export function EventShareButton({ eventId, eventTitle, isPollEvent }: EventShar
               {isPollEvent && (
                 <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-3">
                   <p className="text-xs text-blue-800 dark:text-blue-200">
-                    💡 <strong>Tip:</strong> Friends can respond without creating an account. You'll see all responses in your dashboard.
+                    💡 <strong>Tip:</strong> Friends can respond without creating an account. You&apos;ll see all responses in your dashboard.
                   </p>
                 </div>
               )}

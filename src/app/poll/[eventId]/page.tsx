@@ -155,7 +155,7 @@ export default function PollPage() {
             Poll not found
           </h1>
           <p className="text-gray-600 dark:text-gray-400 mb-6">
-            This poll doesn't exist or has been removed.
+            This poll doesn&apos;t exist or has been removed.
           </p>
           <button
             onClick={() => router.push('/')}

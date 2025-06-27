@@ -8,12 +8,12 @@ interface CalendarTimeSelectorProps {
   onChange: (dates: ProposedDateTime[]) => void
 }
 
-interface TimeSlot {
-  date: string
-  hour: number
-  minute: number
-  selected: boolean
-}
+// interface TimeSlot {
+//   date: string
+//   hour: number
+//   minute: number
+//   selected: boolean
+// }
 
 export function CalendarTimeSelector({ proposedDates, onChange }: CalendarTimeSelectorProps) {
   // Generate a week starting from today
@@ -132,7 +132,7 @@ export function CalendarTimeSelector({ proposedDates, onChange }: CalendarTimeSe
           📅 Select your available times
         </h3>
         <p className="text-sm text-blue-800 dark:text-blue-200">
-          Click and drag to select time slots when you're available to host. 
+          Click and drag to select time slots when you&apos;re available to host. 
           Selected times (in blue) will be offered as options for your guests to vote on.
         </p>
       </div>

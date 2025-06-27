@@ -2,7 +2,7 @@
 // This contains the domain logic that would be the same in any framework
 
 import { EventRepository, EventFilters, CreateEventData } from '@/repositories/EventRepository'
-import { ProposedDateTime, PollRecipient } from '@/types'
+import { ProposedDateTime } from '@/types'
 import { prisma } from '@/lib/prisma'
 
 export class EventService {

@@ -68,7 +68,7 @@ export function AvailabilityPollSection({
               📊 Poll for availability first
             </label>
             <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">
-              Survey your guests about when they're available, and mark your own availability too.
+              Survey your guests about when they&apos;re available, and mark your own availability too.
               Great for coordinating with busy schedules!
             </p>
           </div>
@@ -126,7 +126,7 @@ export function AvailabilityPollSection({
               Your Availability
             </h3>
             <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">
-              Mark when you're available to host. Guests will see your availability and can choose times that work for both of you.
+              Mark when you&apos;re available to host. Guests will see your availability and can choose times that work for both of you.
             </p>
             <CalendarTimeSelector
               proposedDates={chefAvailability}
