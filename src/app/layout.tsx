@@ -4,6 +4,7 @@ import './globals.css';
 import { ThemeProvider } from '@/contexts/ThemeContext';
 import { ClerkAuthProvider } from '@/contexts/ClerkAuthContext';
 import { ClerkProvider } from '@clerk/nextjs';
+import { ThemeWrapper } from '@/components/ThemeWrapper';
 
 const geistSans = Geist({
 	variable: '--font-geist-sans',
@@ -34,7 +35,9 @@ export default function RootLayout({
 				>
 					<ThemeProvider>
 						<ClerkAuthProvider>
-							{children}
+							<ThemeWrapper>
+								{children}
+							</ThemeWrapper>
 						</ClerkAuthProvider>
 					</ThemeProvider>
 				</body>

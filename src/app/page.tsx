@@ -1,8 +1,10 @@
 import { Navigation } from '@/components/Navigation';
+import { ThemeTestComponent } from '@/components/ThemeTestComponent';
+import { TailwindDarkTest } from '@/components/TailwindDarkTest';
 
 export default function Home() {
 	return (
-		<div className='min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 transition-colors'>
+		<div>
 			<Navigation />
 			{/* Hero Section */}
 			<div className='max-w-7xl mx-auto px-4 pt-24 pb-20 relative'>
@@ -312,6 +314,8 @@ export default function Home() {
 					</p>
 				</div>
 			</div>
+			<ThemeTestComponent />
+			<TailwindDarkTest />
 		</div>
 	);
 }
