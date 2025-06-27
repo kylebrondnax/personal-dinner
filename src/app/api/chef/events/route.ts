@@ -1,29 +1,27 @@
 // Chef Events API endpoint
 import { NextRequest, NextResponse } from 'next/server'
+import { getAuth } from '@clerk/nextjs/server'
 import { EventService } from '@/services/EventService'
 
 // GET /api/chef/events - Get chef's events for dashboard
 export async function GET(request: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url)
+    // Get authenticated user from Clerk
+    const { userId } = getAuth(request)
     
-    // TODO: Get chefId from authentication middleware
-    // For now, get it from query params
-    const chefId = searchParams.get('chefId')
-    
-    if (!chefId) {
+    if (!userId) {
       return NextResponse.json(
         {
           success: false,
           error: 'Authentication required',
-          message: 'Chef ID is required'
+          message: 'You must be logged in to access this resource'
         },
         { status: 401 }
       )
     }
 
-    // Get events for this chef
-    const events = await EventService.getEventsByChef(chefId)
+    // Get events for this chef using the authenticated user ID
+    const events = await EventService.getEventsByChef(userId)
 
     // Transform for dashboard display
     const dashboardEvents = events.map(event => ({
@@ -52,7 +50,7 @@ export async function GET(request: NextRequest) {
       data: dashboardEvents,
       meta: {
         total: dashboardEvents.length,
-        chefId: chefId
+        chefId: userId
       }
     })
 

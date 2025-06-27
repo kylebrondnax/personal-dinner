@@ -45,21 +45,16 @@ export default function DashboardPage() {
       setLoading(true)
       
       // Load events user is hosting
-      const hostingResponse = await fetch('/api/chef/events', {
-        headers: {
-          'Authorization': `Bearer ${user.id}`
-        }
-      })
+      const hostingResponse = await fetch('/api/chef/events')
       
-      // Load events user is attending (would need new API endpoint)
-      const attendingResponse = await fetch('/api/user/attending', {
-        headers: {
-          'Authorization': `Bearer ${user.id}`
-        }
-      })
+      // Load events user is attending
+      const attendingResponse = await fetch('/api/user/attending')
 
-      const hostingEvents = hostingResponse.ok ? await hostingResponse.json() : []
-      const attendingEvents = attendingResponse.ok ? await attendingResponse.json() : []
+      const hostingData = hostingResponse.ok ? await hostingResponse.json() : { success: false, data: [] }
+      const attendingData = attendingResponse.ok ? await attendingResponse.json() : { success: false, data: [] }
+
+      const hostingEvents = hostingData.success ? hostingData.data : []
+      const attendingEvents = attendingData.success ? attendingData.data : []
 
       const combinedEvents: EventWithRole[] = [
         ...hostingEvents.map((event: Event) => ({ ...event, userRole: 'host' as const })),

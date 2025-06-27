@@ -50,8 +50,16 @@ export default function ChefDashboard() {
     try {
       setIsLoading(true)
       
-      // Fetch chef's events from API
-      const response = await fetch(`/api/chef/events?chefId=${user!.id}`)
+      console.log('User object:', user)
+      console.log('User ID:', user?.id)
+      
+      if (!user?.id) {
+        console.error('No user ID available')
+        return
+      }
+      
+      // Fetch chef's events from API (user ID comes from authentication)
+      const response = await fetch('/api/chef/events')
       const result = await response.json()
       
       if (!response.ok) {

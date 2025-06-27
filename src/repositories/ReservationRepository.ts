@@ -53,8 +53,13 @@ export class ReservationRepository {
           select: {
             id: true,
             title: true,
+            description: true,
             date: true,
             status: true,
+            maxCapacity: true,
+            estimatedCostPerPerson: true,
+            actualCostPerPerson: true,
+            chefId: true,
             chef: {
               select: { name: true }
             },
@@ -62,6 +67,11 @@ export class ReservationRepository {
               select: {
                 neighborhood: true,
                 city: true
+              }
+            },
+            reservations: {
+              select: {
+                guestCount: true
               }
             }
           }
