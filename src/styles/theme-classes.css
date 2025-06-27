@@ -1,0 +1,120 @@
+/* Theme-aware CSS classes that resolve at root level */
+
+/* Text Colors */
+.text-theme-primary {
+  @apply text-gray-900;
+}
+.dark .text-theme-primary {
+  @apply text-white;
+}
+
+.text-theme-secondary {
+  @apply text-gray-800;
+}
+.dark .text-theme-secondary {
+  @apply text-gray-200;
+}
+
+.text-theme-muted {
+  @apply text-gray-700;
+}
+.dark .text-theme-muted {
+  @apply text-gray-300;
+}
+
+.text-theme-subtle {
+  @apply text-gray-600;
+}
+.dark .text-theme-subtle {
+  @apply text-gray-400;
+}
+
+/* Background Colors */
+.bg-theme-primary {
+  @apply bg-white;
+}
+.dark .bg-theme-primary {
+  @apply bg-gray-800;
+}
+
+.bg-theme-secondary {
+  @apply bg-gray-50;
+}
+.dark .bg-theme-secondary {
+  @apply bg-gray-900;
+}
+
+.bg-theme-card {
+  @apply bg-white;
+}
+.dark .bg-theme-card {
+  @apply bg-gray-700;
+}
+
+.bg-theme-elevated {
+  @apply bg-white;
+}
+.dark .bg-theme-elevated {
+  @apply bg-gray-800;
+}
+
+/* Border Colors */
+.border-theme-primary {
+  @apply border-gray-200;
+}
+.dark .border-theme-primary {
+  @apply border-gray-600;
+}
+
+.border-theme-subtle {
+  @apply border-gray-300;
+}
+.dark .border-theme-subtle {
+  @apply border-gray-600;
+}
+
+/* Navigation specific */
+.nav-bg {
+  @apply bg-white/80 backdrop-blur-sm;
+}
+.dark .nav-bg {
+  @apply bg-gray-900/80;
+}
+
+.nav-border {
+  @apply border-gray-200;
+}
+.dark .nav-border {
+  @apply border-gray-700;
+}
+
+/* Button variants */
+.btn-secondary {
+  @apply bg-white text-blue-600 hover:bg-gray-50;
+}
+.dark .btn-secondary {
+  @apply bg-gray-700 text-blue-400 hover:bg-gray-600;
+}
+
+.btn-theme-toggle {
+  @apply bg-white border-gray-300 text-gray-700 hover:bg-gray-50;
+}
+.dark .btn-theme-toggle {
+  @apply bg-gray-800 border-gray-600 text-gray-300 hover:bg-gray-700;
+}
+
+/* Card hover effects */
+.card-hover {
+  @apply hover:shadow-lg;
+}
+.dark .card-hover {
+  @apply hover:bg-gray-600;
+}
+
+/* Input styles */
+.input-theme {
+  @apply bg-white border-gray-300 text-gray-900 placeholder-gray-500;
+}
+.dark .input-theme {
+  @apply bg-gray-700 border-gray-600 text-white placeholder-gray-400;
+}

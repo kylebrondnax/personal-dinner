@@ -21,17 +21,11 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   }
 
   const applyTheme = (actualTheme: 'light' | 'dark') => {
-    console.log('🎨 Applying theme:', actualTheme)
-    console.log('📄 Document element classList before:', document.documentElement.classList.toString())
-    
     if (actualTheme === 'dark') {
       document.documentElement.classList.add('dark')
     } else {
       document.documentElement.classList.remove('dark')
     }
-    
-    console.log('📄 Document element classList after:', document.documentElement.classList.toString())
-    console.log('🔍 Dark class present?', document.documentElement.classList.contains('dark'))
     setResolvedTheme(actualTheme)
   }
 
@@ -73,7 +67,6 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     localStorage.setItem('theme', nextTheme)
   }
 
-  console.log('🎯 ThemeProvider rendering - theme:', theme, 'resolvedTheme:', resolvedTheme)
 
   return (
     <ThemeContext.Provider value={{ theme, toggleTheme, resolvedTheme }}>
