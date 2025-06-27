@@ -109,6 +109,7 @@ export async function POST(
         responses.map(response => 
           tx.availabilityResponse.create({
             data: {
+              eventId: eventId,
               proposedDateId: response.proposedDateId,
               guestEmail: guestInfo.email,
               guestName: guestInfo.name,
