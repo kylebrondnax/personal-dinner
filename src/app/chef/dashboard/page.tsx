@@ -59,10 +59,11 @@ export default function ChefDashboard() {
       }
       
       if (result.success) {
-        // Convert date strings back to Date objects
+        // Convert date strings back to Date objects, handling null values
         const eventsWithDates = result.data.map((event: DashboardEvent) => ({
           ...event,
-          date: new Date(event.date),
+          date: event.date ? new Date(event.date) : new Date(),
+          pollDeadline: event.pollDeadline ? new Date(event.pollDeadline) : undefined,
           createdAt: new Date(event.createdAt),
           updatedAt: new Date(event.updatedAt)
         }))
