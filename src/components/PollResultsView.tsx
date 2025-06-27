@@ -77,7 +77,7 @@ export function PollResultsView({
     }
   }
 
-  const isDeadlinePassed = pollData.pollDeadline && new Date() > pollData.pollDeadline
+  const isDeadlinePassed = pollData.pollDeadline && new Date() > new Date(pollData.pollDeadline)
   const canFinalize = pollData.status === 'ACTIVE' && getTotalResponses() > 0
 
   return (
@@ -124,7 +124,7 @@ export function PollResultsView({
                 day: 'numeric',
                 hour: 'numeric',
                 minute: '2-digit'
-              }).format(pollData.pollDeadline)}
+              }).format(new Date(pollData.pollDeadline))}
               {isDeadlinePassed && <span className="text-red-600 dark:text-red-400 ml-1">(Passed)</span>}
             </span>
           )}

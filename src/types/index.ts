@@ -127,7 +127,7 @@ export interface AvailabilityPollData {
   eventTitle: string;
   description?: string;
   proposedDates: (ProposedDateTime & { responses: AvailabilityResponse[] })[];
-  pollDeadline: Date;
+  pollDeadline: Date | string;
   responses: AvailabilityResponse[];
   status: 'ACTIVE' | 'CLOSED' | 'FINALIZED';
   chefName: string;

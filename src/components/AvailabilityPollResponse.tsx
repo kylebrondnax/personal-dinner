@@ -103,7 +103,7 @@ export function AvailabilityPollResponse({
     }
   }
 
-  const isDeadlinePassed = pollData.pollDeadline && new Date() > pollData.pollDeadline
+  const isDeadlinePassed = pollData.pollDeadline && new Date() > new Date(pollData.pollDeadline)
 
   return (
     <div className="max-w-3xl mx-auto">
@@ -141,7 +141,7 @@ export function AvailabilityPollResponse({
                 day: 'numeric',
                 hour: 'numeric',
                 minute: '2-digit'
-              }).format(pollData.pollDeadline)}
+              }).format(new Date(pollData.pollDeadline))}
             </p>
           </div>
         )}

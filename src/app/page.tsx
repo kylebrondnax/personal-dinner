@@ -8,7 +8,7 @@ export default function Home() {
 			<div className='max-w-7xl mx-auto px-4 pt-24 pb-20 relative'>
 				<div className='text-center'>
 					<h1 className='text-5xl md:text-6xl font-bold text-gray-900 dark:text-white mb-6'>
-						Let's Cook & Eat
+						Let&apos;s Cook & Eat
 						<span className='text-blue-600 block'>
 							Together
 						</span>
@@ -46,7 +46,7 @@ export default function Home() {
 						</h2>
 						<p className='text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto'>
 							Whether you want to join a dinner or host one,
-							it's easy to get started.
+							it&apos;s easy to get started.
 						</p>
 					</div>
 
@@ -67,7 +67,7 @@ export default function Home() {
 										</h4>
 										<p className='text-gray-600 dark:text-gray-300'>
 											See what friends and family are
-											cooking and when they're hosting.
+											cooking and when they&apos;re hosting.
 										</p>
 									</div>
 								</div>
@@ -80,8 +80,8 @@ export default function Home() {
 											Reserve Your Spot
 										</h4>
 										<p className='text-gray-600 dark:text-gray-300'>
-											Let them know you're coming!
-											You'll see the estimated cost upfront.
+											Let them know you&apos;re coming!
+											You&apos;ll see the estimated cost upfront.
 										</p>
 									</div>
 								</div>
@@ -160,7 +160,7 @@ export default function Home() {
 										</h4>
 										<p className='text-gray-600 dark:text-gray-300'>
 											Just snap a photo of your grocery
-											receipt when you're done shopping.
+											receipt when you&apos;re done shopping.
 										</p>
 									</div>
 								</div>
@@ -173,7 +173,7 @@ export default function Home() {
 											Get Reimbursed
 										</h4>
 										<p className='text-gray-600 dark:text-gray-300'>
-											We'll send payment requests to
+											We&apos;ll send payment requests to
 											everyone for their share.
 										</p>
 									</div>
@@ -192,7 +192,7 @@ export default function Home() {
 							Why We Love This
 						</h2>
 						<p className='text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto'>
-							Dinner is better when we're together, and nobody
+							Dinner is better when we&apos;re together, and nobody
 							should have to cook alone or break the bank.
 						</p>
 					</div>
@@ -242,7 +242,7 @@ export default function Home() {
 					</h2>
 					<p className='text-xl text-blue-100 mb-8'>
 						Whether you love to cook or love to eat,
-						let's make dinner better together.
+						let&apos;s make dinner better together.
 					</p>
 
 					<div className='flex flex-col sm:flex-row gap-4 justify-center'>
@@ -250,7 +250,7 @@ export default function Home() {
 							href='/browse'
 							className='px-8 py-4 bg-white text-blue-600 text-lg font-semibold rounded-xl hover:bg-gray-100 transition-colors'
 						>
-							See What's Cooking
+							See What&apos;s Cooking
 						</a>
 						<a
 							href='/create-event'
@@ -273,7 +273,7 @@ export default function Home() {
 							For Hosts
 						</h2>
 						<p className='text-xl text-gray-600 dark:text-gray-300'>
-							We're working on tools to make hosting
+							We&apos;re working on tools to make hosting
 							even easier for you.
 						</p>
 					</div>
