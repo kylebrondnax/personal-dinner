@@ -190,6 +190,8 @@ export default function CreateEventPage() {
         maxCapacity: formData.maxCapacity,
         estimatedCostPerPerson: formData.estimatedCostPerPerson,
         chefId: user!.id, // From auth context
+        chefName: user!.name,
+        chefEmail: user!.email,
         cuisineTypes: formData.cuisineTypes,
         dietaryAccommodations: formData.dietaryAccommodations,
         reservationDeadline: formData.reservationDeadline,

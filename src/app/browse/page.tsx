@@ -17,101 +17,6 @@ interface EventsResponse {
   }
 }
 
-// Mock data - keeping as fallback
-const mockEvents: PublicDinnerEvent[] = [
-  {
-    id: '1',
-    title: 'Prime Rib Dinner',
-    description: 'A classic prime rib dinner with Yorkshire pudding, roasted vegetables, and red wine reduction. Perfect for a special evening with friends.',
-    chefId: 'chef1',
-    chefName: 'Sarah Johnson',
-    chefPhoto: '/api/placeholder/48/48',
-    date: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000), // 3 days from now
-    estimatedDuration: 180, // 3 hours
-    maxCapacity: 8,
-    currentReservations: 5,
-    estimatedCostPerPerson: 65.00,
-    cuisineType: ['American', 'Comfort Food'],
-    dietaryAccommodations: ['Gluten-free options'],
-    status: 'open',
-    reservationDeadline: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000), // 2 days from now
-    location: {
-      neighborhood: 'Capitol Hill',
-      city: 'Seattle'
-    },
-    createdAt: new Date(),
-    updatedAt: new Date()
-  },
-  {
-    id: '2',
-    title: 'Italian Night - Homemade Pasta',
-    description: 'Fresh handmade pasta with authentic Italian sauces. Multiple courses including antipasti, pasta course, and tiramisu for dessert.',
-    chefId: 'chef2',
-    chefName: 'Marco Rossi',
-    chefPhoto: '/api/placeholder/48/48',
-    date: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000), // 5 days from now
-    estimatedDuration: 150, // 2.5 hours
-    maxCapacity: 6,
-    currentReservations: 2,
-    estimatedCostPerPerson: 45.00,
-    cuisineType: ['Italian'],
-    dietaryAccommodations: ['Vegetarian', 'Vegan options'],
-    status: 'open',
-    reservationDeadline: new Date(Date.now() + 4 * 24 * 60 * 60 * 1000),
-    location: {
-      neighborhood: 'Fremont',
-      city: 'Seattle'
-    },
-    createdAt: new Date(),
-    updatedAt: new Date()
-  },
-  {
-    id: '3',
-    title: 'Korean BBQ & Banchan',
-    description: 'Traditional Korean BBQ with house-made banchan (side dishes). Interactive cooking experience with premium wagyu beef.',
-    chefId: 'chef3',
-    chefName: 'David Kim',
-    chefPhoto: '/api/placeholder/48/48',
-    date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 1 week from now
-    estimatedDuration: 120, // 2 hours
-    maxCapacity: 4,
-    currentReservations: 4,
-    estimatedCostPerPerson: 75.00,
-    cuisineType: ['Korean', 'BBQ'],
-    dietaryAccommodations: ['Vegetarian options'],
-    status: 'full',
-    reservationDeadline: new Date(Date.now() + 6 * 24 * 60 * 60 * 1000),
-    location: {
-      neighborhood: 'Ballard',
-      city: 'Seattle'
-    },
-    createdAt: new Date(),
-    updatedAt: new Date()
-  },
-  {
-    id: '4',
-    title: 'French Bistro Experience',
-    description: 'Classic French bistro dinner featuring coq au vin, ratatouille, and crème brûlée. Wine pairings included.',
-    chefId: 'chef4',
-    chefName: 'Amélie Dubois',
-    chefPhoto: '/api/placeholder/48/48',
-    date: new Date(Date.now() + 10 * 24 * 60 * 60 * 1000), // 10 days from now
-    estimatedDuration: 210, // 3.5 hours
-    maxCapacity: 6,
-    currentReservations: 1,
-    estimatedCostPerPerson: 85.00,
-    cuisineType: ['French'],
-    dietaryAccommodations: ['Pescatarian options'],
-    status: 'open',
-    reservationDeadline: new Date(Date.now() + 9 * 24 * 60 * 60 * 1000),
-    location: {
-      neighborhood: 'Queen Anne',
-      city: 'Seattle'
-    },
-    createdAt: new Date(),
-    updatedAt: new Date()
-  }
-]
 
 export default function BrowsePage() {
   const [searchTerm, setSearchTerm] = useState('')
@@ -137,11 +42,16 @@ export default function BrowsePage() {
       if (selectedCuisine) params.append('cuisineTypes', selectedCuisine)
       if (maxPrice) params.append('maxPrice', maxPrice.toString())
       
-      const response = await fetch(`/api/events?${params.toString()}`)
+      const url = `/api/events?${params.toString()}`
+      console.log('Fetching events from:', url)
+      
+      const response = await fetch(url)
       const result: EventsResponse = await response.json()
       
+      console.log('API Response:', result)
+      
       if (!response.ok) {
-        throw new Error(result.error || 'Failed to fetch events')
+        throw new Error(result.error || `HTTP ${response.status}: Failed to fetch events`)
       }
       
       if (result.success) {
@@ -153,15 +63,15 @@ export default function BrowsePage() {
           createdAt: new Date(event.createdAt),
           updatedAt: new Date(event.updatedAt)
         }))
+        console.log('Events loaded:', eventsWithDates)
         setEvents(eventsWithDates)
       } else {
-        throw new Error(result.error || 'Unknown error')
+        throw new Error(result.error || 'API returned success: false')
       }
     } catch (err) {
       console.error('Error fetching events:', err)
       setError(err instanceof Error ? err.message : 'Failed to load events')
-      // Fallback to mock data on error
-      setEvents(mockEvents)
+      setEvents([])
     } finally {
       setLoading(false)
     }

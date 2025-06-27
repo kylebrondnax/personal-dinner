@@ -10,7 +10,7 @@ export class EventService {
   static async getPublicEvents(filters: EventFilters = {}) {
     const events = await EventRepository.findMany({
       ...filters,
-      status: 'OPEN' // Only show open events to public
+      status: ['OPEN', 'POLL_ACTIVE'] // Show both open events and active polls to public
     })
 
     // Transform data for frontend (JSON parsing, calculations, etc.)
@@ -64,7 +64,7 @@ export class EventService {
   }
 
   // Create new event (chef only)
-  static async createEvent(data: CreateEventData) {
+  static async createEvent(data: CreateEventData & { chefName?: string; chefEmail?: string }) {
     // Business logic validation
     if (data.date <= new Date()) {
       throw new Error('Event date must be in the future')
@@ -78,14 +78,17 @@ export class EventService {
       throw new Error('Event capacity must be between 1 and 50')
     }
 
-    // Ensure the chef user exists in our database
+    // Ensure the chef user exists in our database using provided chef data
     await prisma.user.upsert({
       where: { id: data.chefId },
-      update: {}, // Don't update existing users
+      update: data.chefName || data.chefEmail ? {
+        ...(data.chefEmail && { email: data.chefEmail }),
+        ...(data.chefName && { name: data.chefName })
+      } : {}, // Don't update if no chef data provided
       create: {
         id: data.chefId,
-        email: `chef-${data.chefId}@temp.com`, // Temporary email, should be updated with real Clerk data
-        name: 'Chef User', // Temporary name, should be updated with real Clerk data
+        email: data.chefEmail || `chef-${data.chefId}@temp.com`,
+        name: data.chefName || 'Chef User',
         role: 'CHEF'
       }
     })
@@ -101,6 +104,8 @@ export class EventService {
     maxCapacity: number
     estimatedCostPerPerson: number
     chefId: string
+    chefName?: string
+    chefEmail?: string
     cuisineTypes: string[]
     dietaryAccommodations: string[]
     location?: {
@@ -146,14 +151,17 @@ export class EventService {
     }
 
     return await prisma.$transaction(async (tx) => {
-      // Ensure the chef user exists in our database
+      // Ensure the chef user exists in our database using provided chef data
       await tx.user.upsert({
         where: { id: data.chefId },
-        update: {}, // Don't update existing users
+        update: data.chefName || data.chefEmail ? {
+          ...(data.chefEmail && { email: data.chefEmail }),
+          ...(data.chefName && { name: data.chefName })
+        } : {}, // Don't update if no chef data provided
         create: {
           id: data.chefId,
-          email: `chef-${data.chefId}@temp.com`, // Temporary email, should be updated with real Clerk data
-          name: 'Chef User', // Temporary name, should be updated with real Clerk data
+          email: data.chefEmail || `chef-${data.chefId}@temp.com`,
+          name: data.chefName || 'Chef User',
           role: 'CHEF'
         }
       })
