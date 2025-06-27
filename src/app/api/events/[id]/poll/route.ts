@@ -115,7 +115,7 @@ export async function POST(
     // Validate input
     if (!proposedDates || proposedDates.length < 2) {
       return NextResponse.json(
-        { success: false, message: 'At least 2 proposed dates are required' },
+        { success: false, message: 'At least 2 date options are required for polling' },
         { status: 400 }
       )
     }

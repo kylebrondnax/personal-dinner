@@ -124,25 +124,36 @@ export default function CreateEventPage() {
     setError('')
 
     try {
-      // Validation
-      if (!formData.title || !formData.date || !formData.time) {
-        throw new Error('Please fill in all required fields')
+      // Validation - different requirements for polling vs regular events
+      if (!formData.title) {
+        throw new Error('Please enter a dinner title')
+      }
+      
+      if (!formData.useAvailabilityPoll) {
+        // Regular event validation
+        if (!formData.date || !formData.time) {
+          throw new Error('Please set a date and time for your dinner')
+        }
       }
 
       if (formData.cuisineTypes.length === 0) {
         throw new Error('Please select at least one cuisine type')
       }
 
-      const eventDateTime = new Date(`${formData.date}T${formData.time}`)
       const now = new Date()
-      
-      if (eventDateTime <= now) {
-        throw new Error('Event date must be in the future')
-      }
 
-      const deadlineDate = new Date(formData.reservationDeadline)
-      if (deadlineDate >= eventDateTime) {
-        throw new Error('Reservation deadline must be before the event date')
+      if (!formData.useAvailabilityPoll) {
+        // Regular event date validation
+        const eventDateTime = new Date(`${formData.date}T${formData.time}`)
+        
+        if (eventDateTime <= now) {
+          throw new Error('Event date must be in the future')
+        }
+
+        const deadlineDate = new Date(formData.reservationDeadline)
+        if (deadlineDate >= eventDateTime) {
+          throw new Error('Reservation deadline must be before the event date')
+        }
       }
 
       // Additional validation for availability polling
@@ -166,7 +177,7 @@ export default function CreateEventPage() {
         }
         
         if (formData.chefAvailability.length === 0) {
-          throw new Error('Please mark your availability before creating the poll')
+          throw new Error('Please mark your availability on the calendar before creating the poll')
         }
       }
 
@@ -287,7 +298,8 @@ export default function CreateEventPage() {
               </div>
             </div>
 
-            {/* Date & Time */}
+            {/* Date & Time - Only show if polling is disabled */}
+            {!formData.useAvailabilityPoll && (
             <div>
               <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">Date & Time</h2>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -340,6 +352,7 @@ export default function CreateEventPage() {
                 </div>
               </div>
             </div>
+            )}
 
             {/* Capacity & Pricing */}
             <div>
@@ -477,7 +490,8 @@ export default function CreateEventPage() {
               </div>
             </div>
 
-            {/* Reservation Deadline */}
+            {/* Reservation Deadline - Only show if polling is disabled */}
+            {!formData.useAvailabilityPoll && (
             <div>
               <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">Reservation Settings</h2>
               <div>
@@ -498,6 +512,7 @@ export default function CreateEventPage() {
                 </p>
               </div>
             </div>
+            )}
 
             {/* Availability Polling Section */}
             <div>

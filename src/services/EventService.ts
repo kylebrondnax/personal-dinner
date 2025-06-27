@@ -78,6 +78,18 @@ export class EventService {
       throw new Error('Event capacity must be between 1 and 50')
     }
 
+    // Ensure the chef user exists in our database
+    await prisma.user.upsert({
+      where: { id: data.chefId },
+      update: {}, // Don't update existing users
+      create: {
+        id: data.chefId,
+        email: `chef-${data.chefId}@temp.com`, // Temporary email, should be updated with real Clerk data
+        name: 'Chef User', // Temporary name, should be updated with real Clerk data
+        role: 'CHEF'
+      }
+    })
+
     return await EventRepository.create(data)
   }
 
@@ -97,13 +109,16 @@ export class EventService {
       city: string
       showFullAddress: boolean
     }
-    proposedDates: ProposedDateTime[]
+    chefAvailability: ProposedDateTime[]
     pollDeadline: Date
-    pollRecipients: PollRecipient[]
+    pollDateRange: {
+      startDate: string
+      endDate: string
+    }
   }) {
     // Business logic validation
-    if (data.proposedDates.length < 2) {
-      throw new Error('At least 2 proposed dates are required for polling')
+    if (data.chefAvailability.length === 0) {
+      throw new Error('Please mark your availability on the calendar before creating the poll')
     }
 
     if (data.pollDeadline <= new Date()) {
@@ -114,22 +129,41 @@ export class EventService {
       throw new Error('Event capacity must be between 1 and 50')
     }
 
-    // Validate proposed dates are in the future
+    // Validate chef availability dates are in the future
     const now = new Date()
-    for (const proposedDate of data.proposedDates) {
-      const dateTime = new Date(`${proposedDate.date}T${proposedDate.time}`)
+    for (const availability of data.chefAvailability) {
+      const dateTime = new Date(`${availability.date}T${availability.time}`)
       if (dateTime <= now) {
-        throw new Error('All proposed dates must be in the future')
+        throw new Error('All availability slots must be in the future')
       }
     }
 
+    // Validate poll date range
+    const startDate = new Date(data.pollDateRange.startDate)
+    const endDate = new Date(data.pollDateRange.endDate)
+    if (startDate >= endDate) {
+      throw new Error('Poll end date must be after start date')
+    }
+
     return await prisma.$transaction(async (tx) => {
+      // Ensure the chef user exists in our database
+      await tx.user.upsert({
+        where: { id: data.chefId },
+        update: {}, // Don't update existing users
+        create: {
+          id: data.chefId,
+          email: `chef-${data.chefId}@temp.com`, // Temporary email, should be updated with real Clerk data
+          name: 'Chef User', // Temporary name, should be updated with real Clerk data
+          role: 'CHEF'
+        }
+      })
+
       // Create the event with polling enabled
       const event = await tx.event.create({
         data: {
           title: data.title,
           description: data.description,
-          date: new Date(`${data.proposedDates[0].date}T${data.proposedDates[0].time}`), // Temporary date
+          date: new Date(`${data.chefAvailability[0].date}T${data.chefAvailability[0].time}`), // Temporary date
           duration: data.duration,
           maxCapacity: data.maxCapacity,
           estimatedCostPerPerson: data.estimatedCostPerPerson,
@@ -160,14 +194,14 @@ export class EventService {
         }
       })
 
-      // Create proposed dates
-      const proposedDateRecords = await Promise.all(
-        data.proposedDates.map(proposedDate => 
+      // Create chef availability slots (which serve as the poll options)
+      const chefAvailabilityRecords = await Promise.all(
+        data.chefAvailability.map(availability => 
           tx.proposedDate.create({
             data: {
               eventId: event.id,
-              date: new Date(`${proposedDate.date}T${proposedDate.time}`),
-              time: proposedDate.time
+              date: new Date(`${availability.date}T${availability.time}`),
+              time: availability.time
             }
           })
         )
@@ -178,8 +212,8 @@ export class EventService {
 
       return {
         ...event,
-        proposedDates: proposedDateRecords,
-        pollRecipients: data.pollRecipients
+        chefAvailability: chefAvailabilityRecords,
+        pollDateRange: data.pollDateRange
       }
     })
   }

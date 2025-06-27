@@ -60,15 +60,15 @@ export async function POST(request: NextRequest) {
     let requiredFields = ['title', 'duration', 'maxCapacity', 'estimatedCostPerPerson', 'chefId']
     
     if (useAvailabilityPoll) {
-      // For polls, we need proposed dates instead of a single date
-      requiredFields = [...requiredFields, 'proposedDates', 'pollDeadline']
+      // For polls, we need chef availability and poll settings
+      requiredFields = [...requiredFields, 'chefAvailability', 'pollDeadline', 'pollDateRange']
       
-      if (!body.proposedDates || body.proposedDates.length < 2) {
+      if (!body.chefAvailability || body.chefAvailability.length === 0) {
         return NextResponse.json(
           {
             success: false,
             error: 'Validation failed',
-            message: 'At least 2 proposed dates are required for polling'
+            message: 'Please mark your availability on the calendar before creating the poll'
           },
           { status: 400 }
         )
@@ -126,9 +126,9 @@ export async function POST(request: NextRequest) {
         cuisineTypes: body.cuisineTypes || [],
         dietaryAccommodations: body.dietaryAccommodations || [],
         location: body.location,
-        proposedDates: body.proposedDates,
+        chefAvailability: body.chefAvailability,
         pollDeadline: new Date(body.pollDeadline),
-        pollRecipients: body.pollRecipients || []
+        pollDateRange: body.pollDateRange
       })
 
       return NextResponse.json({
