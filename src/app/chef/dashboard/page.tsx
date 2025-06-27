@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/contexts/ClerkAuthContext'
 import { Navigation } from '@/components/Navigation'
+import { EventShareButton } from '@/components/EventShareButton'
 
 interface DashboardEvent {
   id: string
@@ -11,9 +12,12 @@ interface DashboardEvent {
   date: Date
   maxCapacity: number
   currentReservations: number
-  status: 'OPEN' | 'FULL' | 'COMPLETED' | 'CANCELLED'
+  status: 'OPEN' | 'FULL' | 'COMPLETED' | 'CANCELLED' | 'POLL_ACTIVE'
   estimatedCostPerPerson: number
   actualCostPerPerson?: number
+  useAvailabilityPoll?: boolean
+  pollStatus?: 'ACTIVE' | 'CLOSED' | 'FINALIZED'
+  pollDeadline?: Date
   location?: {
     neighborhood: string
     city: string
@@ -101,6 +105,8 @@ export default function ChefDashboard() {
         return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300'
       case 'CANCELLED':
         return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300'
+      case 'POLL_ACTIVE':
+        return 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-300'
       default:
         return 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300'
     }
@@ -236,15 +242,20 @@ export default function ChefDashboard() {
                     <div className="flex-1">
                       <div className="flex items-center gap-3 mb-2">
                         <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                          {event.useAvailabilityPoll && '📊 '}
                           {event.title}
                         </h3>
                         <span className={`px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(event.status)}`}>
-                          {event.status}
+                          {event.status === 'POLL_ACTIVE' ? 'POLL_ACTIVE' : event.status}
                         </span>
                       </div>
                       
                       <div className="space-y-1 text-sm text-gray-600 dark:text-gray-400">
-                        <p>📅 {formatDate(event.date)}</p>
+                        {event.useAvailabilityPoll ? (
+                          <p>🗳️ Poll deadline: {event.pollDeadline ? formatDate(event.pollDeadline) : 'Not set'}</p>
+                        ) : (
+                          <p>📅 {formatDate(event.date)}</p>
+                        )}
                         <p>👥 {event.currentReservations}/{event.maxCapacity} guests</p>
                         {event.location && (
                           <p>📍 {event.location.neighborhood}, {event.location.city}</p>
@@ -261,6 +272,13 @@ export default function ChefDashboard() {
                     </div>
 
                     <div className="flex items-center space-x-2">
+                      {/* Share button for all events */}
+                      <EventShareButton
+                        eventId={event.id}
+                        eventTitle={event.title}
+                        isPollEvent={event.useAvailabilityPoll || false}
+                      />
+                      
                       {event.status === 'OPEN' && (
                         <>
                           <button className="px-3 py-1 text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300">
@@ -271,11 +289,19 @@ export default function ChefDashboard() {
                           </button>
                         </>
                       )}
+                      
+                      {event.status === 'POLL_ACTIVE' && (
+                        <button className="px-3 py-1 text-sm text-purple-600 hover:text-purple-700 dark:text-purple-400 dark:hover:text-purple-300">
+                          View Responses
+                        </button>
+                      )}
+                      
                       {event.status === 'COMPLETED' && (
                         <button className="px-3 py-1 text-sm text-green-600 hover:text-green-700 dark:text-green-400 dark:hover:text-green-300">
                           View Receipt
                         </button>
                       )}
+                      
                       <button className="px-3 py-1 text-sm text-gray-600 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300">
                         Details
                       </button>

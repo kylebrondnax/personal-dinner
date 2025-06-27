@@ -12,18 +12,17 @@ export async function POST(
     
     const { 
       responses,
-      guestEmail,
-      guestName,
-      userId
+      guestInfo
     }: {
       responses: Array<{
         proposedDateId: string
         available: boolean
         tentative?: boolean
       }>
-      guestEmail?: string
-      guestName?: string
-      userId?: string
+      guestInfo: {
+        email: string
+        name?: string
+      }
     } = body
 
     // Validate input
@@ -34,9 +33,9 @@ export async function POST(
       )
     }
 
-    if (!userId && !guestEmail) {
+    if (!guestInfo.email || !guestInfo.email.includes('@')) {
       return NextResponse.json(
-        { success: false, message: 'Either userId or guestEmail is required' },
+        { success: false, message: 'Valid email address is required' },
         { status: 400 }
       )
     }
@@ -82,14 +81,13 @@ export async function POST(
       )
     }
 
-    // Check for existing responses from this user/email
+    // Check for existing responses from this email
     const existingResponses = await prisma.availabilityResponse.findMany({
       where: {
-        eventId,
-        OR: [
-          userId ? { userId } : {},
-          guestEmail ? { guestEmail } : {}
-        ].filter(condition => Object.keys(condition).length > 0)
+        proposedDate: {
+          eventId: eventId
+        },
+        guestEmail: guestInfo.email
       }
     })
 
@@ -111,11 +109,9 @@ export async function POST(
         responses.map(response => 
           tx.availabilityResponse.create({
             data: {
-              eventId,
               proposedDateId: response.proposedDateId,
-              userId,
-              guestEmail,
-              guestName,
+              guestEmail: guestInfo.email,
+              guestName: guestInfo.name,
               available: response.available,
               tentative: response.tentative || false
             }
@@ -131,10 +127,11 @@ export async function POST(
 
     return NextResponse.json({
       success: true,
-      message: 'Availability responses submitted successfully',
+      message: 'Your availability has been recorded successfully',
       data: {
-        responsesCount: responseRecords.length,
-        eventId
+        responseCount: responseRecords.length,
+        guestEmail: guestInfo.email,
+        guestName: guestInfo.name
       }
     })
 
