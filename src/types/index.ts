@@ -155,7 +155,10 @@ export interface EventFormDataWithPolling {
   
   // Polling fields
   useAvailabilityPoll: boolean;
-  proposedDates: ProposedDateTime[];
   pollDeadline: string;
-  pollRecipients: PollRecipient[];
+  pollDateRange: {
+    startDate: string;
+    endDate: string;
+  };
+  chefAvailability: ProposedDateTime[];
 }

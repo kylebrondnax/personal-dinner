@@ -4,25 +4,8 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/contexts/ClerkAuthContext'
 import { Navigation } from '@/components/Navigation'
-
-interface EventFormData {
-  title: string
-  description: string
-  date: string
-  time: string
-  duration: number
-  maxCapacity: number
-  estimatedCostPerPerson: number
-  cuisineTypes: string[]
-  dietaryAccommodations: string[]
-  location: {
-    address: string
-    neighborhood: string
-    city: string
-    showFullAddress: boolean
-  }
-  reservationDeadline: string
-}
+import { AvailabilityPollSection } from '@/components/AvailabilityPollSection'
+import { EventFormDataWithPolling, ProposedDateTime } from '@/types'
 
 const cuisineOptions = [
   'American', 'Italian', 'French', 'Mexican', 'Chinese', 'Japanese', 'Korean', 
@@ -41,7 +24,7 @@ export default function CreateEventPage() {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
 
-  const [formData, setFormData] = useState<EventFormData>({
+  const [formData, setFormData] = useState<EventFormDataWithPolling>({
     title: '',
     description: '',
     date: '',
@@ -57,7 +40,15 @@ export default function CreateEventPage() {
       city: 'Seattle',
       showFullAddress: false
     },
-    reservationDeadline: ''
+    reservationDeadline: '',
+    // Polling fields
+    useAvailabilityPoll: false,
+    pollDeadline: '',
+    pollDateRange: {
+      startDate: '',
+      endDate: ''
+    },
+    chefAvailability: []
   })
 
   // Redirect if not authenticated
@@ -101,6 +92,23 @@ export default function CreateEventPage() {
     setError('')
   }
 
+  // Handlers for availability polling
+  const handlePollToggle = (enabled: boolean) => {
+    setFormData(prev => ({ ...prev, useAvailabilityPoll: enabled }))
+  }
+
+  const handlePollDeadlineChange = (deadline: string) => {
+    setFormData(prev => ({ ...prev, pollDeadline: deadline }))
+  }
+
+  const handlePollDateRangeChange = (range: { startDate: string; endDate: string }) => {
+    setFormData(prev => ({ ...prev, pollDateRange: range }))
+  }
+
+  const handleChefAvailabilityChange = (availability: ProposedDateTime[]) => {
+    setFormData(prev => ({ ...prev, chefAvailability: availability }))
+  }
+
   const handleCheckboxChange = (field: 'cuisineTypes' | 'dietaryAccommodations', value: string) => {
     setFormData(prev => ({
       ...prev,
@@ -137,6 +145,31 @@ export default function CreateEventPage() {
         throw new Error('Reservation deadline must be before the event date')
       }
 
+      // Additional validation for availability polling
+      if (formData.useAvailabilityPoll) {
+        if (!formData.pollDeadline) {
+          throw new Error('Please set a poll deadline')
+        }
+        if (!formData.pollDateRange.startDate || !formData.pollDateRange.endDate) {
+          throw new Error('Please set both start and end dates for the poll range')
+        }
+        
+        const pollDeadlineDate = new Date(formData.pollDeadline)
+        if (pollDeadlineDate <= now) {
+          throw new Error('Poll deadline must be in the future')
+        }
+        
+        const startDate = new Date(formData.pollDateRange.startDate)
+        const endDate = new Date(formData.pollDateRange.endDate)
+        if (startDate >= endDate) {
+          throw new Error('Poll end date must be after start date')
+        }
+        
+        if (formData.chefAvailability.length === 0) {
+          throw new Error('Please mark your availability before creating the poll')
+        }
+      }
+
       // Prepare API request data
       const eventData = {
         title: formData.title,
@@ -149,7 +182,12 @@ export default function CreateEventPage() {
         cuisineTypes: formData.cuisineTypes,
         dietaryAccommodations: formData.dietaryAccommodations,
         reservationDeadline: formData.reservationDeadline,
-        location: formData.location
+        location: formData.location,
+        // Include polling data
+        useAvailabilityPoll: formData.useAvailabilityPoll,
+        pollDeadline: formData.pollDeadline,
+        pollDateRange: formData.pollDateRange,
+        chefAvailability: formData.chefAvailability
       }
 
       // Create event via API
@@ -459,6 +497,21 @@ export default function CreateEventPage() {
                   Guests must RSVP by this date
                 </p>
               </div>
+            </div>
+
+            {/* Availability Polling Section */}
+            <div>
+              <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">Availability Polling (Optional)</h2>
+              <AvailabilityPollSection
+                enabled={formData.useAvailabilityPoll}
+                onToggle={handlePollToggle}
+                pollDeadline={formData.pollDeadline}
+                onDeadlineChange={handlePollDeadlineChange}
+                pollDateRange={formData.pollDateRange}
+                onDateRangeChange={handlePollDateRangeChange}
+                chefAvailability={formData.chefAvailability}
+                onChefAvailabilityChange={handleChefAvailabilityChange}
+              />
             </div>
 
             {/* Error Message */}
