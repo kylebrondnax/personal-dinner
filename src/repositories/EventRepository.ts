@@ -60,7 +60,25 @@ export class EventRepository {
 
     return await prisma.event.findMany({
       where,
-      include: {
+      select: {
+        id: true,
+        title: true,
+        description: true,
+        date: true,
+        duration: true,
+        maxCapacity: true,
+        estimatedCostPerPerson: true,
+        actualCostPerPerson: true,
+        chefId: true,
+        cuisineTypes: true,
+        dietaryAccommodations: true,
+        reservationDeadline: true,
+        status: true,
+        useAvailabilityPoll: true,
+        pollStatus: true,
+        pollDeadline: true,
+        createdAt: true,
+        updatedAt: true,
         chef: {
           select: {
             id: true,

@@ -35,6 +35,10 @@ export async function GET(request: NextRequest) {
       status: event.status,
       estimatedCostPerPerson: event.estimatedCostPerPerson,
       actualCostPerPerson: event.actualCostPerPerson,
+      // Include polling fields
+      useAvailabilityPoll: event.useAvailabilityPoll,
+      pollStatus: event.pollStatus,
+      pollDeadline: event.pollDeadline,
       location: event.location ? {
         neighborhood: event.location.neighborhood,
         city: event.location.city
