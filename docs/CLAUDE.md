@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is a Family Dinner Planning App designed to help hosts split costs for expensive meals with friends/family. The project is currently in development using Next.js 15, TypeScript, and Tailwind CSS v4.
+This is a Family Dinner planning App designed to help hosts split costs for expensive meals with friends/family. The project is currently in development using Next.js 15, TypeScript, and Tailwind CSS v4.
 
 ## Core Problem & Solution
 
@@ -21,6 +21,7 @@ This is a Family Dinner Planning App designed to help hosts split costs for expe
 ## Current Implementation Status
 
 **Phase 1 MVP Components Implemented**:
+
 - ✅ `VenmoSetup` - Venmo username/link configuration
 - ✅ `CostEditor` - Estimated vs actual cost management with inline editing
 - ✅ `PaymentTracker` - Payment status tracking with Venmo request generation
@@ -29,6 +30,7 @@ This is a Family Dinner Planning App designed to help hosts split costs for expe
 - ✅ Mobile-first responsive design with Tailwind CSS
 
 **Authentication & Hosting Flow Implemented**:
+
 - ✅ AuthContext for chef/guest authentication (localStorage-based demo)
 - ✅ Chef registration/login page (`/chef/auth`)
 - ✅ Chef dashboard with event management (`/chef/dashboard`)
@@ -36,6 +38,7 @@ This is a Family Dinner Planning App designed to help hosts split costs for expe
 - ✅ Theme toggle and dark mode support across all pages
 
 **Next Steps for Full MVP**:
+
 - PDF parsing integration (`pdf-parse` library)
 - Connect event creation form to actual API endpoints
 - Implement real user authentication with backend
@@ -44,6 +47,7 @@ This is a Family Dinner Planning App designed to help hosts split costs for expe
 ## Architecture
 
 ### Data Models
+
 ```typescript
 // Enhanced event object
 {
@@ -64,12 +68,14 @@ This is a Family Dinner Planning App designed to help hosts split costs for expe
 ```
 
 ### Key Components
+
 - **VenmoSetup**: Username validation and link generation
 - **CostEditor**: Toggle between estimated/actual costs with inline editing
 - **PaymentTracker**: Individual payment status with Venmo request generation
 - **ReceiptUpload**: Drag/drop PDF upload with parsing simulation
 
 ### Technology Stack
+
 - Next.js 15 with App Router
 - TypeScript for type safety
 - Tailwind CSS v4 for mobile-first responsive design
@@ -95,6 +101,7 @@ This is a Family Dinner Planning App designed to help hosts split costs for expe
 ## Future Features - User Account Benefits
 
 ### For Guests (Optional Accounts)
+
 - **Dining History**: Track past family dinners attended
 - **Preferences**: Save dietary restrictions and cuisine preferences
 - **Quick RSVP**: Faster booking with saved payment info
@@ -102,7 +109,8 @@ This is a Family Dinner Planning App designed to help hosts split costs for expe
 - **Favorites**: Save favorite chefs and get notified of their events
 - **Social Features**: Connect with other food lovers in the community
 
-### For Hosts (Required Accounts)  
+### For Hosts (Required Accounts)
+
 - **Event Management**: Create, edit, and manage dinner events
 - **Guest Communications**: Send updates and messages to attendees
 - **Payment Tracking**: Monitor who has paid and send payment reminders

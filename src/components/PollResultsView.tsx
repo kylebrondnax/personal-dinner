@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { AvailabilityPollData } from '@/types'
+import { groupDatesByDay } from '@/utils/dateGrouping'
 
 interface PollResultsViewProps {
   pollData: AvailabilityPollData
@@ -18,6 +19,7 @@ export function PollResultsView({
 }: PollResultsViewProps) {
   const [selectedDateId, setSelectedDateId] = useState<string>('')
   const [showConfirmModal, setShowConfirmModal] = useState(false)
+  const [expandedDays, setExpandedDays] = useState<Set<string>>(new Set())
 
   const formatDateTime = (date: string, time: string) => {
     try {
@@ -75,6 +77,38 @@ export function PollResultsView({
     } catch (error) {
       console.error('Failed to finalize poll:', error)
     }
+  }
+
+  const toggleDayExpansion = (date: string) => {
+    setExpandedDays(prev => {
+      const newSet = new Set(prev)
+      if (newSet.has(date)) {
+        newSet.delete(date)
+      } else {
+        newSet.add(date)
+      }
+      return newSet
+    })
+  }
+
+  const getDayStats = (timeSlots: Array<{ originalData: { responses?: Array<{ available: boolean; tentative?: boolean }> } }>) => {
+    const dayResponses = timeSlots.flatMap(slot => slot.originalData.responses || [])
+    const available = dayResponses.filter(r => r.available && !r.tentative).length
+    const tentative = dayResponses.filter(r => r.tentative).length
+    const unavailable = dayResponses.filter(r => !r.available).length
+    const total = dayResponses.length
+    return { available, tentative, unavailable, total }
+  }
+
+  const getBestTimeSlot = (timeSlots: Array<{ originalData: { responses?: Array<{ available: boolean; tentative?: boolean }> } }>) => {
+    return timeSlots.reduce((best, current) => {
+      const currentStats = getDateStats(current.originalData)
+      const bestStats = getDateStats(best.originalData)
+      
+      if (currentStats.available > bestStats.available) return current
+      if (currentStats.available === bestStats.available && currentStats.total > bestStats.total) return current
+      return best
+    })
   }
 
   const isDeadlinePassed = pollData.pollDeadline && new Date() > new Date(pollData.pollDeadline)
@@ -155,123 +189,220 @@ export function PollResultsView({
 
       {/* Date Options Results */}
       <div className="space-y-4">
-        {pollData.proposedDates
+        {groupDatesByDay(pollData.proposedDates)
           .sort((a, b) => {
-            const aStats = getDateStats(a)
-            const bStats = getDateStats(b)
+            const aStats = getDayStats(a.times)
+            const bStats = getDayStats(b.times)
             return bStats.available - aStats.available || bStats.total - aStats.total
           })
-          .map((proposedDate, index) => {
-            const stats = getDateStats(proposedDate)
-            const isRecommended = proposedDate.id === getBestDate().id
+          .map((dayGroup) => {
+            const isExpanded = expandedDays.has(dayGroup.date)
+            const dayStats = getDayStats(dayGroup.times)
+            const bestTimeSlot = dayGroup.times.length > 0 ? getBestTimeSlot(dayGroup.times) : null
             
             return (
-              <div 
-                key={proposedDate.id}
-                className={`bg-white dark:bg-gray-800 rounded-lg border-2 p-6 ${
-                  isRecommended 
-                    ? 'border-green-500 bg-green-50 dark:bg-green-900/10' 
-                    : 'border-gray-200 dark:border-gray-700'
-                }`}
-              >
-                <div className="flex items-start justify-between mb-4">
+              <div key={dayGroup.date} className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
+                {/* Day Header */}
+                <button
+                  type="button"
+                  onClick={() => toggleDayExpansion(dayGroup.date)}
+                  className="w-full p-6 hover:bg-gray-50 dark:hover:bg-gray-750 transition-colors text-left flex items-center justify-between"
+                >
                   <div>
                     <div className="flex items-center space-x-2">
                       <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                        {formatDateTime(proposedDate.date, proposedDate.time)}
+                        📅 {dayGroup.dayDisplay}
                       </h3>
-                      {isRecommended && (
+                      {bestTimeSlot && bestTimeSlot.id === getBestDate().id && (
                         <span className="px-2 py-1 bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-200 text-xs rounded-full font-medium">
-                          🌟 Best Option
-                        </span>
-                      )}
-                      {index === 0 && stats.available > 0 && (
-                        <span className="px-2 py-1 bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-200 text-xs rounded-full font-medium">
-                          Most Popular
+                          🌟 Best Day
                         </span>
                       )}
                     </div>
                     <div className="flex items-center space-x-4 mt-2 text-sm">
-                      <span className="text-green-600 dark:text-green-400">
-                        ✅ {stats.available} available
+                      <span className="text-gray-600 dark:text-gray-400">
+                        {dayGroup.times.length} time{dayGroup.times.length !== 1 ? 's' : ''} available
                       </span>
-                      {stats.tentative > 0 && (
-                        <span className="text-yellow-600 dark:text-yellow-400">
-                          ⚠️ {stats.tentative} tentative
-                        </span>
-                      )}
-                      {stats.unavailable > 0 && (
-                        <span className="text-red-600 dark:text-red-400">
-                          ❌ {stats.unavailable} unavailable
-                        </span>
+                      {dayStats.total > 0 && (
+                        <>
+                          <span className="text-green-600 dark:text-green-400">
+                            ✅ {dayStats.available} available
+                          </span>
+                          {dayStats.tentative > 0 && (
+                            <span className="text-yellow-600 dark:text-yellow-400">
+                              ⚠️ {dayStats.tentative} tentative
+                            </span>
+                          )}
+                          {dayStats.unavailable > 0 && (
+                            <span className="text-red-600 dark:text-red-400">
+                              ❌ {dayStats.unavailable} unavailable
+                            </span>
+                          )}
+                        </>
                       )}
                     </div>
+                    
+                    {/* Day Progress Bar */}
+                    {dayStats.total > 0 && (
+                      <div className="mt-3">
+                        <div className="flex h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                          <div 
+                            className="bg-green-500 h-full" 
+                            style={{ width: `${(dayStats.available / dayStats.total) * 100}%` }}
+                          />
+                          <div 
+                            className="bg-yellow-500 h-full" 
+                            style={{ width: `${(dayStats.tentative / dayStats.total) * 100}%` }}
+                          />
+                          <div 
+                            className="bg-red-500 h-full" 
+                            style={{ width: `${(dayStats.unavailable / dayStats.total) * 100}%` }}
+                          />
+                        </div>
+                      </div>
+                    )}
                   </div>
                   
-                  {canFinalize && (
-                    <button
-                      onClick={() => {
-                        setSelectedDateId(proposedDate.id!)
-                        setShowConfirmModal(true)
-                      }}
-                      className="px-3 py-1 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 transition-colors"
-                    >
-                      Select This Date
-                    </button>
-                  )}
-                </div>
-
-                {/* Progress Bar */}
-                {stats.total > 0 && (
-                  <div className="mb-4">
-                    <div className="flex h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
-                      <div 
-                        className="bg-green-500 h-full" 
-                        style={{ width: `${(stats.available / stats.total) * 100}%` }}
-                      />
-                      <div 
-                        className="bg-yellow-500 h-full" 
-                        style={{ width: `${(stats.tentative / stats.total) * 100}%` }}
-                      />
-                      <div 
-                        className="bg-red-500 h-full" 
-                        style={{ width: `${(stats.unavailable / stats.total) * 100}%` }}
-                      />
+                  <div className="flex items-center space-x-3">
+                    <span className="text-sm text-gray-500 dark:text-gray-400">
+                      {isExpanded ? 'Click to collapse' : 'Click to expand'}
+                    </span>
+                    <div className={`transform transition-transform ${
+                      isExpanded ? 'rotate-180' : 'rotate-0'
+                    }`}>
+                      ▼
                     </div>
                   </div>
-                )}
+                </button>
 
-                {/* Individual Responses */}
-                {proposedDate.responses.length > 0 && (
-                  <div>
-                    <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                      Responses:
-                    </h4>
-                    <div className="flex flex-wrap gap-2">
-                      {proposedDate.responses.map((response, idx) => (
-                        <div
-                          key={idx}
-                          className={`px-3 py-1 rounded-full text-xs font-medium ${
-                            response.available && !response.tentative
-                              ? 'bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-200'
-                              : response.tentative
-                              ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/40 dark:text-yellow-200'
-                              : 'bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-200'
-                          }`}
-                        >
-                          {response.available && !response.tentative ? '✅' : 
-                           response.tentative ? '⚠️' : '❌'} {' '}
-                          {response.guestName || response.guestEmail?.split('@')[0] || 'Anonymous'}
-                        </div>
-                      ))}
+                {/* Time Slots */}
+                {isExpanded && (
+                  <div className="border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-750">
+                    <div className="p-6 space-y-4">
+                      {dayGroup.times
+                        .sort((a, b) => {
+                          const aStats = getDateStats(a.originalData)
+                          const bStats = getDateStats(b.originalData)
+                          return bStats.available - aStats.available || bStats.total - aStats.total
+                        })
+                        .map((timeSlot, timeIndex) => {
+                          const proposedDate = timeSlot.originalData
+                          const stats = getDateStats(proposedDate)
+                          const isRecommended = timeSlot.id === getBestDate().id
+                          
+                          return (
+                            <div 
+                              key={timeSlot.id}
+                              className={`bg-white dark:bg-gray-800 rounded-lg border-2 p-4 ${
+                                isRecommended 
+                                  ? 'border-green-500 bg-green-50 dark:bg-green-900/10' 
+                                  : 'border-gray-200 dark:border-gray-700'
+                              }`}
+                            >
+                              <div className="flex items-start justify-between mb-4">
+                                <div>
+                                  <div className="flex items-center space-x-2">
+                                    <h4 className="font-semibold text-gray-900 dark:text-white">
+                                      🕐 {timeSlot.timeDisplay}
+                                    </h4>
+                                    {isRecommended && (
+                                      <span className="px-2 py-1 bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-200 text-xs rounded-full font-medium">
+                                        🌟 Best Option
+                                      </span>
+                                    )}
+                                    {timeIndex === 0 && stats.available > 0 && (
+                                      <span className="px-2 py-1 bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-200 text-xs rounded-full font-medium">
+                                        Most Popular
+                                      </span>
+                                    )}
+                                  </div>
+                                  <div className="flex items-center space-x-4 mt-2 text-sm">
+                                    <span className="text-green-600 dark:text-green-400">
+                                      ✅ {stats.available} available
+                                    </span>
+                                    {stats.tentative > 0 && (
+                                      <span className="text-yellow-600 dark:text-yellow-400">
+                                        ⚠️ {stats.tentative} tentative
+                                      </span>
+                                    )}
+                                    {stats.unavailable > 0 && (
+                                      <span className="text-red-600 dark:text-red-400">
+                                        ❌ {stats.unavailable} unavailable
+                                      </span>
+                                    )}
+                                  </div>
+                                </div>
+                                
+                                {canFinalize && (
+                                  <button
+                                    onClick={() => {
+                                      setSelectedDateId(timeSlot.id)
+                                      setShowConfirmModal(true)
+                                    }}
+                                    className="px-3 py-1 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 transition-colors"
+                                  >
+                                    Select This Time
+                                  </button>
+                                )}
+                              </div>
+
+                              {/* Progress Bar */}
+                              {stats.total > 0 && (
+                                <div className="mb-4">
+                                  <div className="flex h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                                    <div 
+                                      className="bg-green-500 h-full" 
+                                      style={{ width: `${(stats.available / stats.total) * 100}%` }}
+                                    />
+                                    <div 
+                                      className="bg-yellow-500 h-full" 
+                                      style={{ width: `${(stats.tentative / stats.total) * 100}%` }}
+                                    />
+                                    <div 
+                                      className="bg-red-500 h-full" 
+                                      style={{ width: `${(stats.unavailable / stats.total) * 100}%` }}
+                                    />
+                                  </div>
+                                </div>
+                              )}
+
+                              {/* Individual Responses */}
+                              {proposedDate.responses && proposedDate.responses.length > 0 && (
+                                <div>
+                                  <h5 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                    Responses:
+                                  </h5>
+                                  <div className="flex flex-wrap gap-2">
+                                    {proposedDate.responses.map((response, idx) => (
+                                      <div
+                                        key={idx}
+                                        className={`px-3 py-1 rounded-full text-xs font-medium ${
+                                          response.available && !response.tentative
+                                            ? 'bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-200'
+                                            : response.tentative
+                                            ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/40 dark:text-yellow-200'
+                                            : 'bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-200'
+                                        }`}
+                                      >
+                                        {response.available && !response.tentative ? '✅' : 
+                                         response.tentative ? '⚠️' : '❌'} {' '}
+                                        {response.guestName || response.guestEmail?.split('@')[0] || 'Anonymous'}
+                                      </div>
+                                    ))}
+                                  </div>
+                                </div>
+                              )}
+
+                              {(!proposedDate.responses || proposedDate.responses.length === 0) && (
+                                <p className="text-sm text-gray-500 dark:text-gray-400 italic">
+                                  No responses yet for this time
+                                </p>
+                              )}
+                            </div>
+                          )
+                        })}
                     </div>
                   </div>
-                )}
-
-                {proposedDate.responses.length === 0 && (
-                  <p className="text-sm text-gray-500 dark:text-gray-400 italic">
-                    No responses yet for this date
-                  </p>
                 )}
               </div>
             )

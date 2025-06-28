@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { AvailabilityPollData } from '@/types'
+import { groupDatesByDay } from '@/utils/dateGrouping'
 
 interface AvailabilityPollResponseProps {
   pollData: AvailabilityPollData
@@ -27,27 +28,34 @@ export function AvailabilityPollResponse({
   const [guestEmail, setGuestEmail] = useState('')
   const [guestName, setGuestName] = useState('')
   const [error, setError] = useState('')
+  const [expandedDays, setExpandedDays] = useState<Set<string>>(new Set())
 
-  const formatDateTime = (date: string, time: string) => {
-    try {
-      const dateTime = new Date(`${date}T${time}`)
-      return new Intl.DateTimeFormat('en-US', {
-        weekday: 'long',
-        month: 'long',
-        day: 'numeric',
-        hour: 'numeric',
-        minute: '2-digit'
-      }).format(dateTime)
-    } catch {
-      return `${date} at ${time}`
-    }
-  }
 
   const handleResponseChange = (proposedDateId: string, response: ResponseOption) => {
     setResponses(prev => ({
       ...prev,
       [proposedDateId]: response
     }))
+  }
+
+  const toggleDayExpansion = (date: string) => {
+    setExpandedDays(prev => {
+      const newSet = new Set(prev)
+      if (newSet.has(date)) {
+        newSet.delete(date)
+      } else {
+        newSet.add(date)
+      }
+      return newSet
+    })
+  }
+
+  const getDayStats = (timeSlots: Array<{ originalData: { responses?: Array<{ available: boolean; tentative?: boolean }> } }>) => {
+    const dayResponses = timeSlots.flatMap(slot => slot.originalData.responses || [])
+    const available = dayResponses.filter(r => r.available && !r.tentative).length
+    const tentative = dayResponses.filter(r => r.tentative).length
+    const total = dayResponses.length
+    return { available, tentative, total }
   }
 
   const getResponseIcon = (response: ResponseOption) => {
@@ -153,66 +161,116 @@ export function AvailabilityPollResponse({
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
                 Please mark your availability for each option:
               </h3>
-              <div className="space-y-4">
-                {pollData.proposedDates.map((proposedDate) => (
-                  <div 
-                    key={proposedDate.id}
-                    className={`border-2 rounded-lg p-4 transition-colors ${getResponseColor(responses[proposedDate.id!])}`}
-                  >
-                    <div className="flex items-center justify-between mb-3">
-                      <div>
-                        <h4 className="font-medium text-gray-900 dark:text-white">
-                          {formatDateTime(proposedDate.date, proposedDate.time)}
-                        </h4>
-                        {proposedDate.responses.length > 0 && (
+              <div className="space-y-3">
+                {groupDatesByDay(pollData.proposedDates).map((dayGroup) => {
+                  const isExpanded = expandedDays.has(dayGroup.date)
+                  const dayStats = getDayStats(dayGroup.times)
+                  
+                  return (
+                    <div key={dayGroup.date} className="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
+                      {/* Day Header */}
+                      <button
+                        type="button"
+                        onClick={() => toggleDayExpansion(dayGroup.date)}
+                        className="w-full p-4 bg-gray-50 dark:bg-gray-750 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors text-left flex items-center justify-between"
+                      >
+                        <div>
+                          <h4 className="font-semibold text-gray-900 dark:text-white">
+                            📅 {dayGroup.dayDisplay}
+                          </h4>
                           <p className="text-sm text-gray-600 dark:text-gray-400">
-                            {proposedDate.responses.filter(r => r.available && !r.tentative).length} available, {' '}
-                            {proposedDate.responses.filter(r => r.tentative).length} tentative
+                            {dayGroup.times.length} time{dayGroup.times.length !== 1 ? 's' : ''} available
+                            {dayStats.total > 0 && (
+                              <span className="ml-2">
+                                • {dayStats.available} available, {dayStats.tentative} tentative
+                              </span>
+                            )}
                           </p>
-                        )}
-                      </div>
-                      <div className="text-2xl">
-                        {getResponseIcon(responses[proposedDate.id!])}
-                      </div>
-                    </div>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <span className="text-sm text-gray-500 dark:text-gray-400">
+                            {isExpanded ? 'Click to collapse' : 'Click to expand'}
+                          </span>
+                          <div className={`transform transition-transform ${
+                            isExpanded ? 'rotate-180' : 'rotate-0'
+                          }`}>
+                            ▼
+                          </div>
+                        </div>
+                      </button>
 
-                    <div className="grid grid-cols-3 gap-2">
-                      <button
-                        type="button"
-                        onClick={() => handleResponseChange(proposedDate.id!, 'available')}
-                        className={`px-3 py-2 rounded-lg border text-sm font-medium transition-colors ${
-                          responses[proposedDate.id!] === 'available'
-                            ? 'border-green-500 bg-green-100 dark:bg-green-900/40 text-green-800 dark:text-green-200'
-                            : 'border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
-                        }`}
-                      >
-                        ✅ Available
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => handleResponseChange(proposedDate.id!, 'tentative')}
-                        className={`px-3 py-2 rounded-lg border text-sm font-medium transition-colors ${
-                          responses[proposedDate.id!] === 'tentative'
-                            ? 'border-yellow-500 bg-yellow-100 dark:bg-yellow-900/40 text-yellow-800 dark:text-yellow-200'
-                            : 'border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
-                        }`}
-                      >
-                        ⚠️ Maybe
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => handleResponseChange(proposedDate.id!, 'unavailable')}
-                        className={`px-3 py-2 rounded-lg border text-sm font-medium transition-colors ${
-                          responses[proposedDate.id!] === 'unavailable'
-                            ? 'border-red-500 bg-red-100 dark:bg-red-900/40 text-red-800 dark:text-red-200'
-                            : 'border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
-                        }`}
-                      >
-                        ❌ Can&apos;t make it
-                      </button>
+                      {/* Time Slots */}
+                      {isExpanded && (
+                        <div className="border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
+                          <div className="p-4 space-y-4">
+                            {dayGroup.times.map((timeSlot) => {
+                              const proposedDate = timeSlot.originalData
+                              return (
+                                <div 
+                                  key={timeSlot.id}
+                                  className={`border-2 rounded-lg p-4 transition-colors ${getResponseColor(responses[timeSlot.id])}`}
+                                >
+                                  <div className="flex items-center justify-between mb-3">
+                                    <div>
+                                      <h5 className="font-medium text-gray-900 dark:text-white">
+                                        🕐 {timeSlot.timeDisplay}
+                                      </h5>
+                                      {proposedDate.responses && proposedDate.responses.length > 0 && (
+                                        <p className="text-sm text-gray-600 dark:text-gray-400">
+                                          {proposedDate.responses.filter(r => r.available && !r.tentative).length} available, {' '}
+                                          {proposedDate.responses.filter(r => r.tentative).length} tentative
+                                        </p>
+                                      )}
+                                    </div>
+                                    <div className="text-2xl">
+                                      {getResponseIcon(responses[timeSlot.id])}
+                                    </div>
+                                  </div>
+
+                                  <div className="grid grid-cols-3 gap-2">
+                                    <button
+                                      type="button"
+                                      onClick={() => handleResponseChange(timeSlot.id, 'available')}
+                                      className={`px-3 py-2 rounded-lg border text-sm font-medium transition-colors ${
+                                        responses[timeSlot.id] === 'available'
+                                          ? 'border-green-500 bg-green-100 dark:bg-green-900/40 text-green-800 dark:text-green-200'
+                                          : 'border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
+                                      }`}
+                                    >
+                                      ✅ Available
+                                    </button>
+                                    <button
+                                      type="button"
+                                      onClick={() => handleResponseChange(timeSlot.id, 'tentative')}
+                                      className={`px-3 py-2 rounded-lg border text-sm font-medium transition-colors ${
+                                        responses[timeSlot.id] === 'tentative'
+                                          ? 'border-yellow-500 bg-yellow-100 dark:bg-yellow-900/40 text-yellow-800 dark:text-yellow-200'
+                                          : 'border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
+                                      }`}
+                                    >
+                                      ⚠️ Maybe
+                                    </button>
+                                    <button
+                                      type="button"
+                                      onClick={() => handleResponseChange(timeSlot.id, 'unavailable')}
+                                      className={`px-3 py-2 rounded-lg border text-sm font-medium transition-colors ${
+                                        responses[timeSlot.id] === 'unavailable'
+                                          ? 'border-red-500 bg-red-100 dark:bg-red-900/40 text-red-800 dark:text-red-200'
+                                          : 'border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
+                                      }`}
+                                    >
+                                      ❌ Can&apos;t make it
+                                    </button>
+                                  </div>
+                                </div>
+                              )
+                            })}
+                          </div>
+                        </div>
+                      )}
                     </div>
-                  </div>
-                ))}
+                  )
+                })}
               </div>
             </div>
 

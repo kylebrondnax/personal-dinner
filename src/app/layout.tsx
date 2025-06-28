@@ -17,9 +17,49 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-	title: 'Family Dinner Planning',
+	title: 'Family Dinner',
 	description:
-		'Connect passionate home chefs with food lovers in your community'
+		'Connect passionate home chefs with food lovers in your community',
+	keywords: [
+		'family dinner',
+		'home chef',
+		'community meals',
+		'food sharing',
+		'dinner parties'
+	],
+	authors: [{ name: 'Family Dinner' }],
+	openGraph: {
+		title: 'Family Dinner',
+		description:
+			'Connect passionate home chefs with food lovers in your community',
+		url: 'https://familydinner.me',
+		siteName: 'Family Dinner',
+		images: [
+			{
+				url: '/og-image.jpg',
+				width: 1200,
+				height: 630,
+				alt: 'Delicious grilled beef ribs from Family Dinner community chefs'
+			}
+		],
+		locale: 'en_US',
+		type: 'website'
+	},
+	twitter: {
+		card: 'summary_large_image',
+		title: 'Family Dinner',
+		description:
+			'Connect passionate home chefs with food lovers in your community',
+		images: ['/og-image.jpg']
+	},
+	robots: {
+		index: true,
+		follow: true
+	},
+	icons: {
+		icon: '/favicon.ico',
+		apple: '/apple-touch-icon.png'
+	}
 };
 
 export default function RootLayout({
@@ -35,9 +75,7 @@ export default function RootLayout({
 				>
 					<ThemeProvider>
 						<ClerkAuthProvider>
-							<ThemeWrapper>
-								{children}
-							</ThemeWrapper>
+							<ThemeWrapper>{children}</ThemeWrapper>
 						</ClerkAuthProvider>
 					</ThemeProvider>
 				</body>

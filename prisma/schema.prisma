@@ -1,4 +1,4 @@
-// Family Dinner Planning App Database Schema
+// Family Dinner App Database Schema
 // Domain-driven design with clean separation for future microservices
 
 generator client {
@@ -215,13 +215,13 @@ model ProposedDate {
   eventId  String
   date     DateTime
   time     String   // e.g., "18:00"
-  
+
   // Relationships
   event    Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
   responses AvailabilityResponse[]
-  
+
   createdAt DateTime @default(now())
-  
+
   @@map("proposed_dates")
 }
 
@@ -234,14 +234,14 @@ model AvailabilityResponse {
   guestName       String?
   available       Boolean
   tentative       Boolean @default(false)
-  
+
   // Relationships
   event           Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
   proposedDate    ProposedDate @relation(fields: [proposedDateId], references: [id], onDelete: Cascade)
   user            User? @relation(fields: [userId], references: [id])
-  
+
   createdAt       DateTime @default(now())
-  
+
   @@unique([proposedDateId, userId])
   @@unique([proposedDateId, guestEmail])
   @@map("availability_responses")
@@ -266,7 +266,7 @@ model Receipt {
   fileUrl     String
   fileSize    Int?
   mimeType    String?
-  
+
   // OCR processing
   ocrText     String?
   parsedItems Json? // Structured data from OCR
