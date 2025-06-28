@@ -1,4 +1,5 @@
 import { Navigation } from '@/components/Navigation';
+import Script from 'next/script';
 
 export default function ChangelogPage() {
 	return (
@@ -28,7 +29,7 @@ export default function ChangelogPage() {
 									<span className='text-sm font-medium text-blue-600 dark:text-blue-400'>
 										June 28, 2025
 									</span>
-									<span className='px-2 py-1 text-xs bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 rounded-full'>
+									<span className='px-2 py-1 text-xs badge-success rounded-full'>
 										Fix
 									</span>
 								</div>
@@ -47,7 +48,7 @@ export default function ChangelogPage() {
 									<span className='text-sm font-medium text-green-600 dark:text-green-400'>
 										June 27, 2025
 									</span>
-									<span className='px-2 py-1 text-xs bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded-full'>
+									<span className='px-2 py-1 text-xs badge-info rounded-full'>
 										Feature
 									</span>
 								</div>
@@ -66,7 +67,7 @@ export default function ChangelogPage() {
 									<span className='text-sm font-medium text-purple-600 dark:text-purple-400'>
 										June 26, 2025
 									</span>
-									<span className='px-2 py-1 text-xs bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200 rounded-full'>
+									<span className='px-2 py-1 text-xs badge-purple rounded-full'>
 										Enhancement
 									</span>
 								</div>
@@ -118,7 +119,7 @@ export default function ChangelogPage() {
 										information again.&quot;
 									</p>
 									<div className='flex items-center gap-2'>
-										<span className='px-2 py-1 text-xs bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 rounded-full'>
+										<span className='px-2 py-1 text-xs badge-success rounded-full'>
 											✓ Implemented
 										</span>
 										<span className='text-xs text-theme-subtle'>
@@ -200,8 +201,49 @@ export default function ChangelogPage() {
 							</a>
 						</div>
 					</section>
+
+					{/* Support Section */}
+					<section className='bg-theme-secondary rounded-lg p-6'>
+						<h2 className='text-2xl font-semibold text-theme-primary mb-4'>
+							☕ Support the Project
+						</h2>
+						<p className='text-theme-muted mb-4'>
+							Love using Family Dinner? If this app has helped you
+							organize memorable meals with friends and family,
+							consider supporting its development! Your support
+							helps keep the lights on and enables new features.
+						</p>
+						<div className='flex flex-col sm:flex-row gap-3 items-center'>
+							<a
+								href='https://coff.ee/bufordeeds'
+								target='_blank'
+								rel='noopener noreferrer'
+								className='inline-flex items-center justify-center px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white font-medium rounded-lg transition-colors'
+							>
+								☕ Buy me a coffee
+							</a>
+							<span className='text-sm text-theme-muted'>
+								Every coffee helps fuel more delicious features!
+							</span>
+						</div>
+					</section>
 				</div>
 			</div>
+
+			{/* Buy Me A Coffee Widget */}
+			<Script
+				src='https://cdnjs.buymeacoffee.com/1.0.0/widget.prod.min.js'
+				data-name='BMC-Widget'
+				data-cfasync='false'
+				data-id='bufordeeds'
+				data-description='Support me on Buy me a coffee!'
+				data-message='Thanks for your support!'
+				data-color='#5F7FFF'
+				data-position='Right'
+				data-x_margin='18'
+				data-y_margin='18'
+				strategy='lazyOnload'
+			/>
 		</div>
 	);
 }

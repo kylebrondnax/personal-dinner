@@ -242,3 +242,46 @@
 .dark .calendar-hover {
   @apply hover:bg-blue-900/20;
 }
+
+/* Badge styles */
+.badge-success {
+  @apply bg-green-100 text-green-800;
+}
+.dark .badge-success {
+  @apply bg-green-900/20 text-green-200;
+}
+
+.badge-info {
+  @apply bg-blue-100 text-blue-800;
+}
+.dark .badge-info {
+  @apply bg-blue-900/20 text-blue-200;
+}
+
+.badge-warning {
+  @apply bg-orange-100 text-orange-800;
+}
+.dark .badge-warning {
+  @apply bg-orange-900/20 text-orange-200;
+}
+
+.badge-error {
+  @apply bg-red-100 text-red-800;
+}
+.dark .badge-error {
+  @apply bg-red-900/20 text-red-200;
+}
+
+.badge-purple {
+  @apply bg-purple-100 text-purple-800;
+}
+.dark .badge-purple {
+  @apply bg-purple-900/20 text-purple-200;
+}
+
+.badge-default {
+  @apply bg-gray-100 text-gray-800;
+}
+.dark .badge-default {
+  @apply bg-gray-800 text-gray-200;
+}
