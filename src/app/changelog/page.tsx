@@ -2,14 +2,14 @@ import { Navigation } from '@/components/Navigation';
 
 export default function ChangelogPage() {
 	return (
-		<div className='min-h-screen bg-white dark:bg-gray-900'>
+		<div className='min-h-screen bg-theme-primary'>
 			<Navigation />
 			<div className='container mx-auto px-4 py-8 max-w-4xl mt-16'>
 				<header className='mb-8'>
-					<h1 className='text-4xl font-bold text-gray-900 dark:text-white mb-4'>
+					<h1 className='text-4xl font-bold text-theme-primary mb-4'>
 						Changelog
 					</h1>
-					<p className='text-lg text-gray-600 dark:text-gray-300'>
+					<p className='text-lg text-theme-muted'>
 						Track the latest updates, new features, and improvements
 						to Family Dinner.
 					</p>
@@ -17,8 +17,8 @@ export default function ChangelogPage() {
 
 				<div className='space-y-8'>
 					{/* Latest Updates */}
-					<section className='bg-gray-50 dark:bg-gray-800 rounded-lg p-6'>
-						<h2 className='text-2xl font-semibold text-gray-900 dark:text-white mb-4'>
+					<section className='bg-theme-secondary rounded-lg p-6'>
+						<h2 className='text-2xl font-semibold text-theme-primary mb-4'>
 							🚀 Latest Updates
 						</h2>
 
@@ -32,10 +32,10 @@ export default function ChangelogPage() {
 										Fix
 									</span>
 								</div>
-								<h3 className='text-lg font-medium text-gray-900 dark:text-white mb-1'>
+								<h3 className='text-lg font-medium text-theme-primary mb-1'>
 									Enhanced Route Handling & Event Forms
 								</h3>
-								<p className='text-gray-600 dark:text-gray-300'>
+								<p className='text-theme-muted'>
 									Updated Next.js route parameters to async
 									for better performance and fixed event form
 									initialization issues.
@@ -51,10 +51,10 @@ export default function ChangelogPage() {
 										Feature
 									</span>
 								</div>
-								<h3 className='text-lg font-medium text-gray-900 dark:text-white mb-1'>
+								<h3 className='text-lg font-medium text-theme-primary mb-1'>
 									Comprehensive Dashboard Event Management
 								</h3>
-								<p className='text-gray-600 dark:text-gray-300'>
+								<p className='text-theme-muted'>
 									Added powerful event management actions to
 									the dashboard, making it easier for chefs to
 									organize and track their dinner events.
@@ -70,10 +70,10 @@ export default function ChangelogPage() {
 										Enhancement
 									</span>
 								</div>
-								<h3 className='text-lg font-medium text-gray-900 dark:text-white mb-1'>
+								<h3 className='text-lg font-medium text-theme-primary mb-1'>
 									Improved Theme System
 								</h3>
-								<p className='text-gray-600 dark:text-gray-300'>
+								<p className='text-theme-muted'>
 									Implemented a centralized theme system with
 									consistent styling across all components for
 									a better user experience.
@@ -83,34 +83,34 @@ export default function ChangelogPage() {
 					</section>
 
 					{/* Community Contributions */}
-					<section className='bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-gray-800 dark:to-gray-700 rounded-lg p-6'>
-						<h2 className='text-2xl font-semibold text-gray-900 dark:text-white mb-4'>
+					<section className='bg-theme-secondary rounded-lg p-6'>
+						<h2 className='text-2xl font-semibold text-theme-primary mb-4'>
 							💡 Community Contributions
 						</h2>
-						<p className='text-gray-600 dark:text-gray-300 mb-4'>
+						<p className='text-theme-muted mb-4'>
 							We love hearing from our users! Here are some great
 							suggestions from the community that are helping
 							shape the future of Family Dinner.
 						</p>
 
-						<div className='bg-white dark:bg-gray-800 rounded-lg p-4 border border-blue-200 dark:border-gray-600'>
+						<div className='bg-theme-card rounded-lg p-4 border border-theme-primary'>
 							<div className='flex items-start gap-3'>
 								<div className='w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white font-semibold text-sm'>
 									A
 								</div>
 								<div className='flex-1'>
 									<div className='flex items-center gap-2 mb-1'>
-										<span className='font-medium text-gray-900 dark:text-white'>
+										<span className='font-medium text-theme-primary'>
 											Adam
 										</span>
-										<span className='text-sm text-gray-500 dark:text-gray-400'>
+										<span className='text-sm text-theme-subtle'>
 											• Suggested
 										</span>
 									</div>
-									<h4 className='font-medium text-gray-900 dark:text-white mb-1'>
+									<h4 className='font-medium text-theme-primary mb-1'>
 										Pre-populate User Data in RSVP Forms
 									</h4>
-									<p className='text-sm text-gray-600 dark:text-gray-300 mb-2'>
+									<p className='text-sm text-theme-muted mb-2'>
 										&quot;It would be great if the RSVP form
 										could automatically fill in my name and
 										email since I&apos;m already signed in,
@@ -121,7 +121,7 @@ export default function ChangelogPage() {
 										<span className='px-2 py-1 text-xs bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 rounded-full'>
 											✓ Implemented
 										</span>
-										<span className='text-xs text-gray-500 dark:text-gray-400'>
+										<span className='text-xs text-theme-subtle'>
 											Thanks for the great suggestion,
 											Adam! 🎉
 										</span>
@@ -132,42 +132,42 @@ export default function ChangelogPage() {
 					</section>
 
 					{/* Upcoming Features */}
-					<section className='bg-gray-50 dark:bg-gray-800 rounded-lg p-6'>
-						<h2 className='text-2xl font-semibold text-gray-900 dark:text-white mb-4'>
+					<section className='bg-theme-secondary rounded-lg p-6'>
+						<h2 className='text-2xl font-semibold text-theme-primary mb-4'>
 							🔮 What&apos;s Coming Next
 						</h2>
 						<div className='grid gap-4 md:grid-cols-2'>
-							<div className='bg-white dark:bg-gray-700 rounded-lg p-4 border border-gray-200 dark:border-gray-600'>
-								<h4 className='font-medium text-gray-900 dark:text-white mb-2'>
+							<div className='bg-theme-card rounded-lg p-4 border border-theme-primary'>
+								<h4 className='font-medium text-theme-primary mb-2'>
 									Smart RSVP Forms
 								</h4>
-								<p className='text-sm text-gray-600 dark:text-gray-300'>
+								<p className='text-sm text-theme-muted'>
 									Pre-populated user information for faster
 									RSVPs
 								</p>
 							</div>
-							<div className='bg-white dark:bg-gray-700 rounded-lg p-4 border border-gray-200 dark:border-gray-600'>
-								<h4 className='font-medium text-gray-900 dark:text-white mb-2'>
+							<div className='bg-theme-card rounded-lg p-4 border border-theme-primary'>
+								<h4 className='font-medium text-theme-primary mb-2'>
 									Enhanced Notifications
 								</h4>
-								<p className='text-sm text-gray-600 dark:text-gray-300'>
+								<p className='text-sm text-theme-muted'>
 									Better event reminders and updates
 								</p>
 							</div>
-							<div className='bg-white dark:bg-gray-700 rounded-lg p-4 border border-gray-200 dark:border-gray-600'>
-								<h4 className='font-medium text-gray-900 dark:text-white mb-2'>
+							<div className='bg-theme-card rounded-lg p-4 border border-theme-primary'>
+								<h4 className='font-medium text-theme-primary mb-2'>
 									Pot Luck Feature
 								</h4>
-								<p className='text-sm text-gray-600 dark:text-gray-300'>
+								<p className='text-sm text-theme-muted'>
 									Sign-up system for pot luck dinners to
 									coordinate dishes and avoid duplicate items
 								</p>
 							</div>
-							<div className='bg-white dark:bg-gray-700 rounded-lg p-4 border border-gray-200 dark:border-gray-600'>
-								<h4 className='font-medium text-gray-900 dark:text-white mb-2'>
+							<div className='bg-theme-card rounded-lg p-4 border border-theme-primary'>
+								<h4 className='font-medium text-theme-primary mb-2'>
 									Recipe Sharing
 								</h4>
-								<p className='text-sm text-gray-600 dark:text-gray-300'>
+								<p className='text-sm text-theme-muted'>
 									Share your favorite recipes with the
 									community
 								</p>
@@ -176,11 +176,11 @@ export default function ChangelogPage() {
 					</section>
 
 					{/* Feedback Section */}
-					<section className='bg-gradient-to-r from-green-50 to-emerald-50 dark:from-gray-800 dark:to-gray-700 rounded-lg p-6'>
-						<h2 className='text-2xl font-semibold text-gray-900 dark:text-white mb-4'>
+					<section className='bg-theme-secondary rounded-lg p-6'>
+						<h2 className='text-2xl font-semibold text-theme-primary mb-4'>
 							📝 Share Your Ideas
 						</h2>
-						<p className='text-gray-600 dark:text-gray-300 mb-4'>
+						<p className='text-theme-muted mb-4'>
 							Have a suggestion or found a bug? We&apos;d love to
 							hear from you! Your feedback helps make Family
 							Dinner Planning better for everyone.
