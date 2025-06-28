@@ -4,7 +4,8 @@ import { useState, useEffect, useCallback } from 'react'
 import { EventCard } from '@/components/EventCard'
 import { RSVPFlow } from '@/components/RSVPFlow'
 import { Navigation } from '@/components/Navigation'
-import { PublicDinnerEvent } from '@/types'
+import { PublicDinnerEvent, RSVPStatus } from '@/types'
+import { useAuth } from '@/contexts/ClerkAuthContext'
 
 // API response type
 interface EventsResponse {
@@ -19,6 +20,7 @@ interface EventsResponse {
 
 
 export default function BrowsePage() {
+  const { isAuthenticated } = useAuth()
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedCuisine, setSelectedCuisine] = useState('')
   const [maxPrice, setMaxPrice] = useState<number | null>(null)
@@ -29,6 +31,37 @@ export default function BrowsePage() {
   const [events, setEvents] = useState<PublicDinnerEvent[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [rsvpStatuses, setRsvpStatuses] = useState<Record<string, RSVPStatus>>({})
+
+  // Fetch RSVP statuses for authenticated users
+  const fetchRSVPStatuses = useCallback(async () => {
+    if (!isAuthenticated) {
+      setRsvpStatuses({})
+      return
+    }
+    
+    try {
+      const response = await fetch('/api/events/rsvp-status')
+      const result = await response.json()
+      
+      if (response.ok && result.success) {
+        // Convert date strings back to Date objects
+        const statusesWithDates = Object.entries(result.data).reduce((acc, [eventId, status]) => {
+          const typedStatus = status as RSVPStatus
+          acc[eventId] = {
+            ...typedStatus,
+            rsvpedAt: new Date(typedStatus.rsvpedAt)
+          }
+          return acc
+        }, {} as Record<string, RSVPStatus>)
+        
+        setRsvpStatuses(statusesWithDates)
+      }
+    } catch (err) {
+      console.error('Error fetching RSVP statuses:', err)
+      // Don't show error for RSVP status fetch failures
+    }
+  }, [isAuthenticated])
 
   // Fetch events from API
   const fetchEvents = useCallback(async () => {
@@ -65,6 +98,11 @@ export default function BrowsePage() {
         }))
         console.log('Events loaded:', eventsWithDates)
         setEvents(eventsWithDates)
+        
+        // Fetch RSVP statuses for authenticated users
+        if (isAuthenticated) {
+          fetchRSVPStatuses()
+        }
       } else {
         throw new Error(result.error || 'API returned success: false')
       }
@@ -75,7 +113,7 @@ export default function BrowsePage() {
     } finally {
       setLoading(false)
     }
-  }, [searchTerm, selectedCuisine, maxPrice])
+  }, [searchTerm, selectedCuisine, maxPrice, isAuthenticated, fetchRSVPStatuses])
 
   // Fetch events on component mount and when filters change
   useEffect(() => {
@@ -93,7 +131,10 @@ export default function BrowsePage() {
     const matchesPrice = !maxPrice || event.estimatedCostPerPerson <= maxPrice
 
     return matchesSearch && matchesCuisine && matchesPrice
-  })
+  }).map(event => ({
+    ...event,
+    userRsvpStatus: rsvpStatuses[event.id]
+  }))
 
   // Get unique cuisine types for filter
   const cuisineTypes = Array.from(new Set(events.flatMap(event => event.cuisineType || [])))
@@ -101,7 +142,21 @@ export default function BrowsePage() {
   const handleReservation = (eventId: string) => {
     const event = events.find(e => e.id === eventId)
     if (event) {
-      setSelectedEvent(event)
+      // Check if user already has an RSVP for this event
+      if (rsvpStatuses[eventId]) {
+        const status = rsvpStatuses[eventId].status
+        if (status === 'CONFIRMED') {
+          alert(`You already have a confirmed reservation for ${event.title}.`)
+        } else if (status === 'WAITLIST') {
+          alert(`You're already on the waitlist for ${event.title}.`)
+        }
+        return
+      }
+      
+      setSelectedEvent({
+        ...event,
+        userRsvpStatus: rsvpStatuses[eventId]
+      })
       setShowRSVP(true)
     }
   }
@@ -121,8 +176,9 @@ export default function BrowsePage() {
       alert(`${message} for ${selectedEvent?.title}! You'll receive a confirmation email shortly.`)
     }
     
-    // Refresh events to show updated capacity
+    // Refresh events and RSVP statuses
     fetchEvents()
+    fetchRSVPStatuses()
   }
 
   const handleRSVPClose = () => {

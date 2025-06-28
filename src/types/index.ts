@@ -68,6 +68,14 @@ export interface PublicDinnerEvent {
   };
   createdAt: Date;
   updatedAt: Date;
+  // User's RSVP status (populated when fetching with user context)
+  userRsvpStatus?: RSVPStatus;
+}
+
+export interface RSVPStatus {
+  status: 'CONFIRMED' | 'WAITLIST' | 'CANCELLED';
+  guestCount: number;
+  rsvpedAt: Date;
 }
 
 export interface Reservation {

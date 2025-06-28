@@ -25,7 +25,7 @@ interface ReservationFormData {
 }
 
 export function RSVPFlow({ event, isOpen, onClose, onSuccess }: RSVPFlowProps) {
-  const { user } = useAuth()
+  const { user, isAuthenticated } = useAuth()
   const [step, setStep] = useState(1)
   const [formData, setFormData] = useState<ReservationFormData>({
     attendeeName: user?.name || '',
@@ -36,6 +36,36 @@ export function RSVPFlow({ event, isOpen, onClose, onSuccess }: RSVPFlowProps) {
     phoneNumber: ''
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
+
+  // Require authentication for RSVP
+  if (!isAuthenticated) {
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+        <div className="bg-white rounded-xl max-w-md w-full p-6">
+          <div className="text-center">
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">Sign In Required</h2>
+            <p className="text-gray-600 mb-6">
+              Please sign in to make a reservation for this dinner.
+            </p>
+            <div className="flex gap-4">
+              <button
+                onClick={onClose}
+                className="flex-1 px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => window.location.href = '/sign-in'}
+                className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+              >
+                Sign In
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  }
 
   const spotsAvailable = event.maxCapacity - event.currentReservations
   const totalCost = event.estimatedCostPerPerson * formData.guestCount
@@ -69,9 +99,6 @@ export function RSVPFlow({ event, isOpen, onClose, onSuccess }: RSVPFlowProps) {
         },
         body: JSON.stringify({
           eventId: event.id,
-          attendeeName: formData.attendeeName,
-          attendeeEmail: formData.attendeeEmail,
-          phoneNumber: formData.phoneNumber,
           guestCount: formData.guestCount,
           dietaryRestrictions: formData.dietaryRestrictions || undefined,
         })
@@ -102,9 +129,7 @@ export function RSVPFlow({ event, isOpen, onClose, onSuccess }: RSVPFlowProps) {
     }
   }
 
-  const isStep1Valid = user?.name && user?.email 
-    ? true // For authenticated users, step 1 is always valid (no required fields)
-    : formData.attendeeName.trim() && formData.attendeeEmail.trim() // For non-auth users, require name and email
+  const isStep1Valid = true // For authenticated users, step 1 is always valid
   const isStep2Valid = formData.guestCount >= 1 && formData.guestCount <= spotsAvailable
   const isStep3Valid = formData.agreedToCost
 
@@ -116,9 +141,7 @@ export function RSVPFlow({ event, isOpen, onClose, onSuccess }: RSVPFlowProps) {
           <div>
             <h2 className="text-2xl font-bold text-gray-900">Reserve Your Spot</h2>
             <p className="text-gray-600">{event.title} by {event.chefName}</p>
-            {user?.name && (
-              <p className="text-sm text-blue-600">Reserving as {user.name}</p>
-            )}
+            <p className="text-sm text-blue-600">Reserving as {user?.name}</p>
           </div>
           <button
             onClick={onClose}
@@ -135,23 +158,21 @@ export function RSVPFlow({ event, isOpen, onClose, onSuccess }: RSVPFlowProps) {
               <div key={stepNum} className="flex items-center">
                 <div className={cn(
                   'w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium',
-                  step >= stepNum || (stepNum === 1 && user?.name && user?.email)
-                    ? 'bg-blue-600 text-white' 
-                    : 'bg-gray-200 text-gray-600'
+                  step >= stepNum ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-600'
                 )}>
-                  {stepNum === 1 && user?.name && user?.email ? '✓' : stepNum}
+                  {stepNum}
                 </div>
                 {stepNum < 3 && (
                   <div className={cn(
                     'h-1 w-16 mx-2',
-                    step > stepNum || (stepNum === 1 && user?.name && user?.email) ? 'bg-blue-600' : 'bg-gray-200'
+                    step > stepNum ? 'bg-blue-600' : 'bg-gray-200'
                   )} />
                 )}
               </div>
             ))}
           </div>
           <div className="flex justify-between mt-2 text-xs text-gray-600">
-            <span>{user?.name && user?.email ? 'Additional Info' : 'Your Info'}</span>
+            <span>Additional Info</span>
             <span>Party Size</span>
             <span>Confirm</span>
           </div>
@@ -162,66 +183,28 @@ export function RSVPFlow({ event, isOpen, onClose, onSuccess }: RSVPFlowProps) {
           {step === 1 && (
             <div className="space-y-6">
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                  {user?.name && user?.email ? 'Additional Information' : 'Tell us about yourself'}
-                </h3>
-                {user?.name && user?.email ? (
-                  <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="text-sm text-green-800 font-medium">
-                          ✓ Your basic info is ready from your profile
-                        </p>
-                        <p className="text-xs text-green-700 mt-1">
-                          {user.name} • {user.email}
-                        </p>
-                      </div>
-                      <button 
-                        onClick={() => window.open('/profile', '_blank')}
-                        className="text-xs text-green-700 hover:text-green-800 underline"
-                      >
-                        Update Profile
-                      </button>
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">Additional Information</h3>
+                
+                <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm text-green-800 font-medium">
+                        ✓ Your basic info is ready from your profile
+                      </p>
+                      <p className="text-xs text-green-700 mt-1">
+                        {user?.name} • {user?.email}
+                      </p>
                     </div>
+                    <button 
+                      onClick={() => window.open('/profile', '_blank')}
+                      className="text-xs text-green-700 hover:text-green-800 underline"
+                    >
+                      Update Profile
+                    </button>
                   </div>
-                ) : (
-                  <p className="text-gray-600 mb-6">We need some basic information to complete your reservation.</p>
-                )}
+                </div>
                 
                 <div className="space-y-4">
-                  {/* Show name/email fields only if user is not authenticated */}
-                  {!(user?.name && user?.email) && (
-                    <>
-                      <div>
-                        <label htmlFor="name" className="block text-sm font-medium text-gray-900 mb-2">
-                          Full Name *
-                        </label>
-                        <input
-                          id="name"
-                          type="text"
-                          value={formData.attendeeName}
-                          onChange={(e) => handleInputChange('attendeeName', e.target.value)}
-                          placeholder="Your full name"
-                          className="w-full px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 placeholder-gray-500 bg-white"
-                        />
-                      </div>
-
-                      <div>
-                        <label htmlFor="email" className="block text-sm font-medium text-gray-900 mb-2">
-                          Email Address *
-                        </label>
-                        <input
-                          id="email"
-                          type="email"
-                          value={formData.attendeeEmail}
-                          onChange={(e) => handleInputChange('attendeeEmail', e.target.value)}
-                          placeholder="your.email@example.com"
-                          className="w-full px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 placeholder-gray-500 bg-white"
-                        />
-                      </div>
-                    </>
-                  )}
-
                   <div>
                     <label htmlFor="phone" className="block text-sm font-medium text-gray-900 mb-2">
                       Phone Number (Optional)
@@ -234,14 +217,12 @@ export function RSVPFlow({ event, isOpen, onClose, onSuccess }: RSVPFlowProps) {
                       placeholder="(555) 123-4567"
                       className="w-full px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 placeholder-gray-500 bg-white"
                     />
-                    {user?.name && user?.email && (
-                      <p className="text-xs text-gray-500 mt-1">Add your phone number so the chef can contact you if needed.</p>
-                    )}
+                    <p className="text-xs text-gray-500 mt-1">Add your phone number so the chef can contact you if needed.</p>
                   </div>
 
                   <div>
                     <label htmlFor="dietary" className="block text-sm font-medium text-gray-900 mb-2">
-                      Dietary Restrictions or Allergies {user?.name && user?.email && '(Optional)'}
+                      Dietary Restrictions or Allergies (Optional)
                     </label>
                     <textarea
                       id="dietary"
@@ -251,22 +232,18 @@ export function RSVPFlow({ event, isOpen, onClose, onSuccess }: RSVPFlowProps) {
                       rows={3}
                       className="w-full px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 placeholder-gray-500 bg-white resize-none"
                     />
-                    {user?.name && user?.email && (
-                      <p className="text-xs text-gray-500 mt-1">Help the chef prepare a meal that&apos;s perfect for you.</p>
-                    )}
+                    <p className="text-xs text-gray-500 mt-1">Help the chef prepare a meal that&apos;s perfect for you.</p>
                   </div>
 
-                  {user?.name && user?.email && (
-                    <div className="mt-6 p-3 bg-gray-50 rounded-lg text-center">
-                      <p className="text-xs text-gray-600 mb-2">Want to save this info for future reservations?</p>
-                      <button 
-                        onClick={() => window.open('/profile', '_blank')}
-                        className="text-sm text-blue-600 hover:text-blue-700 font-medium"
-                      >
-                        → Update your profile
-                      </button>
-                    </div>
-                  )}
+                  <div className="mt-6 p-3 bg-gray-50 rounded-lg text-center">
+                    <p className="text-xs text-gray-600 mb-2">Want to save this info for future reservations?</p>
+                    <button 
+                      onClick={() => window.open('/profile', '_blank')}
+                      className="text-sm text-blue-600 hover:text-blue-700 font-medium"
+                    >
+                      → Update your profile
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>

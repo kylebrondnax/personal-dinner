@@ -45,6 +45,13 @@ export function Navigation() {
                 </Link>
               </>
             )}
+            
+            <Link 
+              href="/changelog" 
+              className="nav-link transition-colors"
+            >
+              What&apos;s New
+            </Link>
           </div>
 
           {/* Right side - Auth + Theme */}

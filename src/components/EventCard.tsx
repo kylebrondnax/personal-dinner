@@ -13,6 +13,9 @@ export function EventCard({ event, onReserve, className }: EventCardProps) {
   const spotsAvailable = event.maxCapacity - event.currentReservations
   const isAlmostFull = spotsAvailable <= 2 && spotsAvailable > 0
   const isFull = event.status === 'full' || spotsAvailable <= 0
+  const hasRSVP = !!event.userRsvpStatus
+  const isRSVPConfirmed = event.userRsvpStatus?.status === 'CONFIRMED'
+  const isRSVPWaitlisted = event.userRsvpStatus?.status === 'WAITLIST'
   
   const formatDate = (date: Date | string) => {
     try {
@@ -43,6 +46,19 @@ export function EventCard({ event, onReserve, className }: EventCardProps) {
 
   return (
     <div className={cn('bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-shadow overflow-hidden', className)}>
+      {/* RSVP Status Banner */}
+      {hasRSVP && (
+        <div className={cn(
+          'px-6 py-2 text-sm font-medium text-center',
+          isRSVPConfirmed ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' :
+          isRSVPWaitlisted ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200' :
+          'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200'
+        )}>
+          {isRSVPConfirmed && `✓ You're going! (${event.userRsvpStatus?.guestCount} ${event.userRsvpStatus?.guestCount === 1 ? 'person' : 'people'})`}
+          {isRSVPWaitlisted && `⏱️ You're on the waitlist (${event.userRsvpStatus?.guestCount} ${event.userRsvpStatus?.guestCount === 1 ? 'person' : 'people'})`}
+        </div>
+      )}
+      
       {/* Event Header */}
       <div className="p-6 pb-4">
         <div className="flex items-start justify-between mb-3">
@@ -139,16 +155,18 @@ export function EventCard({ event, onReserve, className }: EventCardProps) {
 
         {/* Action Button */}
         <button
-          onClick={() => onReserve(event.id)}
-          disabled={isFull}
+          onClick={() => !hasRSVP && onReserve(event.id)}
+          disabled={isFull || hasRSVP}
           className={cn(
             'w-full py-3 px-4 rounded-lg font-medium transition-colors text-sm',
             isFull
               ? 'bg-gray-200 dark:bg-gray-600 text-gray-500 dark:text-gray-400 cursor-not-allowed'
-              : 'bg-blue-600 text-white hover:bg-blue-700 shadow-sm'
+              : hasRSVP
+                ? 'bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 cursor-default'
+                : 'bg-blue-600 text-white hover:bg-blue-700 shadow-sm'
           )}
         >
-          {isFull ? 'Dinner Full' : isAlmostFull ? 'Reserve Now - Almost Full!' : 'Reserve Your Spot'}
+          {isFull ? 'Dinner Full' : hasRSVP ? (isRSVPConfirmed ? 'Already Reserved' : 'On Waitlist') : isAlmostFull ? 'Reserve Now - Almost Full!' : 'Reserve Your Spot'}
         </button>
 
         {/* Dietary Accommodations */}
