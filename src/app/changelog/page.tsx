@@ -118,13 +118,12 @@ export default function ChangelogPage() {
 										instead of asking me to provide this
 										information again.&quot;
 									</p>
-									<div className='flex items-center gap-2'>
-										<span className='px-2 py-1 text-xs badge-success rounded-full'>
-											✓ Implemented
+									<div className='flex items-start gap-2'>
+										<span className='px-2 py-1 text-xs badge-success rounded-full flex-shrink-0'>
+											✓
 										</span>
 										<span className='text-xs text-theme-subtle'>
-											Thanks for the great suggestion,
-											Adam! 🎉
+											<span className='font-medium text-green-600 dark:text-green-400'>Implemented</span> - Thanks for the great suggestion, Adam! 🎉
 										</span>
 									</div>
 								</div>
