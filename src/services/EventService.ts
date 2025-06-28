@@ -80,19 +80,37 @@ export class EventService {
     }
 
     // Ensure the chef user exists in our database using provided chef data
-    await prisma.user.upsert({
-      where: { id: data.chefId },
-      update: data.chefName || data.chefEmail ? {
-        ...(data.chefEmail && { email: data.chefEmail }),
-        ...(data.chefName && { name: data.chefName })
-      } : {}, // Don't update if no chef data provided
-      create: {
-        id: data.chefId,
-        email: data.chefEmail || `chef-${data.chefId}@temp.com`,
-        name: data.chefName || 'Chef User',
-        role: 'CHEF'
+    try {
+      await prisma.user.upsert({
+        where: { id: data.chefId },
+        update: data.chefName || data.chefEmail ? {
+          ...(data.chefEmail && { email: data.chefEmail }),
+          ...(data.chefName && { name: data.chefName })
+        } : {}, // Don't update if no chef data provided
+        create: {
+          id: data.chefId,
+          email: data.chefEmail || `chef-${data.chefId}@temp.com`,
+          name: data.chefName || 'Chef User',
+          role: 'CHEF'
+        }
+      })
+    } catch (error: unknown) {
+      if (error && typeof error === 'object' && 'code' in error && error.code === 'P2002' && 'meta' in error && error.meta && typeof error.meta === 'object' && 'target' in error.meta && Array.isArray(error.meta.target) && error.meta.target.includes('email')) {
+        // Email already exists, try without updating email
+        await prisma.user.upsert({
+          where: { id: data.chefId },
+          update: data.chefName ? { name: data.chefName } : {},
+          create: {
+            id: data.chefId,
+            email: data.chefEmail || `chef-${data.chefId}@temp.com`,
+            name: data.chefName || 'Chef User',
+            role: 'CHEF'
+          }
+        })
+      } else {
+        throw error
       }
-    })
+    }
 
     return await EventRepository.create(data)
   }
@@ -153,19 +171,37 @@ export class EventService {
 
     return await prisma.$transaction(async (tx) => {
       // Ensure the chef user exists in our database using provided chef data
-      await tx.user.upsert({
-        where: { id: data.chefId },
-        update: data.chefName || data.chefEmail ? {
-          ...(data.chefEmail && { email: data.chefEmail }),
-          ...(data.chefName && { name: data.chefName })
-        } : {}, // Don't update if no chef data provided
-        create: {
-          id: data.chefId,
-          email: data.chefEmail || `chef-${data.chefId}@temp.com`,
-          name: data.chefName || 'Chef User',
-          role: 'CHEF'
+      try {
+        await tx.user.upsert({
+          where: { id: data.chefId },
+          update: data.chefName || data.chefEmail ? {
+            ...(data.chefEmail && { email: data.chefEmail }),
+            ...(data.chefName && { name: data.chefName })
+          } : {}, // Don't update if no chef data provided
+          create: {
+            id: data.chefId,
+            email: data.chefEmail || `chef-${data.chefId}@temp.com`,
+            name: data.chefName || 'Chef User',
+            role: 'CHEF'
+          }
+        })
+      } catch (error: unknown) {
+        if (error && typeof error === 'object' && 'code' in error && error.code === 'P2002' && 'meta' in error && error.meta && typeof error.meta === 'object' && 'target' in error.meta && Array.isArray(error.meta.target) && error.meta.target.includes('email')) {
+          // Email already exists, try without updating email
+          await tx.user.upsert({
+            where: { id: data.chefId },
+            update: data.chefName ? { name: data.chefName } : {},
+            create: {
+              id: data.chefId,
+              email: data.chefEmail || `chef-${data.chefId}@temp.com`,
+              name: data.chefName || 'Chef User',
+              role: 'CHEF'
+            }
+          })
+        } else {
+          throw error
         }
-      })
+      }
 
       // Create the event with polling enabled
       const event = await tx.event.create({

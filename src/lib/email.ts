@@ -190,7 +190,7 @@ export class EmailService {
           <li>Share your culinary passion</li>
           <li>Get paid fairly for your ingredients and time</li>
         </ul>
-        <a href="${process.env.NEXT_PUBLIC_APP_URL}/chef/create-event" style="background-color: #2563eb; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; display: inline-block; margin: 16px 0;">Create Your First Event</a>
+        <a href="${process.env.NEXT_PUBLIC_APP_URL}/create-event" style="background-color: #2563eb; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; display: inline-block; margin: 16px 0;">Create Your First Event</a>
       `
       : `
         <p>As a food lover, you can:</p>
