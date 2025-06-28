@@ -45,7 +45,7 @@ export function EventCard({ event, onReserve, className }: EventCardProps) {
   }
 
   return (
-    <div className={cn('bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-shadow overflow-hidden', className)}>
+    <div className={cn('bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-shadow overflow-hidden flex flex-col h-full', className)}>
       {/* RSVP Status Banner */}
       {hasRSVP && (
         <div className={cn(
@@ -60,7 +60,7 @@ export function EventCard({ event, onReserve, className }: EventCardProps) {
       )}
       
       {/* Event Header */}
-      <div className="p-6 pb-4">
+      <div className="p-6 pb-4 flex-1">
         <div className="flex items-start justify-between mb-3">
           <div className="flex-1">
             <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-1">{event.title}</h3>
