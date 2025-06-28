@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import React, { useState } from 'react'
 import { PublicDinnerEvent } from '@/types'
 import { cn, formatCurrency } from '@/lib/utils'
 import { useAuth } from '@/contexts/ClerkAuthContext'
@@ -153,22 +153,22 @@ export function RSVPFlow({ event, isOpen, onClose, onSuccess }: RSVPFlowProps) {
 
         {/* Progress Indicator */}
         <div className="px-6 py-4 bg-gray-50">
-          <div className="flex items-center">
-            {[1, 2, 3].map((stepNum) => (
-              <div key={stepNum} className="flex items-center">
+          <div className="flex items-center justify-between">
+            {[1, 2, 3].map((stepNum, index) => (
+              <React.Fragment key={stepNum}>
                 <div className={cn(
                   'w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium',
                   step >= stepNum ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-600'
                 )}>
                   {stepNum}
                 </div>
-                {stepNum < 3 && (
+                {index < 2 && (
                   <div className={cn(
-                    'h-1 w-16 mx-2',
+                    'h-1 flex-1 mx-4',
                     step > stepNum ? 'bg-blue-600' : 'bg-gray-200'
                   )} />
                 )}
-              </div>
+              </React.Fragment>
             ))}
           </div>
           <div className="flex justify-between mt-2 text-xs text-gray-600">

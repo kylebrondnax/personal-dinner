@@ -400,7 +400,7 @@ export default function DashboardPage() {
                               )}
                               
                               <Link
-                                href={`/events/${event.id}/manage`}
+                                href={`/events/${event.id}`}
                                 className="px-3 py-1 text-sm text-gray-600 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
                               >
                                 Details
