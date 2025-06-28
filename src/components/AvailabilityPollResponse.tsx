@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { AvailabilityPollData } from '@/types'
+import { AvailabilityPollData, AvailabilityResponse } from '@/types'
 import { groupDatesByDay } from '@/utils/dateGrouping'
 
 interface AvailabilityPollResponseProps {
@@ -30,7 +30,6 @@ export function AvailabilityPollResponse({
   const [error, setError] = useState('')
   const [expandedDays, setExpandedDays] = useState<Set<string>>(new Set())
 
-
   const handleResponseChange = (proposedDateId: string, response: ResponseOption) => {
     setResponses(prev => ({
       ...prev,
@@ -50,10 +49,10 @@ export function AvailabilityPollResponse({
     })
   }
 
-  const getDayStats = (timeSlots: Array<{ originalData: { responses?: Array<{ available: boolean; tentative?: boolean }> } }>) => {
+  const getDayStats = (timeSlots: Array<{ originalData: { responses?: AvailabilityResponse[] } }>) => {
     const dayResponses = timeSlots.flatMap(slot => slot.originalData.responses || [])
-    const available = dayResponses.filter(r => r.available && !r.tentative).length
-    const tentative = dayResponses.filter(r => r.tentative).length
+    const available = dayResponses.filter((r: AvailabilityResponse) => r.available && !r.tentative).length
+    const tentative = dayResponses.filter((r: AvailabilityResponse) => r.tentative).length
     const total = dayResponses.length
     return { available, tentative, total }
   }
@@ -217,8 +216,8 @@ export function AvailabilityPollResponse({
                                       </h5>
                                       {proposedDate.responses && proposedDate.responses.length > 0 && (
                                         <p className="text-sm text-gray-600 dark:text-gray-400">
-                                          {proposedDate.responses.filter(r => r.available && !r.tentative).length} available, {' '}
-                                          {proposedDate.responses.filter(r => r.tentative).length} tentative
+                                          {proposedDate.responses.filter((r: AvailabilityResponse) => r.available && !r.tentative).length} available, {' '}
+                                          {proposedDate.responses.filter((r: AvailabilityResponse) => r.tentative).length} tentative
                                         </p>
                                       )}
                                     </div>

@@ -1,4 +1,4 @@
-export interface DateGroup {
+export interface DateGroup<T = unknown> {
   date: string // YYYY-MM-DD format
   dayDisplay: string // "Monday, June 28"
   times: Array<{
@@ -11,8 +11,8 @@ export interface DateGroup {
 
 export function groupDatesByDay<T extends { id?: string; date: string; time: string }>(
   dates: T[]
-): DateGroup[] {
-  const groups = new Map<string, DateGroup>()
+): DateGroup<T>[] {
+  const groups = new Map<string, DateGroup<T>>()
 
   dates.forEach((dateItem) => {
     const { date, time, id } = dateItem

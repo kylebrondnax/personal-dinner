@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { AvailabilityPollData } from '@/types'
+import { AvailabilityPollData, AvailabilityResponse } from '@/types'
 import { groupDatesByDay } from '@/utils/dateGrouping'
 
 interface PollResultsViewProps {
@@ -91,19 +91,28 @@ export function PollResultsView({
     })
   }
 
-  const getDayStats = (timeSlots: Array<{ originalData: { responses?: Array<{ available: boolean; tentative?: boolean }> } }>) => {
+  const getDayStats = (timeSlots: Array<{ id: string; originalData: { responses?: AvailabilityResponse[] } }>) => {
     const dayResponses = timeSlots.flatMap(slot => slot.originalData.responses || [])
-    const available = dayResponses.filter(r => r.available && !r.tentative).length
-    const tentative = dayResponses.filter(r => r.tentative).length
-    const unavailable = dayResponses.filter(r => !r.available).length
+    const available = dayResponses.filter((r: AvailabilityResponse) => r.available && !r.tentative).length
+    const tentative = dayResponses.filter((r: AvailabilityResponse) => r.tentative).length
+    const unavailable = dayResponses.filter((r: AvailabilityResponse) => !r.available).length
     const total = dayResponses.length
     return { available, tentative, unavailable, total }
   }
 
-  const getBestTimeSlot = (timeSlots: Array<{ originalData: { responses?: Array<{ available: boolean; tentative?: boolean }> } }>) => {
+  const getTimeSlotStats = (originalData: { responses?: AvailabilityResponse[] }) => {
+    const responses = originalData.responses || []
+    const available = responses.filter((r: AvailabilityResponse) => r.available && !r.tentative).length
+    const tentative = responses.filter((r: AvailabilityResponse) => r.tentative).length
+    const unavailable = responses.filter((r: AvailabilityResponse) => !r.available).length
+    const total = responses.length
+    return { available, tentative, unavailable, total }
+  }
+
+  const getBestTimeSlot = (timeSlots: Array<{ id: string; originalData: { responses?: AvailabilityResponse[] } }>) => {
     return timeSlots.reduce((best, current) => {
-      const currentStats = getDateStats(current.originalData)
-      const bestStats = getDateStats(best.originalData)
+      const currentStats = getTimeSlotStats(current.originalData)
+      const bestStats = getTimeSlotStats(best.originalData)
       
       if (currentStats.available > bestStats.available) return current
       if (currentStats.available === bestStats.available && currentStats.total > bestStats.total) return current
@@ -213,7 +222,7 @@ export function PollResultsView({
                       <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
                         📅 {dayGroup.dayDisplay}
                       </h3>
-                      {bestTimeSlot && bestTimeSlot.id === getBestDate().id && (
+                      {bestTimeSlot && getBestDate().id && bestTimeSlot.id === getBestDate().id && (
                         <span className="px-2 py-1 bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-200 text-xs rounded-full font-medium">
                           🌟 Best Day
                         </span>
@@ -281,13 +290,13 @@ export function PollResultsView({
                     <div className="p-6 space-y-4">
                       {dayGroup.times
                         .sort((a, b) => {
-                          const aStats = getDateStats(a.originalData)
-                          const bStats = getDateStats(b.originalData)
+                          const aStats = getTimeSlotStats(a.originalData)
+                          const bStats = getTimeSlotStats(b.originalData)
                           return bStats.available - aStats.available || bStats.total - aStats.total
                         })
                         .map((timeSlot, timeIndex) => {
                           const proposedDate = timeSlot.originalData
-                          const stats = getDateStats(proposedDate)
+                          const stats = getTimeSlotStats(proposedDate)
                           const isRecommended = timeSlot.id === getBestDate().id
                           
                           return (
@@ -373,7 +382,7 @@ export function PollResultsView({
                                     Responses:
                                   </h5>
                                   <div className="flex flex-wrap gap-2">
-                                    {proposedDate.responses.map((response, idx) => (
+                                    {proposedDate.responses.map((response: AvailabilityResponse, idx: number) => (
                                       <div
                                         key={idx}
                                         className={`px-3 py-1 rounded-full text-xs font-medium ${
