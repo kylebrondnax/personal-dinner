@@ -30,7 +30,7 @@ export default function EventDetailPage() {
         }
 
         if (data.success) {
-          setEvent(data.event)
+          setEvent(data.data)
         } else {
           throw new Error(data.message || 'Event not found')
         }
