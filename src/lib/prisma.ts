@@ -7,11 +7,10 @@ const globalForPrisma = globalThis as unknown as {
 
 export const prisma = globalForPrisma.prisma ?? new PrismaClient({
   log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
+  // Configure for Supabase connection pooling to avoid prepared statement conflicts
   datasources: {
     db: {
-      url: process.env.NODE_ENV === 'production' 
-        ? process.env.POSTGRES_URL_NON_POOLING 
-        : process.env.POSTGRES_PRISMA_URL
+      url: process.env.POSTGRES_PRISMA_URL + '&pgbouncer=true&prepared_statements=false'
     }
   }
 })

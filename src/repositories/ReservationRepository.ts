@@ -50,25 +50,11 @@ export class ReservationRepository {
       where: { userId },
       include: {
         event: {
-          select: {
-            id: true,
-            title: true,
-            description: true,
-            date: true,
-            status: true,
-            maxCapacity: true,
-            estimatedCostPerPerson: true,
-            actualCostPerPerson: true,
-            chefId: true,
+          include: {
             chef: {
               select: { name: true }
             },
-            location: {
-              select: {
-                neighborhood: true,
-                city: true
-              }
-            },
+            location: true,
             reservations: {
               select: {
                 guestCount: true

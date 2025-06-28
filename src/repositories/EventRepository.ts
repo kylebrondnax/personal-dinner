@@ -38,47 +38,46 @@ export interface CreateEventData {
 export class EventRepository {
   // Get events with filters (like Laravel Eloquent scopes)
   static async findMany(filters: EventFilters = {}) {
-    const where: Prisma.EventWhereInput = {
-      ...(filters.status ? { status: Array.isArray(filters.status) ? { in: filters.status } : filters.status } : (filters.chefId ? {} : { status: 'OPEN' })),
-      ...(filters.chefId && { chefId: filters.chefId }),
-      ...(filters.search && {
-        OR: [
-          { title: { contains: filters.search } },
-          { description: { contains: filters.search } },
-          { chef: { name: { contains: filters.search } } }
-        ]
-      }),
-      ...(filters.maxPrice && {
-        estimatedCostPerPerson: { lte: filters.maxPrice }
-      }),
-      ...(filters.city && {
-        location: { city: { equals: filters.city } }
-      }),
-      ...(filters.dateFrom && { date: { gte: filters.dateFrom } }),
-      ...(filters.dateTo && { date: { lte: filters.dateTo } })
+    const where: Prisma.EventWhereInput = {}
+
+    // Build where clause piece by piece to avoid parameter conflicts
+    if (filters.status) {
+      where.status = Array.isArray(filters.status) ? { in: filters.status } : filters.status
+    } else if (!filters.chefId) {
+      where.status = 'OPEN'
+    }
+
+    if (filters.chefId) {
+      where.chefId = filters.chefId
+    }
+
+    if (filters.search) {
+      where.OR = [
+        { title: { contains: filters.search } },
+        { description: { contains: filters.search } },
+        { chef: { name: { contains: filters.search } } }
+      ]
+    }
+
+    if (filters.maxPrice) {
+      where.estimatedCostPerPerson = { lte: filters.maxPrice }
+    }
+
+    if (filters.city) {
+      where.location = { city: { equals: filters.city } }
+    }
+
+    if (filters.dateFrom) {
+      where.date = { ...where.date, gte: filters.dateFrom }
+    }
+
+    if (filters.dateTo) {
+      where.date = { ...where.date, lte: filters.dateTo }
     }
 
     return await prisma.event.findMany({
       where,
-      select: {
-        id: true,
-        title: true,
-        description: true,
-        date: true,
-        duration: true,
-        maxCapacity: true,
-        estimatedCostPerPerson: true,
-        actualCostPerPerson: true,
-        chefId: true,
-        cuisineTypes: true,
-        dietaryAccommodations: true,
-        reservationDeadline: true,
-        status: true,
-        useAvailabilityPoll: true,
-        pollStatus: true,
-        pollDeadline: true,
-        createdAt: true,
-        updatedAt: true,
+      include: {
         chef: {
           select: {
             id: true,
@@ -96,13 +95,6 @@ export class EventRepository {
         reservations: {
           where: { status: 'CONFIRMED' },
           select: { id: true, guestCount: true }
-        },
-        _count: {
-          select: {
-            reservations: {
-              where: { status: 'CONFIRMED' }
-            }
-          }
         }
       },
       orderBy: { date: 'asc' }
