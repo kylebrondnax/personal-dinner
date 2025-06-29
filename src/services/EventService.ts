@@ -294,12 +294,13 @@ export class EventService {
       description: event.description,
       date: event.date,
       time: event.date.toTimeString().slice(0, 5), // Convert to HH:MM format
-      duration: event.duration,
+      estimatedDuration: event.duration,
       maxCapacity: event.maxCapacity,
       estimatedCostPerPerson: event.estimatedCostPerPerson,
       actualCostPerPerson: event.actualCostPerPerson,
       chefId: event.chefId,
       chefName: event.chef.name,
+      chefPhoto: event.chef.profile?.avatarUrl,
       status: event.status,
       location: event.location ? {
         neighborhood: event.location.neighborhood,
@@ -320,7 +321,7 @@ export class EventService {
         date: pd.date.toISOString().split('T')[0],
         time: pd.time
       })) || [],
-      currentGuests: event.reservations
+      currentReservations: event.reservations
         .filter(r => r.status === 'CONFIRMED')
         .reduce((sum, res) => sum + res.guestCount, 0),
       createdAt: event.createdAt,

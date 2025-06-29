@@ -40,23 +40,23 @@ export function RSVPFlow({ event, isOpen, onClose, onSuccess }: RSVPFlowProps) {
   // Require authentication for RSVP
   if (!isAuthenticated) {
     return (
-      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-        <div className="bg-white rounded-xl max-w-md w-full p-6">
+      <div className="fixed inset-0 bg-theme-overlay flex items-center justify-center p-4 z-50">
+        <div className="bg-theme-elevated rounded-xl max-w-md w-full p-6">
           <div className="text-center">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">Sign In Required</h2>
-            <p className="text-gray-600 mb-6">
+            <h2 className="text-2xl font-bold text-theme-primary mb-4">Sign In Required</h2>
+            <p className="text-theme-muted mb-6">
               Please sign in to make a reservation for this dinner.
             </p>
             <div className="flex gap-4">
               <button
                 onClick={onClose}
-                className="flex-1 px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50"
+                className="flex-1 px-4 py-2 text-theme-primary border border-theme-primary rounded-lg hover:bg-theme-secondary transition-colors"
               >
                 Cancel
               </button>
               <button
                 onClick={() => window.location.href = '/sign-in'}
-                className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                className="flex-1 px-4 py-2 btn-primary rounded-lg"
               >
                 Sign In
               </button>
@@ -134,44 +134,44 @@ export function RSVPFlow({ event, isOpen, onClose, onSuccess }: RSVPFlowProps) {
   const isStep3Valid = formData.agreedToCost
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 bg-theme-overlay flex items-center justify-center p-4 z-50">
+      <div className="bg-theme-elevated rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-gray-200">
+        <div className="flex items-center justify-between p-6 border-b border-theme-primary">
           <div>
-            <h2 className="text-2xl font-bold text-gray-900">Reserve Your Spot</h2>
-            <p className="text-gray-600">{event.title} by {event.chefName}</p>
-            <p className="text-sm text-blue-600">Reserving as {user?.name}</p>
+            <h2 className="text-2xl font-bold text-theme-primary">Reserve Your Spot</h2>
+            <p className="text-theme-muted">{event.title} by {event.chefName}</p>
+            <p className="text-sm text-theme-subtle">Reserving as {user?.name}</p>
           </div>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 text-xl font-bold"
+            className="text-theme-subtle hover:text-theme-primary text-xl font-bold transition-colors"
           >
             ×
           </button>
         </div>
 
         {/* Progress Indicator */}
-        <div className="px-6 py-4 bg-gray-50">
+        <div className="px-6 py-4 bg-theme-secondary">
           <div className="flex items-center justify-between">
             {[1, 2, 3].map((stepNum, index) => (
               <React.Fragment key={stepNum}>
                 <div className={cn(
-                  'w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium',
-                  step >= stepNum ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-600'
+                  'w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-colors',
+                  step >= stepNum ? 'btn-primary' : 'bg-theme-card text-theme-muted'
                 )}>
                   {stepNum}
                 </div>
                 {index < 2 && (
                   <div className={cn(
-                    'h-1 flex-1 mx-4',
-                    step > stepNum ? 'bg-blue-600' : 'bg-gray-200'
+                    'h-1 flex-1 mx-4 transition-colors',
+                    step > stepNum ? 'bg-theme-subtle' : 'bg-theme-card'
                   )} />
                 )}
               </React.Fragment>
             ))}
           </div>
-          <div className="flex justify-between mt-2 text-xs text-gray-600">
+          <div className="flex justify-between mt-2 text-xs text-theme-muted">
             <span>Additional Info</span>
             <span>Party Size</span>
             <span>Confirm</span>
@@ -183,21 +183,21 @@ export function RSVPFlow({ event, isOpen, onClose, onSuccess }: RSVPFlowProps) {
           {step === 1 && (
             <div className="space-y-6">
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">Additional Information</h3>
+                <h3 className="text-lg font-semibold text-theme-primary mb-4">Additional Information</h3>
                 
-                <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
+                <div className="bg-theme-accent-bg border border-theme-accent-border rounded-lg p-4 mb-6">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm text-green-800 font-medium">
+                      <p className="text-sm text-theme-primary font-medium">
                         ✓ Your basic info is ready from your profile
                       </p>
-                      <p className="text-xs text-green-700 mt-1">
+                      <p className="text-xs text-theme-muted mt-1">
                         {user?.name} • {user?.email}
                       </p>
                     </div>
                     <button 
                       onClick={() => window.open('/profile', '_blank')}
-                      className="text-xs text-green-700 hover:text-green-800 underline"
+                      className="text-xs text-theme-subtle hover:text-theme-primary underline transition-colors"
                     >
                       Update Profile
                     </button>
@@ -206,7 +206,7 @@ export function RSVPFlow({ event, isOpen, onClose, onSuccess }: RSVPFlowProps) {
                 
                 <div className="space-y-4">
                   <div>
-                    <label htmlFor="phone" className="block text-sm font-medium text-gray-900 mb-2">
+                    <label htmlFor="phone" className="block text-sm font-medium text-theme-primary mb-2">
                       Phone Number (Optional)
                     </label>
                     <input
@@ -215,13 +215,13 @@ export function RSVPFlow({ event, isOpen, onClose, onSuccess }: RSVPFlowProps) {
                       value={formData.phoneNumber}
                       onChange={(e) => handleInputChange('phoneNumber', e.target.value)}
                       placeholder="(555) 123-4567"
-                      className="w-full px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 placeholder-gray-500 bg-white"
+                      className="w-full px-3 py-3 input-theme rounded-lg"
                     />
-                    <p className="text-xs text-gray-500 mt-1">Add your phone number so the chef can contact you if needed.</p>
+                    <p className="text-xs text-theme-muted mt-1">Add your phone number so the chef can contact you if needed.</p>
                   </div>
 
                   <div>
-                    <label htmlFor="dietary" className="block text-sm font-medium text-gray-900 mb-2">
+                    <label htmlFor="dietary" className="block text-sm font-medium text-theme-primary mb-2">
                       Dietary Restrictions or Allergies (Optional)
                     </label>
                     <textarea
@@ -230,16 +230,16 @@ export function RSVPFlow({ event, isOpen, onClose, onSuccess }: RSVPFlowProps) {
                       onChange={(e) => handleInputChange('dietaryRestrictions', e.target.value)}
                       placeholder="Please let the chef know about any allergies or dietary restrictions..."
                       rows={3}
-                      className="w-full px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 placeholder-gray-500 bg-white resize-none"
+                      className="w-full px-3 py-3 input-theme rounded-lg resize-none"
                     />
-                    <p className="text-xs text-gray-500 mt-1">Help the chef prepare a meal that&apos;s perfect for you.</p>
+                    <p className="text-xs text-theme-muted mt-1">Help the chef prepare a meal that&apos;s perfect for you.</p>
                   </div>
 
-                  <div className="mt-6 p-3 bg-gray-50 rounded-lg text-center">
-                    <p className="text-xs text-gray-600 mb-2">Want to save this info for future reservations?</p>
+                  <div className="mt-6 p-3 bg-theme-secondary rounded-lg text-center">
+                    <p className="text-xs text-theme-muted mb-2">Want to save this info for future reservations?</p>
                     <button 
                       onClick={() => window.open('/profile', '_blank')}
-                      className="text-sm text-blue-600 hover:text-blue-700 font-medium"
+                      className="text-sm text-theme-subtle hover:text-theme-primary font-medium transition-colors"
                     >
                       → Update your profile
                     </button>
@@ -252,22 +252,22 @@ export function RSVPFlow({ event, isOpen, onClose, onSuccess }: RSVPFlowProps) {
           {step === 2 && (
             <div className="space-y-6">
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">How many people?</h3>
+                <h3 className="text-lg font-semibold text-theme-primary mb-4">How many people?</h3>
                 
-                <div className="bg-gray-50 rounded-lg p-4 mb-6">
-                  <p className="text-sm text-gray-600 mb-2">Available spots: {spotsAvailable}</p>
-                  <p className="text-sm text-gray-600">Cost per person: {formatCurrency(event.estimatedCostPerPerson)}</p>
+                <div className="bg-theme-secondary rounded-lg p-4 mb-6">
+                  <p className="text-sm text-theme-muted mb-2">Available spots: {spotsAvailable}</p>
+                  <p className="text-sm text-theme-muted">Cost per person: {formatCurrency(event.estimatedCostPerPerson)}</p>
                 </div>
 
                 <div>
-                  <label htmlFor="guestCount" className="block text-sm font-medium text-gray-900 mb-2">
+                  <label htmlFor="guestCount" className="block text-sm font-medium text-theme-primary mb-2">
                     Number of people (including yourself)
                   </label>
                   <select
                     id="guestCount"
                     value={formData.guestCount}
                     onChange={(e) => handleInputChange('guestCount', Number(e.target.value))}
-                    className="w-full px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 bg-white"
+                    className="w-full px-3 py-3 input-theme rounded-lg"
                   >
                     {Array.from({ length: spotsAvailable }, (_, i) => i + 1).map(num => (
                       <option key={num} value={num}>
@@ -277,12 +277,12 @@ export function RSVPFlow({ event, isOpen, onClose, onSuccess }: RSVPFlowProps) {
                   </select>
                 </div>
 
-                <div className="mt-6 p-4 bg-blue-50 rounded-lg">
+                <div className="mt-6 p-4 bg-theme-accent-bg rounded-lg">
                   <div className="flex justify-between items-center">
-                    <span className="font-medium text-gray-900">Total estimated cost:</span>
-                    <span className="text-xl font-bold text-blue-600">{formatCurrency(totalCost)}</span>
+                    <span className="font-medium text-theme-primary">Total estimated cost:</span>
+                    <span className="text-xl font-bold text-theme-subtle">{formatCurrency(totalCost)}</span>
                   </div>
-                  <p className="text-sm text-gray-600 mt-1">
+                  <p className="text-sm text-theme-muted mt-1">
                     Final amount may vary based on actual ingredient costs
                   </p>
                 </div>
@@ -293,19 +293,19 @@ export function RSVPFlow({ event, isOpen, onClose, onSuccess }: RSVPFlowProps) {
           {step === 3 && (
             <div className="space-y-6">
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">Confirm your reservation</h3>
+                <h3 className="text-lg font-semibold text-theme-primary mb-4">Confirm your reservation</h3>
 
                 {/* Summary */}
-                <div className="bg-gray-50 rounded-lg p-6 mb-6">
-                  <h4 className="font-medium text-gray-900 mb-3">Reservation Summary</h4>
+                <div className="bg-theme-secondary rounded-lg p-6 mb-6">
+                  <h4 className="font-medium text-theme-primary mb-3">Reservation Summary</h4>
                   <div className="space-y-2 text-sm">
                     <div className="flex justify-between">
-                      <span className="text-gray-600">Event:</span>
-                      <span className="text-gray-900">{event.title}</span>
+                      <span className="text-theme-muted">Event:</span>
+                      <span className="text-theme-primary">{event.title}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-gray-600">Date:</span>
-                      <span className="text-gray-900">
+                      <span className="text-theme-muted">Date:</span>
+                      <span className="text-theme-primary">
                         {new Intl.DateTimeFormat('en-US', {
                           weekday: 'long',
                           month: 'long',
@@ -316,16 +316,16 @@ export function RSVPFlow({ event, isOpen, onClose, onSuccess }: RSVPFlowProps) {
                       </span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-gray-600">Party size:</span>
-                      <span className="text-gray-900">{formData.guestCount} {formData.guestCount === 1 ? 'person' : 'people'}</span>
+                      <span className="text-theme-muted">Party size:</span>
+                      <span className="text-theme-primary">{formData.guestCount} {formData.guestCount === 1 ? 'person' : 'people'}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-gray-600">Name:</span>
-                      <span className="text-gray-900">{formData.attendeeName}</span>
+                      <span className="text-theme-muted">Name:</span>
+                      <span className="text-theme-primary">{formData.attendeeName}</span>
                     </div>
-                    <div className="flex justify-between font-medium pt-2 border-t border-gray-200">
-                      <span className="text-gray-900">Estimated total:</span>
-                      <span className="text-blue-600">{formatCurrency(totalCost)}</span>
+                    <div className="flex justify-between font-medium pt-2 border-t border-theme-primary">
+                      <span className="text-theme-primary">Estimated total:</span>
+                      <span className="text-theme-subtle">{formatCurrency(totalCost)}</span>
                     </div>
                   </div>
                 </div>
@@ -337,14 +337,14 @@ export function RSVPFlow({ event, isOpen, onClose, onSuccess }: RSVPFlowProps) {
                       type="checkbox"
                       checked={formData.agreedToCost}
                       onChange={(e) => handleInputChange('agreedToCost', e.target.checked)}
-                      className="mt-1 w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
+                      className="mt-1 w-4 h-4 checkbox-theme rounded"
                     />
-                    <span className="text-sm text-gray-700">
+                    <span className="text-sm text-theme-primary">
                       I understand that the final cost may vary based on actual ingredient prices and agree to pay my fair share via Venmo after the dinner.
                     </span>
                   </label>
 
-                  <div className="text-xs text-gray-500 space-y-1">
+                  <div className="text-xs text-theme-muted space-y-1">
                     <p>• Cancellations must be made at least 24 hours in advance</p>
                     <p>• Payment will be requested after the dinner based on actual costs</p>
                     <p>• By reserving, you agree to our terms of service</p>
@@ -356,10 +356,10 @@ export function RSVPFlow({ event, isOpen, onClose, onSuccess }: RSVPFlowProps) {
         </div>
 
         {/* Footer Actions */}
-        <div className="flex justify-between p-6 border-t border-gray-200">
+        <div className="flex justify-between p-6 border-t border-theme-primary">
           <button
             onClick={step === 1 ? onClose : handlePrevStep}
-            className="px-6 py-3 text-gray-600 hover:text-gray-800 font-medium"
+            className="px-6 py-3 text-theme-muted hover:text-theme-primary font-medium transition-colors"
           >
             {step === 1 ? 'Cancel' : 'Back'}
           </button>
@@ -376,8 +376,8 @@ export function RSVPFlow({ event, isOpen, onClose, onSuccess }: RSVPFlowProps) {
               (step === 1 && isStep1Valid) ||
               (step === 2 && isStep2Valid) ||
               (step === 3 && isStep3Valid && !isSubmitting)
-                ? 'bg-blue-600 text-white hover:bg-blue-700'
-                : 'bg-gray-200 text-gray-500 cursor-not-allowed'
+                ? 'btn-primary'
+                : 'bg-theme-secondary text-theme-subtle cursor-not-allowed'
             )}
           >
             {isSubmitting ? 'Reserving...' : step === 3 ? 'Confirm Reservation' : 'Continue'}

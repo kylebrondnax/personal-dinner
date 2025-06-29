@@ -10,7 +10,19 @@ interface EventCardProps {
 }
 
 export function EventCard({ event, onReserve, className }: EventCardProps) {
-  const spotsAvailable = event.maxCapacity - event.currentReservations
+  console.log('🎴 [EVENT CARD] Received event props:', {
+    event: event,
+    hasEvent: !!event,
+    eventKeys: event ? Object.keys(event) : [],
+    estimatedDuration: event?.estimatedDuration,
+    maxCapacity: event?.maxCapacity,
+    currentReservations: event?.currentReservations,
+    cuisineType: event?.cuisineType,
+    dietaryAccommodations: event?.dietaryAccommodations,
+    location: event?.location
+  })
+
+  const spotsAvailable = (event.maxCapacity || 0) - (event.currentReservations || 0)
   const isAlmostFull = spotsAvailable <= 2 && spotsAvailable > 0
   const isFull = event.status === 'full' || spotsAvailable <= 0
   const hasRSVP = !!event.userRsvpStatus
@@ -37,11 +49,25 @@ export function EventCard({ event, onReserve, className }: EventCardProps) {
   }
 
   const formatDuration = (minutes: number) => {
+    console.log('⏱️ [EVENT CARD] formatDuration called with:', {
+      minutes,
+      type: typeof minutes,
+      isNaN: isNaN(minutes),
+      isUndefined: minutes === undefined,
+      isNull: minutes === null
+    })
+    
+    if (!minutes || isNaN(minutes)) {
+      console.log('⚠️ [EVENT CARD] Duration is invalid, returning TBD')
+      return 'Duration TBD'
+    }
+    
     const hours = Math.floor(minutes / 60)
     const mins = minutes % 60
-    if (hours === 0) return `${mins}m`
-    if (mins === 0) return `${hours}h`
-    return `${hours}h ${mins}m`
+    const result = hours === 0 ? `${mins}m` : mins === 0 ? `${hours}h` : `${hours}h ${mins}m`
+    
+    console.log('✅ [EVENT CARD] Duration formatted:', result)
+    return result
   }
 
   return (
@@ -78,7 +104,7 @@ export function EventCard({ event, onReserve, className }: EventCardProps) {
 
         {/* Cuisine Tags */}
         <div className="flex flex-wrap gap-2 mb-4">
-          {event.cuisineType.map((cuisine) => (
+          {event.cuisineType?.map((cuisine) => (
             <span 
               key={cuisine}
               className="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded-full"
@@ -101,7 +127,12 @@ export function EventCard({ event, onReserve, className }: EventCardProps) {
           {event.location && (
             <div className="flex items-center gap-2">
               <span className="font-medium">📍</span>
-              <span>{event.location.neighborhood}, {event.location.city}</span>
+              <span>
+                {event.location.neighborhood && event.location.city 
+                  ? `${event.location.neighborhood}, ${event.location.city}`
+                  : event.location.city || event.location.neighborhood || 'Location TBD'
+                }
+              </span>
             </div>
           )}
         </div>
@@ -137,17 +168,17 @@ export function EventCard({ event, onReserve, className }: EventCardProps) {
               </span>
             </div>
             <p className="text-xs text-theme-subtle">
-              {isFull ? 'Full' : `${spotsAvailable} available`}
+              {isFull ? 'Full' : `${spotsAvailable >= 0 ? spotsAvailable : 0} available`}
             </p>
           </div>
         </div>
 
         {/* Progress Bar */}
-        <div className="w-full bg-theme-primary rounded-full h-2 mb-4 opacity-20">
+        <div className="w-full bg-theme-secondary rounded-full h-2 mb-4">
           <div 
             className={cn(
               'h-2 rounded-full transition-all',
-              isFull ? 'bg-red-500' : isAlmostFull ? 'bg-orange-500' : 'bg-green-500'
+              isFull ? 'bg-theme-muted' : isAlmostFull ? 'bg-theme-subtle' : 'bg-theme-primary'
             )}
             style={{ width: `${(event.currentReservations / event.maxCapacity) * 100}%` }}
           />
@@ -162,15 +193,15 @@ export function EventCard({ event, onReserve, className }: EventCardProps) {
             isFull
               ? 'bg-theme-secondary text-theme-subtle cursor-not-allowed'
               : hasRSVP
-                ? 'bg-green-100 text-green-700 cursor-default'
-                : 'bg-blue-600 text-white hover:bg-blue-700 shadow-sm'
+                ? 'badge-success cursor-default'
+                : 'btn-primary shadow-sm'
           )}
         >
           {isFull ? 'Dinner Full' : hasRSVP ? (isRSVPConfirmed ? 'Already Reserved' : 'On Waitlist') : isAlmostFull ? 'Reserve Now - Almost Full!' : 'Reserve Your Spot'}
         </button>
 
         {/* Dietary Accommodations */}
-        {event.dietaryAccommodations.length > 0 && (
+        {event.dietaryAccommodations?.length > 0 && (
           <div className="mt-3">
             <p className="text-xs text-theme-subtle mb-1">Dietary accommodations:</p>
             <div className="flex flex-wrap gap-1">

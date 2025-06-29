@@ -9,13 +9,8 @@ interface ThemeWrapperProps {
 export function ThemeWrapper({ children }: ThemeWrapperProps) {
   const { resolvedTheme } = useTheme()
 
-  // Conditionally apply classes based on resolved theme
-  const backgroundClasses = resolvedTheme === 'dark' 
-    ? 'min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 transition-colors'
-    : 'min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 transition-colors'
-
   return (
-    <div className={backgroundClasses}>
+    <div className={`min-h-screen bg-theme-body transition-colors ${resolvedTheme === 'dark' ? 'dark' : ''}`}>
       {children}
     </div>
   )
