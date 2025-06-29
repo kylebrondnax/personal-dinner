@@ -6,7 +6,7 @@ export function HomePage() {
 				<div className='text-center'>
 					<h1 className='text-5xl md:text-6xl font-bold text-theme-primary mb-6'>
 						Let&apos;s Cook & Eat
-						<span className='text-blue-600 block'>Together</span>
+						<span className='text-theme-subtle block'>Together</span>
 					</h1>
 					<p className='text-xl md:text-2xl text-theme-secondary max-w-3xl mx-auto mb-12 leading-relaxed'>
 						Connect with family and friends over home-cooked meals.
@@ -17,13 +17,13 @@ export function HomePage() {
 					<div className='flex flex-col sm:flex-row gap-4 justify-center mb-16'>
 						<a
 							href='/browse'
-							className='px-8 py-4 bg-blue-600 text-white text-lg font-semibold rounded-xl hover:bg-blue-700 transition-colors shadow-lg'
+							className='px-8 py-4 btn-primary text-lg font-semibold rounded-xl transition-colors shadow-lg'
 						>
 							Find a Dinner
 						</a>
 						<a
 							href='/create-event'
-							className='px-8 py-4 btn-secondary text-lg font-semibold rounded-xl transition-colors border-2 border-blue-600'
+							className='px-8 py-4 btn-secondary text-lg font-semibold rounded-xl transition-colors'
 						>
 							Host a Dinner
 						</a>
@@ -163,7 +163,7 @@ export function HomePage() {
 								href='mailto:buford@familydinner.com'
 								className='text-blue-600 hover:text-blue-700 font-medium underline transition-colors'
 							>
-								buford@familydinner.com
+								buford@familydinner.me
 							</a>
 						</p>
 					</div>

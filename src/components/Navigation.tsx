@@ -1,5 +1,6 @@
 'use client'
 
+import { useState } from 'react'
 import { useAuth } from '@/contexts/ClerkAuthContext'
 import { ThemeToggle } from '@/components/ThemeToggle'
 import { UserButton } from '@clerk/nextjs'
@@ -7,6 +8,7 @@ import Link from 'next/link'
 
 export function Navigation() {
   const { user } = useAuth()
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 nav-bg border-b nav-border">
@@ -54,9 +56,11 @@ export function Navigation() {
             </Link>
           </div>
 
-          {/* Right side - Auth + Theme */}
+          {/* Right side - Auth + Theme + Mobile Menu Button */}
           <div className="flex items-center space-x-4">
-            <ThemeToggle />
+            <div className="hidden md:block">
+              <ThemeToggle />
+            </div>
             
             {user ? (
               <div className="flex items-center space-x-4">
@@ -76,7 +80,7 @@ export function Navigation() {
                 />
               </div>
             ) : (
-              <div className="flex items-center space-x-3">
+              <div className="hidden md:flex items-center space-x-3">
                 <Link
                   href="/auth/login"
                   className="text-sm font-medium nav-link transition-colors"
@@ -91,8 +95,100 @@ export function Navigation() {
                 </Link>
               </div>
             )}
+
+            {/* Mobile menu button */}
+            <button
+              className="md:hidden p-2 rounded-md nav-link"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              aria-label="Toggle menu"
+            >
+              <svg
+                className="h-6 w-6"
+                fill="none"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                {mobileMenuOpen ? (
+                  <path d="M6 18L18 6M6 6l12 12" />
+                ) : (
+                  <path d="M4 6h16M4 12h16M4 18h16" />
+                )}
+              </svg>
+            </button>
           </div>
         </div>
+
+        {/* Mobile menu */}
+        {mobileMenuOpen && (
+          <div className="md:hidden">
+            <div className="px-2 pt-2 pb-3 space-y-1 nav-bg border-t nav-border">
+              <Link
+                href="/browse"
+                className="block px-3 py-2 rounded-md text-base font-medium nav-link transition-colors"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Browse Dinners
+              </Link>
+              
+              {user && (
+                <>
+                  <Link
+                    href="/dashboard"
+                    className="block px-3 py-2 rounded-md text-base font-medium nav-link transition-colors"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    My Dinners
+                  </Link>
+                  <Link
+                    href="/create-event"
+                    className="block px-3 py-2 rounded-md text-base font-medium nav-link transition-colors"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    Host a Dinner
+                  </Link>
+                </>
+              )}
+              
+              <Link
+                href="/changelog"
+                className="block px-3 py-2 rounded-md text-base font-medium nav-link transition-colors"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                What&apos;s New
+              </Link>
+
+              {/* Mobile auth links */}
+              {!user && (
+                <div className="pt-4 border-t nav-border space-y-1">
+                  <Link
+                    href="/auth/login"
+                    className="block px-3 py-2 rounded-md text-base font-medium nav-link transition-colors"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    Sign In
+                  </Link>
+                  <Link
+                    href="/auth/signup"
+                    className="block px-3 py-2 mx-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-center"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    Sign Up
+                  </Link>
+                </div>
+              )}
+
+              {/* Mobile theme toggle */}
+              <div className="pt-4 border-t nav-border">
+                <div className="px-3 py-2">
+                  <ThemeToggle />
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </nav>
   )

@@ -214,7 +214,7 @@ export default function BrowsePage() {
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder="Search by title, chef, or description..."
-                className="w-full px-3 py-3 input-theme rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-3 input-theme rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
               />
             </div>
 
@@ -227,7 +227,7 @@ export default function BrowsePage() {
                 id="cuisine"
                 value={selectedCuisine}
                 onChange={(e) => setSelectedCuisine(e.target.value)}
-                className="w-full px-3 py-3 input-theme rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-3 input-theme rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
               >
                 <option value="">All cuisines</option>
                 {cuisineTypes.map(cuisine => (
@@ -245,7 +245,7 @@ export default function BrowsePage() {
                 id="price"
                 value={maxPrice || ''}
                 onChange={(e) => setMaxPrice(e.target.value ? Number(e.target.value) : null)}
-                className="w-full px-3 py-3 input-theme rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-3 input-theme rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
               >
                 <option value="">Any price</option>
                 <option value="50">Under $50</option>
@@ -268,7 +268,7 @@ export default function BrowsePage() {
                 setSelectedCuisine('')
                 setMaxPrice(null)
               }}
-              className="text-blue-600 hover:text-blue-700 text-sm font-medium"
+              className="text-theme-subtle hover:text-theme-primary text-sm font-medium"
             >
               Clear filters
             </button>
@@ -291,7 +291,7 @@ export default function BrowsePage() {
             <p className="text-theme-subtle mb-4">{error}</p>
             <button
               onClick={fetchEvents}
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              className="px-4 py-2 btn-primary rounded-lg transition-colors"
             >
               Try Again
             </button>
@@ -325,7 +325,7 @@ export default function BrowsePage() {
                 setSelectedCuisine('')
                 setMaxPrice(null)
               }}
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              className="px-4 py-2 btn-primary rounded-lg transition-colors"
             >
               View all dinners
             </button>

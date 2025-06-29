@@ -23,10 +23,29 @@ export default function ChangelogPage() {
 							🚀 Latest Updates
 						</h2>
 
-						<div className='space-y-6'>
+						<div className='max-h-96 overflow-y-auto space-y-6 pr-2'>
+							<div className='border-l-4 border-orange-500 pl-4'>
+								<div className='flex items-center gap-2 mb-2'>
+									<span className='text-sm font-medium text-theme-subtle'>
+										June 29, 2025
+									</span>
+									<span className='px-2 py-1 text-xs badge-success rounded-full'>
+										Enhancement
+									</span>
+								</div>
+								<h3 className='text-lg font-medium text-theme-primary mb-1'>
+									Warm & Cozy Theme Update
+								</h3>
+								<p className='text-theme-muted'>
+									Transformed the app with a warm, cozy color palette featuring 
+									soft creams, burnt orange, and deep chocolate tones. Thank you 
+									to Case for the amazing suggestion!
+								</p>
+							</div>
+
 							<div className='border-l-4 border-blue-500 pl-4'>
 								<div className='flex items-center gap-2 mb-2'>
-									<span className='text-sm font-medium text-blue-600 dark:text-blue-400'>
+									<span className='text-sm font-medium text-theme-subtle'>
 										June 28, 2025
 									</span>
 									<span className='px-2 py-1 text-xs badge-success rounded-full'>
@@ -45,7 +64,7 @@ export default function ChangelogPage() {
 
 							<div className='border-l-4 border-green-500 pl-4'>
 								<div className='flex items-center gap-2 mb-2'>
-									<span className='text-sm font-medium text-green-600 dark:text-green-400'>
+									<span className='text-sm font-medium text-theme-subtle'>
 										June 27, 2025
 									</span>
 									<span className='px-2 py-1 text-xs badge-info rounded-full'>
@@ -64,7 +83,7 @@ export default function ChangelogPage() {
 
 							<div className='border-l-4 border-purple-500 pl-4'>
 								<div className='flex items-center gap-2 mb-2'>
-									<span className='text-sm font-medium text-purple-600 dark:text-purple-400'>
+									<span className='text-sm font-medium text-theme-subtle'>
 										June 26, 2025
 									</span>
 									<span className='px-2 py-1 text-xs badge-purple rounded-full'>
@@ -94,37 +113,72 @@ export default function ChangelogPage() {
 							shape the future of Family Dinner.
 						</p>
 
-						<div className='bg-theme-card rounded-lg p-4 border border-theme-primary'>
-							<div className='flex items-start gap-3'>
-								<div className='w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white font-semibold text-sm'>
-									A
-								</div>
-								<div className='flex-1'>
-									<div className='flex items-center gap-2 mb-1'>
-										<span className='font-medium text-theme-primary'>
-											Adam
-										</span>
-										<span className='text-sm text-theme-subtle'>
-											• Suggested
-										</span>
+						<div className='max-h-80 overflow-y-auto space-y-4 pr-2'>
+							<div className='bg-theme-card rounded-lg p-4 border border-theme-primary'>
+								<div className='flex items-start gap-3'>
+									<div className='w-8 h-8 bg-orange-500 rounded-full flex items-center justify-center text-white font-semibold text-sm'>
+										C
 									</div>
-									<h4 className='font-medium text-theme-primary mb-1'>
-										Pre-populate User Data in RSVP Forms
-									</h4>
-									<p className='text-sm text-theme-muted mb-2'>
-										&quot;It would be great if the RSVP form
-										could automatically fill in my name and
-										email since I&apos;m already signed in,
-										instead of asking me to provide this
-										information again.&quot;
-									</p>
-									<div className='flex items-start gap-2'>
-										<span className='px-2 py-1 text-xs badge-success rounded-full flex-shrink-0'>
-											✓
-										</span>
-										<span className='text-xs text-theme-subtle'>
-											<span className='font-medium text-green-600 dark:text-green-400'>Implemented</span> - Thanks for the great suggestion, Adam! 🎉
-										</span>
+									<div className='flex-1'>
+										<div className='flex items-center gap-2 mb-1'>
+											<span className='font-medium text-theme-primary'>
+												Case
+											</span>
+											<span className='text-sm text-theme-subtle'>
+												• Suggested
+											</span>
+										</div>
+										<h4 className='font-medium text-theme-primary mb-1'>
+											Warm & Cozy Theme Colors
+										</h4>
+										<p className='text-sm text-theme-muted mb-2'>
+											&quot;BIG fan of your site! I think it would look even better with 
+											theme colors that feel more home-y, warm, and cozy!&quot;
+										</p>
+										<div className='flex items-start gap-2'>
+											<span className='px-2 py-1 text-xs badge-success rounded-full flex-shrink-0'>
+												✓
+											</span>
+											<span className='text-xs text-theme-subtle'>
+												<span className='font-medium text-theme-subtle'>Implemented</span> - What an amazing suggestion, Case! The warm palette transforms the entire experience! 🧡
+											</span>
+										</div>
+									</div>
+								</div>
+							</div>
+
+							<div className='bg-theme-card rounded-lg p-4 border border-theme-primary'>
+								<div className='flex items-start gap-3'>
+									<div className='w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white font-semibold text-sm'>
+										A
+									</div>
+									<div className='flex-1'>
+										<div className='flex items-center gap-2 mb-1'>
+											<span className='font-medium text-theme-primary'>
+												Adam
+											</span>
+											<span className='text-sm text-theme-subtle'>
+												• Suggested
+											</span>
+										</div>
+										<h4 className='font-medium text-theme-primary mb-1'>
+											Pre-populate User Data in RSVP Forms
+										</h4>
+										<p className='text-sm text-theme-muted mb-2'>
+											&quot;It would be great if the RSVP form
+											could automatically fill in my name and
+											email since I&apos;m already signed in,
+											instead of asking me to provide this
+											information again.&quot;
+										</p>
+										<div className='flex items-start gap-2'>
+											<span className='px-2 py-1 text-xs badge-success rounded-full flex-shrink-0'>
+												✓
+											</span>
+											<span className='text-xs text-theme-subtle'>
+												<span className='font-medium text-theme-subtle'>Implemented</span> - Thanks for the great suggestion, Adam! 🎉
+											</span>
+										</div>
 									</div>
 								</div>
 							</div>
@@ -188,13 +242,13 @@ export default function ChangelogPage() {
 						<div className='flex flex-col sm:flex-row gap-3'>
 							<a
 								href='mailto:buford@familydinner.me'
-								className='inline-flex items-center justify-center px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg transition-colors'
+								className='inline-flex items-center justify-center px-4 py-2 btn-primary font-medium rounded-lg transition-colors'
 							>
 								Send Feedback
 							</a>
 							<a
 								href='https://github.com/bufordeeds/family-dinner/issues'
-								className='inline-flex items-center justify-center px-4 py-2 border border-green-600 text-green-600 dark:text-green-400 hover:bg-green-50 dark:hover:bg-gray-700 font-medium rounded-lg transition-colors'
+								className='inline-flex items-center justify-center px-4 py-2 btn-secondary font-medium rounded-lg transition-colors'
 							>
 								Report a Bug
 							</a>
@@ -217,7 +271,7 @@ export default function ChangelogPage() {
 								href='https://coff.ee/bufordeeds'
 								target='_blank'
 								rel='noopener noreferrer'
-								className='inline-flex items-center justify-center px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white font-medium rounded-lg transition-colors'
+								className='inline-flex items-center justify-center px-4 py-2 btn-primary font-medium rounded-lg transition-colors'
 							>
 								☕ Buy me a coffee
 							</a>

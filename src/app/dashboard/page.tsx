@@ -71,17 +71,17 @@ export default function DashboardPage() {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'OPEN':
-        return 'bg-green-100 text-green-700'
+        return 'badge-success'
       case 'FULL':
-        return 'bg-orange-100 text-orange-700'
+        return 'badge-warning'
       case 'COMPLETED':
-        return 'bg-blue-100 text-blue-700'
+        return 'badge-info'
       case 'CANCELLED':
-        return 'bg-red-100 text-red-700'
+        return 'badge-error'
       case 'POLL_ACTIVE':
-        return 'bg-purple-100 text-purple-700'
+        return 'badge-purple'
       default:
-        return 'bg-gray-100 text-gray-700'
+        return 'badge-default'
     }
   }
 
@@ -198,32 +198,32 @@ export default function DashboardPage() {
   return (
     <>
       <Navigation />
-      <div className="pt-20">
+      <div className="min-h-screen bg-theme-secondary pt-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           {/* Header */}
-          <div className="flex justify-between items-center mb-8">
+          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-6 sm:mb-8 gap-4">
             <div>
-              <h1 className="text-3xl font-bold text-theme-primary">
+              <h1 className="text-2xl sm:text-3xl font-bold text-theme-primary">
                 My Dinners
               </h1>
-              <p className="text-theme-muted mt-2">
+              <p className="text-theme-muted mt-1 sm:mt-2 text-sm sm:text-base">
                 Manage dinners you&apos;re hosting and attending
               </p>
             </div>
           
           <Link
             href="/create-event"
-            className="bg-blue-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors"
+            className="btn-primary px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-medium transition-colors text-center whitespace-nowrap"
           >
             Host a Dinner
           </Link>
         </div>
 
         {/* Tabs */}
-        <div className="flex space-x-1 tab-container mb-8 w-fit">
+        <div className="flex space-x-1 tab-container mb-6 sm:mb-8 w-full sm:w-fit">
           <button
             onClick={() => setActiveTab('hosting')}
-            className={`px-4 py-2 rounded-md font-medium transition-colors ${
+            className={`flex-1 sm:flex-initial px-3 sm:px-4 py-2 rounded-md font-medium transition-colors text-sm sm:text-base ${
               activeTab === 'hosting' ? 'tab-active' : 'tab-inactive'
             }`}
           >
@@ -231,7 +231,7 @@ export default function DashboardPage() {
           </button>
           <button
             onClick={() => setActiveTab('attending')}
-            className={`px-4 py-2 rounded-md font-medium transition-colors ${
+            className={`flex-1 sm:flex-initial px-3 sm:px-4 py-2 rounded-md font-medium transition-colors text-sm sm:text-base ${
               activeTab === 'attending' ? 'tab-active' : 'tab-inactive'
             }`}
           >
@@ -241,43 +241,43 @@ export default function DashboardPage() {
 
         {/* Quick Stats for Hosting Tab */}
         {activeTab === 'hosting' && !loading && hostingEvents.length > 0 && (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            <div className="stats-card p-6">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8">
+            <div className="stats-card p-4 sm:p-6">
               <div className="flex items-center">
-                <div className="p-3 bg-blue-100 dark:bg-blue-900 rounded-lg">
-                  <span className="text-2xl">📅</span>
+                <div className="p-2 sm:p-3 rounded-lg" style={{backgroundColor: 'rgba(161, 92, 34, 0.1)'}}>
+                  <span className="text-xl sm:text-2xl">📅</span>
                 </div>
-                <div className="ml-4">
-                  <p className="text-sm text-theme-subtle">Active Events</p>
-                  <p className="text-2xl font-bold text-theme-primary">
+                <div className="ml-3 sm:ml-4">
+                  <p className="text-xs sm:text-sm text-theme-subtle">Active Events</p>
+                  <p className="text-xl sm:text-2xl font-bold text-theme-primary">
                     {hostingEvents.filter(e => e.status === 'OPEN' || e.status === 'FULL').length || 0}
                   </p>
                 </div>
               </div>
             </div>
 
-            <div className="stats-card p-6">
+            <div className="stats-card p-4 sm:p-6">
               <div className="flex items-center">
-                <div className="p-3 bg-green-100 dark:bg-green-900 rounded-lg">
-                  <span className="text-2xl">👥</span>
+                <div className="p-2 sm:p-3 rounded-lg" style={{backgroundColor: 'rgba(179, 138, 105, 0.2)'}}>
+                  <span className="text-xl sm:text-2xl">👥</span>
                 </div>
-                <div className="ml-4">
-                  <p className="text-sm text-theme-subtle">Total Guests</p>
-                  <p className="text-2xl font-bold text-theme-primary">
+                <div className="ml-3 sm:ml-4">
+                  <p className="text-xs sm:text-sm text-theme-subtle">Total Guests</p>
+                  <p className="text-xl sm:text-2xl font-bold text-theme-primary">
                     {hostingEvents.reduce((sum, e) => sum + (e.currentGuests || 0), 0)}
                   </p>
                 </div>
               </div>
             </div>
 
-            <div className="stats-card p-6">
+            <div className="stats-card p-4 sm:p-6">
               <div className="flex items-center">
-                <div className="p-3 bg-purple-100 dark:bg-purple-900 rounded-lg">
-                  <span className="text-2xl">🍽️</span>
+                <div className="p-2 sm:p-3 rounded-lg" style={{backgroundColor: 'rgba(139, 108, 94, 0.2)'}}>
+                  <span className="text-xl sm:text-2xl">🍽️</span>
                 </div>
-                <div className="ml-4">
-                  <p className="text-sm text-theme-subtle">Completed Dinners</p>
-                  <p className="text-2xl font-bold text-theme-primary">
+                <div className="ml-3 sm:ml-4">
+                  <p className="text-xs sm:text-sm text-theme-subtle">Completed Dinners</p>
+                  <p className="text-xl sm:text-2xl font-bold text-theme-primary">
                     {hostingEvents.filter(e => e.status === 'COMPLETED').length || 0}
                   </p>
                 </div>
@@ -289,7 +289,7 @@ export default function DashboardPage() {
         {/* Events List */}
         {loading ? (
           <div className="text-center py-12">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500 mx-auto mb-4"></div>
             <p className="text-gray-600 dark:text-gray-400">Loading your dinners...</p>
           </div>
         ) : (
@@ -297,7 +297,7 @@ export default function DashboardPage() {
             {activeTab === 'hosting' && (
               <>
                 {hostingEvents.length === 0 ? (
-                  <div className="text-center py-12 bg-white dark:bg-gray-800 rounded-lg">
+                  <div className="text-center py-12 bg-theme-card rounded-lg">
                     <div className="text-gray-400 mb-4">
                       <svg className="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -311,7 +311,7 @@ export default function DashboardPage() {
                     </p>
                     <Link
                       href="/create-event"
-                      className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                      className="inline-flex items-center px-4 py-2 btn-primary rounded-lg transition-colors"
                     >
                       Host Your First Dinner
                     </Link>
@@ -323,22 +323,22 @@ export default function DashboardPage() {
                     </div>
                     <div className="divide-y border-theme-primary">
                       {hostingEvents.map((event) => (
-                        <div key={event.id} className="p-6 event-item-hover transition-colors">
-                          <div className="flex items-start justify-between">
+                        <div key={event.id} className="p-4 sm:p-6 event-item-hover transition-colors">
+                          <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
                             <div className="flex-1">
-                              <div className="flex items-center gap-3 mb-2">
-                                <h3 className="text-lg font-semibold text-theme-primary">
+                              <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 mb-3">
+                                <h3 className="text-base sm:text-lg font-semibold text-theme-primary">
                                   {event.useAvailabilityPoll && '📊 '}
                                   {event.title}
                                 </h3>
                                 {event.status && (
-                                  <span className={`px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(event.status)}`}>
+                                  <span className={`px-2 py-1 text-xs font-medium rounded-full w-fit ${getStatusColor(event.status)}`}>
                                     {event.status === 'POLL_ACTIVE' ? 'POLL_ACTIVE' : event.status}
                                   </span>
                                 )}
                               </div>
                               
-                              <div className="space-y-1 text-sm text-theme-muted">
+                              <div className="space-y-1 text-xs sm:text-sm text-theme-muted">
                                 {event.useAvailabilityPoll && event.pollDeadline ? (
                                   <p>🗳️ Poll deadline: {formatDate(event.pollDeadline)}</p>
                                 ) : (
@@ -357,7 +357,7 @@ export default function DashboardPage() {
                               </div>
                             </div>
 
-                            <div className="flex items-center space-x-2">
+                            <div className="flex flex-wrap items-center gap-2 sm:gap-1 sm:space-x-2">
                               <EventShareButton
                                 eventId={event.id}
                                 eventTitle={event.title}
@@ -368,13 +368,13 @@ export default function DashboardPage() {
                                 <>
                                   <button 
                                     onClick={() => handleEditEvent(event.id)}
-                                    className="px-3 py-1 text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
+                                    className="px-3 py-2 text-xs sm:text-sm badge-info rounded-md"
                                   >
                                     Edit
                                   </button>
                                   <button 
                                     onClick={() => setShowCancelModal(event.id)}
-                                    className="px-3 py-1 text-sm text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
+                                    className="px-3 py-2 text-xs sm:text-sm badge-error rounded-md"
                                   >
                                     Cancel
                                   </button>
@@ -384,7 +384,7 @@ export default function DashboardPage() {
                               {event.status === 'POLL_ACTIVE' && (
                                 <button 
                                   onClick={() => handleViewResponses(event.id)}
-                                  className="px-3 py-1 text-sm text-purple-600 hover:text-purple-700 dark:text-purple-400 dark:hover:text-purple-300"
+                                  className="px-3 py-2 text-xs sm:text-sm badge-purple rounded-md"
                                 >
                                   View Responses
                                 </button>
@@ -393,7 +393,7 @@ export default function DashboardPage() {
                               {event.status === 'COMPLETED' && (
                                 <button 
                                   onClick={() => handleViewReceipt(event.id)}
-                                  className="px-3 py-1 text-sm text-green-600 hover:text-green-700 dark:text-green-400 dark:hover:text-green-300"
+                                  className="px-3 py-2 text-xs sm:text-sm badge-success rounded-md"
                                 >
                                   View Receipt
                                 </button>
@@ -401,7 +401,7 @@ export default function DashboardPage() {
                               
                               <Link
                                 href={`/events/${event.id}`}
-                                className="px-3 py-1 text-sm text-gray-600 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
+                                className="px-3 py-2 text-xs sm:text-sm badge-default rounded-md"
                               >
                                 Details
                               </Link>
@@ -418,7 +418,7 @@ export default function DashboardPage() {
             {activeTab === 'attending' && (
               <>
                 {attendingEvents.length === 0 ? (
-                  <div className="text-center py-12 bg-white dark:bg-gray-800 rounded-lg">
+                  <div className="text-center py-12 bg-theme-card rounded-lg">
                     <div className="text-gray-400 mb-4">
                       <svg className="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -432,13 +432,13 @@ export default function DashboardPage() {
                     </p>
                     <Link
                       href="/browse"
-                      className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                      className="inline-flex items-center px-4 py-2 btn-primary rounded-lg transition-colors"
                     >
                       Browse Dinners
                     </Link>
                   </div>
                 ) : (
-                  <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                  <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
                     {attendingEvents.map((event) => (
                       <div key={event.id} className="event-card overflow-hidden event-item-hover">
                         {event.imageUrl && (
@@ -450,7 +450,7 @@ export default function DashboardPage() {
                             <h3 className="text-lg font-semibold text-theme-primary">
                               {event.title}
                             </h3>
-                            <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full">
+                            <span className="text-xs badge-info px-2 py-1 rounded-full">
                               Guest
                             </span>
                           </div>
@@ -477,7 +477,7 @@ export default function DashboardPage() {
                           <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
                             <Link
                               href={`/events/${event.id}`}
-                              className="text-blue-600 hover:text-blue-700 text-sm font-medium"
+                              className="text-theme-subtle hover:text-theme-primary text-sm font-medium"
                             >
                               View Details →
                             </Link>
@@ -516,7 +516,7 @@ export default function DashboardPage() {
               <button
                 onClick={() => handleCancelEvent(showCancelModal)}
                 disabled={cancelLoading}
-                className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors disabled:opacity-50"
+                className="btn-danger px-4 py-2 rounded-lg transition-colors disabled:opacity-50"
               >
                 {cancelLoading ? 'Cancelling...' : 'Cancel Event'}
               </button>

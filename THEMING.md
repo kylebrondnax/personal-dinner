@@ -3,6 +3,25 @@
 ## Overview
 Our app uses a centralized theming system that resolves theme classes at the root level. This allows components to use static CSS classes that automatically adapt to light/dark mode without conditional logic.
 
+## Color Palette
+The app uses a warm, cozy color palette designed to create an inviting atmosphere:
+
+**Light Mode:**
+- Background: `#DACAB0` (soft cream)
+- Cards: `#F5F0E8` (light cream)
+- Primary text: `#4E2F2E` (deep chocolate)
+- Secondary text: `#6F3132` (burgundy)
+- Primary actions: `#A15C22` (burnt orange)
+- Borders/accents: `#8B6C5E` (taupe)
+
+**Dark Mode:**
+- Background: `#4E2F2E` (deep chocolate)
+- Cards: `#6F3132` (burgundy)
+- Primary text: `#DACAB0` (cream)
+- Secondary text: `#B38A69` (warm tan)
+- Primary actions: `#A15C22` (burnt orange - consistent across modes)
+- Borders/accents: `#8B6C5E` (taupe)
+
 ## How It Works
 
 ### 1. Theme Context
@@ -24,30 +43,47 @@ const textClass = resolvedTheme === 'dark' ? 'text-white' : 'text-gray-900'
 ### 3. Available Theme Classes
 
 #### Text Colors
-- `text-theme-primary` - Main headings (gray-900 → white)
-- `text-theme-secondary` - Subheadings (gray-800 → gray-200)  
-- `text-theme-muted` - Body text (gray-700 → gray-300)
-- `text-theme-subtle` - Supporting text (gray-600 → gray-400)
+- `text-theme-primary` - Main headings (deep chocolate → cream)
+- `text-theme-secondary` - Subheadings (burgundy → warm tan)  
+- `text-theme-muted` - Body text (taupe → warm tan)
+- `text-theme-subtle` - Supporting text (burnt orange → taupe)
 
 #### Backgrounds
-- `bg-theme-primary` - Main sections (white → gray-800)
-- `bg-theme-secondary` - Alternate sections (gray-50 → gray-900)
-- `bg-theme-card` - Cards/elevated content (white → gray-700)
-- `bg-theme-elevated` - Modals/overlays (white → gray-800)
+- `bg-theme-primary` - Main sections (light cream → deep chocolate)
+- `bg-theme-secondary` - Alternate sections (soft cream → deep chocolate)
+- `bg-theme-card` - Cards/elevated content (light cream → burgundy)
+- `bg-theme-elevated` - Modals/overlays (light cream → burgundy)
 
 #### Borders
-- `border-theme-primary` - Main borders (gray-200 → gray-600)
-- `border-theme-subtle` - Subtle borders (gray-300 → gray-600)
+- `border-theme-primary` - Main borders (taupe → taupe)
+- `border-theme-subtle` - Subtle borders (warm tan → taupe)
 
 #### Navigation
 - `nav-bg` - Navigation background with backdrop blur
 - `nav-border` - Navigation border
 
 #### Buttons
-- `btn-secondary` - Secondary button styling
+- `btn-primary` - Primary action buttons (burnt orange)
+- `btn-secondary` - Secondary button styling (outlined)
+- `btn-theme-toggle` - Theme toggle button
+- `btn-cancel` - Cancel/neutral actions
+- `btn-danger` - Destructive actions
+
+#### Badges
+- `badge-success` - Success states (burnt orange tint)
+- `badge-info` - Information states (warm tan tint)
+- `badge-warning` - Warning states (taupe tint)
+- `badge-error` - Error states (burgundy tint)
+- `badge-purple` - Special states (taupe purple)
+- `badge-default` - Default states (cream/chocolate)
 
 #### Inputs
 - `input-theme` - Form input styling
+
+#### Scrollbars
+- Custom scrollbar styling with warm colors
+- Burnt orange thumb with cream/chocolate track
+- Consistent across light/dark modes
 
 ## Usage Examples
 
@@ -80,6 +116,32 @@ export function MyComponent() {
   <h3 className="text-theme-primary font-semibold">Card Title</h3>
   <p className="text-theme-muted">Card content</p>
 </div>
+```
+
+### Buttons
+```jsx
+<button className="btn-primary px-4 py-2 rounded-lg">
+  Primary Action
+</button>
+<button className="btn-secondary px-4 py-2 rounded-lg">
+  Secondary Action
+</button>
+<button className="btn-danger px-4 py-2 rounded-lg">
+  Delete
+</button>
+```
+
+### Badges
+```jsx
+<span className="badge-success px-2 py-1 rounded-full text-xs">
+  Active
+</span>
+<span className="badge-warning px-2 py-1 rounded-full text-xs">
+  Pending
+</span>
+<span className="badge-error px-2 py-1 rounded-full text-xs">
+  Cancelled
+</span>
 ```
 
 ## Benefits

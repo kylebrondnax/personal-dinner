@@ -1,144 +1,234 @@
 /* Theme-aware CSS classes that resolve at root level */
+/* Warm and cozy color palette */
 
 /* Text Colors */
 .text-theme-primary {
-  @apply text-gray-900;
+  color: #4E2F2E; /* deep chocolate */
 }
 .dark .text-theme-primary {
-  @apply text-white;
+  color: #DACAB0; /* cream */
 }
 
 .text-theme-secondary {
-  @apply text-gray-800;
+  color: #6F3132; /* burgundy */
 }
 .dark .text-theme-secondary {
-  @apply text-gray-200;
+  color: #B38A69; /* warm tan */
 }
 
 .text-theme-muted {
-  @apply text-gray-700;
+  color: #8B6C5E; /* taupe */
 }
 .dark .text-theme-muted {
-  @apply text-gray-300;
+  color: #B38A69; /* warm tan */
 }
 
 .text-theme-subtle {
-  @apply text-gray-600;
+  color: #A15C22; /* burnt orange */
 }
 .dark .text-theme-subtle {
-  @apply text-gray-400;
+  color: #8B6C5E; /* taupe */
 }
 
 /* Background Colors */
 .bg-theme-primary {
-  @apply bg-white;
+  background-color: #F5F0E8; /* light cream for cards */
 }
 .dark .bg-theme-primary {
-  @apply bg-gray-800;
+  background-color: #4E2F2E; /* deep chocolate */
 }
 
 .bg-theme-secondary {
-  @apply bg-gray-50;
+  background-color: #DACAB0; /* soft cream */
 }
 .dark .bg-theme-secondary {
-  @apply bg-gray-900;
+  background-color: #4E2F2E; /* deep chocolate */
 }
 
 .bg-theme-card {
-  @apply bg-white;
+  background-color: #F5F0E8; /* light cream */
 }
 .dark .bg-theme-card {
-  @apply bg-gray-700;
+  background-color: #6F3132; /* burgundy */
 }
 
 .bg-theme-elevated {
-  @apply bg-white;
+  background-color: #F5F0E8; /* light cream */
 }
 .dark .bg-theme-elevated {
-  @apply bg-gray-800;
+  background-color: #6F3132; /* burgundy */
 }
 
 /* Border Colors */
 .border-theme-primary {
-  @apply border-gray-200;
+  border-color: #8B6C5E; /* taupe */
 }
 .dark .border-theme-primary {
-  @apply border-gray-600;
+  border-color: #8B6C5E; /* taupe */
 }
 
 .border-theme-subtle {
-  @apply border-gray-300;
+  border-color: #B38A69; /* warm tan */
 }
 .dark .border-theme-subtle {
-  @apply border-gray-600;
+  border-color: #8B6C5E; /* taupe */
 }
 
 /* Navigation specific */
 .nav-bg {
-  @apply bg-white/80 backdrop-blur-sm;
+  background-color: rgba(245, 240, 232, 0.8); /* light cream with transparency */
+  backdrop-filter: blur(8px);
 }
 .dark .nav-bg {
-  @apply bg-gray-900/80;
+  background-color: rgba(78, 47, 46, 0.8); /* deep chocolate with transparency */
+  backdrop-filter: blur(8px);
 }
 
 .nav-border {
-  @apply border-gray-200;
+  border-color: #8B6C5E; /* taupe */
 }
 .dark .nav-border {
-  @apply border-gray-700;
+  border-color: #8B6C5E; /* taupe */
 }
 
 .nav-link {
-  @apply text-gray-700 hover:text-gray-900;
+  color: #6F3132; /* burgundy */
+}
+.nav-link:hover {
+  color: #A15C22; /* burnt orange */
 }
 .dark .nav-link {
-  @apply text-gray-300 hover:text-white;
+  color: #B38A69; /* warm tan */
+}
+.dark .nav-link:hover {
+  color: #DACAB0; /* cream */
 }
 
 /* User button styling in navigation */
 .nav-user-text {
-  @apply text-gray-800;
+  color: #4E2F2E; /* deep chocolate */
 }
 .dark .nav-user-text {
-  @apply text-gray-200;
+  color: #DACAB0; /* cream */
 }
 
 /* Button variants */
+.btn-primary {
+  background-color: #A15C22; /* burnt orange */
+  color: #F5F0E8; /* light cream */
+  border: none;
+  transition: background-color 0.2s ease;
+}
+.btn-primary:hover {
+  background-color: #8B4A1C; /* darker burnt orange */
+}
+.dark .btn-primary {
+  background-color: #A15C22; /* burnt orange */
+  color: #F5F0E8; /* light cream */
+}
+.dark .btn-primary:hover {
+  background-color: #8B4A1C; /* darker burnt orange */
+}
+
 .btn-secondary {
-  @apply bg-white text-blue-600 hover:bg-gray-50;
+  background-color: #F5F0E8; /* light cream */
+  color: #A15C22; /* burnt orange */
+  border: 2px solid #A15C22; /* burnt orange border */
+}
+.btn-secondary:hover {
+  background-color: #DACAB0; /* soft cream */
 }
 .dark .btn-secondary {
-  @apply bg-gray-700 text-blue-400 hover:bg-gray-600;
+  background-color: #6F3132; /* burgundy */
+  color: #A15C22; /* burnt orange */
+  border: 2px solid #A15C22; /* burnt orange border */
+}
+.dark .btn-secondary:hover {
+  background-color: #4E2F2E; /* deep chocolate */
 }
 
 .btn-theme-toggle {
-  @apply bg-white border-gray-300 text-gray-700 hover:bg-gray-50;
+  background-color: #F5F0E8; /* light cream */
+  border-color: #8B6C5E; /* taupe */
+  color: #4E2F2E; /* deep chocolate */
+}
+.btn-theme-toggle:hover {
+  background-color: #DACAB0; /* soft cream */
 }
 .dark .btn-theme-toggle {
-  @apply bg-gray-800 border-gray-600 text-gray-300 hover:bg-gray-700;
+  background-color: #6F3132; /* burgundy */
+  border-color: #8B6C5E; /* taupe */
+  color: #DACAB0; /* cream */
+}
+.dark .btn-theme-toggle:hover {
+  background-color: #4E2F2E; /* deep chocolate */
 }
 
 .btn-cancel {
-  @apply bg-gray-200 text-gray-800 hover:bg-gray-300;
+  background-color: #8B6C5E; /* taupe */
+  color: #F5F0E8; /* light cream */
+}
+.btn-cancel:hover {
+  background-color: #6F3132; /* burgundy */
 }
 .dark .btn-cancel {
-  @apply bg-gray-600 text-gray-200 hover:bg-gray-500;
+  background-color: #8B6C5E; /* taupe */
+  color: #DACAB0; /* cream */
+}
+.dark .btn-cancel:hover {
+  background-color: #4E2F2E; /* deep chocolate */
+}
+
+.btn-danger {
+  background-color: #8B4A1C; /* darker burnt orange for danger */
+  color: #F5F0E8; /* light cream */
+}
+.btn-danger:hover {
+  background-color: #6F3516; /* even darker burnt orange */
+}
+.dark .btn-danger {
+  background-color: #8B4A1C; /* darker burnt orange */
+  color: #F5F0E8; /* light cream */
+}
+.dark .btn-danger:hover {
+  background-color: #6F3516; /* even darker burnt orange */
 }
 
 /* Card hover effects */
 .card-hover {
-  @apply hover:shadow-lg;
+  box-shadow: 0 10px 25px rgba(139, 108, 94, 0.15);
 }
-.dark .card-hover {
-  @apply hover:bg-gray-600;
+.card-hover:hover {
+  box-shadow: 0 20px 40px rgba(139, 108, 94, 0.2);
+}
+.dark .card-hover:hover {
+  background-color: #4E2F2E; /* deep chocolate */
 }
 
 /* Input styles */
 .input-theme {
-  @apply bg-white border-gray-300 text-gray-900 placeholder-gray-500 focus:ring-blue-500 focus:border-blue-500;
+  background-color: #F5F0E8; /* light cream */
+  border-color: #8B6C5E; /* taupe */
+  color: #4E2F2E; /* deep chocolate */
+}
+.input-theme::placeholder {
+  color: #A15C22; /* burnt orange */
+}
+.input-theme:focus {
+  ring-color: #A15C22; /* burnt orange */
+  border-color: #A15C22; /* burnt orange */
 }
 .dark .input-theme {
-  @apply bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:ring-blue-500 focus:border-blue-500;
+  background-color: #6F3132; /* burgundy */
+  border-color: #8B6C5E; /* taupe */
+  color: #DACAB0; /* cream */
+}
+.dark .input-theme::placeholder {
+  color: #B38A69; /* warm tan */
+}
+.dark .input-theme:focus {
+  ring-color: #A15C22; /* burnt orange */
+  border-color: #A15C22; /* burnt orange */
 }
 
 /* Special input types */
@@ -155,133 +245,233 @@
 
 /* Form elements */
 .form-label {
-  @apply text-gray-700 text-sm font-medium;
+  color: #4E2F2E; /* deep chocolate */
+  font-size: 0.875rem;
+  font-weight: 500;
 }
 .dark .form-label {
-  @apply text-gray-300;
+  color: #DACAB0; /* cream */
 }
 
 .form-section {
-  @apply bg-white rounded-lg shadow-sm border border-gray-200 p-6;
+  background-color: #F5F0E8; /* light cream */
+  border-color: #8B6C5E; /* taupe */
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 3px rgba(139, 108, 94, 0.1);
+  padding: 1.5rem;
 }
 .dark .form-section {
-  @apply bg-gray-800 border-gray-700;
+  background-color: #6F3132; /* burgundy */
+  border-color: #8B6C5E; /* taupe */
 }
 
 .checkbox-theme {
-  @apply text-blue-600 focus:ring-blue-500 border-gray-300 rounded;
+  color: #A15C22; /* burnt orange */
+  border-color: #8B6C5E; /* taupe */
+  border-radius: 0.25rem;
+}
+.checkbox-theme:focus {
+  ring-color: #A15C22; /* burnt orange */
 }
 .dark .checkbox-theme {
-  @apply border-gray-600 bg-gray-700;
+  border-color: #8B6C5E; /* taupe */
+  background-color: #6F3132; /* burgundy */
 }
 
 /* Tab styles */
 .tab-container {
-  @apply bg-gray-100 p-1 rounded-lg;
+  background-color: #DACAB0; /* soft cream */
+  padding: 0.25rem;
+  border-radius: 0.5rem;
 }
 .dark .tab-container {
-  @apply bg-gray-800;
+  background-color: #4E2F2E; /* deep chocolate */
 }
 
 .tab-active {
-  @apply bg-white text-gray-900 shadow-sm;
+  background-color: #F5F0E8; /* light cream */
+  color: #4E2F2E; /* deep chocolate */
+  box-shadow: 0 1px 3px rgba(139, 108, 94, 0.1);
 }
 .dark .tab-active {
-  @apply bg-gray-700 text-white;
+  background-color: #6F3132; /* burgundy */
+  color: #DACAB0; /* cream */
 }
 
 .tab-inactive {
-  @apply text-gray-600 hover:text-gray-900;
+  color: #6F3132; /* burgundy */
+}
+.tab-inactive:hover {
+  color: #A15C22; /* burnt orange */
 }
 .dark .tab-inactive {
-  @apply text-gray-400 hover:text-white;
+  color: #B38A69; /* warm tan */
+}
+.dark .tab-inactive:hover {
+  color: #DACAB0; /* cream */
 }
 
 /* Stats card styles */
 .stats-card {
-  @apply bg-white border border-gray-200 rounded-xl shadow-sm;
+  background-color: #F5F0E8; /* light cream */
+  border-color: #8B6C5E; /* taupe */
+  border-radius: 0.75rem;
+  box-shadow: 0 1px 3px rgba(139, 108, 94, 0.1);
 }
 .dark .stats-card {
-  @apply bg-gray-800 border-gray-700;
+  background-color: #6F3132; /* burgundy */
+  border-color: #8B6C5E; /* taupe */
 }
 
 /* Event card styles */
 .event-card {
-  @apply bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md;
+  background-color: #F5F0E8; /* light cream */
+  border-color: #8B6C5E; /* taupe */
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 3px rgba(139, 108, 94, 0.1);
+  transition: box-shadow 0.2s ease;
+}
+.event-card:hover {
+  box-shadow: 0 4px 12px rgba(139, 108, 94, 0.15);
 }
 .dark .event-card {
-  @apply bg-gray-800 border-gray-700;
+  background-color: #6F3132; /* burgundy */
+  border-color: #8B6C5E; /* taupe */
 }
 
-.event-item-hover {
-  @apply hover:bg-gray-50;
+.event-item-hover:hover {
+  background-color: #DACAB0; /* soft cream */
 }
-.dark .event-item-hover {
-  @apply hover:bg-gray-700;
+.dark .event-item-hover:hover {
+  background-color: #4E2F2E; /* deep chocolate */
 }
 
 /* Poll section styles */
 .poll-section {
-  @apply bg-blue-50 border border-blue-200 rounded-lg;
+  background-color: rgba(161, 92, 34, 0.1); /* burnt orange tint */
+  border-color: #A15C22; /* burnt orange */
+  border-radius: 0.5rem;
 }
 .dark .poll-section {
-  @apply bg-blue-900/20 border-blue-800;
+  background-color: rgba(161, 92, 34, 0.2); /* burnt orange tint */
+  border-color: #A15C22; /* burnt orange */
 }
 
 .poll-details {
-  @apply bg-white border border-gray-200 rounded-lg;
+  background-color: #F5F0E8; /* light cream */
+  border-color: #8B6C5E; /* taupe */
+  border-radius: 0.5rem;
 }
 .dark .poll-details {
-  @apply bg-gray-800 border-gray-700;
+  background-color: #6F3132; /* burgundy */
+  border-color: #8B6C5E; /* taupe */
 }
 
 /* Calendar time selector specific */
-.calendar-hover {
-  @apply hover:bg-blue-100;
+.calendar-hover:hover {
+  background-color: rgba(161, 92, 34, 0.1); /* burnt orange tint */
 }
-.dark .calendar-hover {
-  @apply hover:bg-blue-900/20;
+.dark .calendar-hover:hover {
+  background-color: rgba(161, 92, 34, 0.2); /* burnt orange tint */
 }
 
 /* Badge styles */
 .badge-success {
-  @apply bg-green-100 text-green-800;
+  background-color: rgba(161, 92, 34, 0.2); /* burnt orange success */
+  color: #A15C22; /* burnt orange */
 }
 .dark .badge-success {
-  @apply bg-green-900/20 text-green-200;
+  background-color: rgba(161, 92, 34, 0.3); /* burnt orange success */
+  color: #DACAB0; /* cream */
 }
 
 .badge-info {
-  @apply bg-blue-100 text-blue-800;
+  background-color: rgba(179, 138, 105, 0.2); /* warm tan info */
+  color: #6F3132; /* burgundy */
 }
 .dark .badge-info {
-  @apply bg-blue-900/20 text-blue-200;
+  background-color: rgba(179, 138, 105, 0.3); /* warm tan info */
+  color: #DACAB0; /* cream */
 }
 
 .badge-warning {
-  @apply bg-orange-100 text-orange-800;
+  background-color: rgba(139, 108, 94, 0.2); /* taupe warning */
+  color: #4E2F2E; /* deep chocolate */
 }
 .dark .badge-warning {
-  @apply bg-orange-900/20 text-orange-200;
+  background-color: rgba(139, 108, 94, 0.3); /* taupe warning */
+  color: #DACAB0; /* cream */
 }
 
 .badge-error {
-  @apply bg-red-100 text-red-800;
+  background-color: rgba(111, 49, 50, 0.2); /* burgundy error */
+  color: #6F3132; /* burgundy */
 }
 .dark .badge-error {
-  @apply bg-red-900/20 text-red-200;
+  background-color: rgba(111, 49, 50, 0.3); /* burgundy error */
+  color: #DACAB0; /* cream */
 }
 
 .badge-purple {
-  @apply bg-purple-100 text-purple-800;
+  background-color: rgba(139, 108, 94, 0.2); /* taupe purple */
+  color: #8B6C5E; /* taupe */
 }
 .dark .badge-purple {
-  @apply bg-purple-900/20 text-purple-200;
+  background-color: rgba(139, 108, 94, 0.3); /* taupe purple */
+  color: #B38A69; /* warm tan */
 }
 
 .badge-default {
-  @apply bg-gray-100 text-gray-800;
+  background-color: rgba(218, 202, 176, 0.3); /* cream default */
+  color: #4E2F2E; /* deep chocolate */
 }
 .dark .badge-default {
-  @apply bg-gray-800 text-gray-200;
+  background-color: rgba(78, 47, 46, 0.5); /* deep chocolate default */
+  color: #DACAB0; /* cream */
+}
+
+/* Custom Scrollbar Styles */
+/* For Webkit browsers (Chrome, Safari, Edge) */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #DACAB0; /* soft cream */
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #A15C22; /* burnt orange */
+  border-radius: 4px;
+  border: 1px solid #8B6C5E; /* taupe border */
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #8B4A1C; /* darker burnt orange */
+}
+
+/* Dark mode scrollbar */
+.dark ::-webkit-scrollbar-track {
+  background: #4E2F2E; /* deep chocolate */
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: #A15C22; /* burnt orange - consistent across modes */
+  border: 1px solid #6F3132; /* burgundy border */
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: #8B4A1C; /* darker burnt orange */
+}
+
+/* For Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #A15C22 #DACAB0; /* thumb track */
+}
+
+.dark * {
+  scrollbar-color: #A15C22 #4E2F2E; /* thumb track */
 }
