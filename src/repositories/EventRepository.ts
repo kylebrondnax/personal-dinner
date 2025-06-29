@@ -67,12 +67,14 @@ export class EventRepository {
       where.location = { city: { equals: filters.city } }
     }
 
-    if (filters.dateFrom) {
-      where.date = { ...(where.date || {}), gte: filters.dateFrom }
-    }
-
-    if (filters.dateTo) {
-      where.date = { ...(where.date || {}), lte: filters.dateTo }
+    if (filters.dateFrom || filters.dateTo) {
+      where.date = {}
+      if (filters.dateFrom) {
+        where.date.gte = filters.dateFrom
+      }
+      if (filters.dateTo) {
+        where.date.lte = filters.dateTo
+      }
     }
 
     return await prisma.event.findMany({
