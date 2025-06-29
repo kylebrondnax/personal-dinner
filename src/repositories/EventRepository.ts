@@ -68,11 +68,11 @@ export class EventRepository {
     }
 
     if (filters.dateFrom) {
-      where.date = { ...where.date, gte: filters.dateFrom }
+      where.date = { ...(where.date || {}), gte: filters.dateFrom }
     }
 
     if (filters.dateTo) {
-      where.date = { ...where.date, lte: filters.dateTo }
+      where.date = { ...(where.date || {}), lte: filters.dateTo }
     }
 
     return await prisma.event.findMany({
