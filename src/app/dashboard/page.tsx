@@ -10,17 +10,16 @@ import { Navigation } from '@/components/Navigation'
 interface Event {
   id: string
   title: string
-  description: string
+  description?: string
   date: string
-  time: string
-  location: string
-  maxGuests: number
-  currentGuests: number
-  estimatedCost: number
-  actualCost?: number
+  location: string | { neighborhood?: string; city?: string }
+  maxCapacity: number
+  currentReservations: number
+  estimatedCostPerPerson: number
+  actualCostPerPerson?: number
   imageUrl?: string
-  chefId: string
-  chefName: string
+  chefId?: string
+  chefName?: string
   status?: 'OPEN' | 'FULL' | 'COMPLETED' | 'CANCELLED' | 'POLL_ACTIVE'
   useAvailabilityPoll?: boolean
   pollStatus?: 'ACTIVE' | 'CLOSED' | 'FINALIZED'
@@ -264,7 +263,7 @@ export default function DashboardPage() {
                 <div className="ml-3 sm:ml-4">
                   <p className="text-xs sm:text-sm text-theme-subtle">Total Guests</p>
                   <p className="text-xl sm:text-2xl font-bold text-theme-primary">
-                    {hostingEvents.reduce((sum, e) => sum + (e.currentGuests || 0), 0)}
+                    {hostingEvents.reduce((sum, e) => sum + (e.currentReservations || 0), 0)}
                   </p>
                 </div>
               </div>
@@ -342,15 +341,15 @@ export default function DashboardPage() {
                                 {event.useAvailabilityPoll && event.pollDeadline ? (
                                   <p>🗳️ Poll deadline: {formatDate(event.pollDeadline)}</p>
                                 ) : (
-                                  <p>📅 {formatDate(`${event.date}T${event.time}`)}</p>
+                                  <p>📅 {formatDate(event.date)}</p>
                                 )}
-                                <p>👥 {event.currentGuests || 0}/{event.maxGuests || 0} guests</p>
+                                <p>👥 {event.currentReservations || 0}/{event.maxCapacity || 0} guests</p>
                                 <p>📍 {formatLocation(event.location)}</p>
                                 <p>
-                                  💰 {formatCurrency(event.estimatedCost || 0)} per person
-                                  {event.actualCost && (
+                                  💰 {formatCurrency(event.estimatedCostPerPerson || 0)} per person
+                                  {event.actualCostPerPerson && (
                                     <span className="text-green-600 dark:text-green-400 ml-2">
-                                      (actual: {formatCurrency(event.actualCost)})
+                                      (actual: {formatCurrency(event.actualCostPerPerson)})
                                     </span>
                                   )}
                                 </p>
@@ -463,15 +462,15 @@ export default function DashboardPage() {
                           <div className="space-y-2 text-sm text-theme-muted">
                             <div className="flex items-center">
                               <span className="w-4 h-4 mr-2">📅</span>
-                              {new Date(event.date).toLocaleDateString()} at {event.time}
+                              {formatDate(event.date)}
                             </div>
                             <div className="flex items-center">
                               <span className="w-4 h-4 mr-2">📍</span>
-                              {event.location}
+                              {formatLocation(event.location)}
                             </div>
                             <div className="flex items-center">
                               <span className="w-4 h-4 mr-2">💰</span>
-                              ${event.actualCost || event.estimatedCost} per person
+                              {formatCurrency(event.actualCostPerPerson || event.estimatedCostPerPerson)} per person
                             </div>
                           </div>
                           <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
