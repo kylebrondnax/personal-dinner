@@ -30,12 +30,12 @@ export default function EventDetailPage() {
       const result = await response.json()
       
       if (response.ok && result.success && result.data[eventId]) {
-        const status = result.data[eventId] as RSVPStatus
+        const status = result.data[eventId]
         // Convert date strings back to Date objects
         setRsvpStatus({
-          ...status,
-          createdAt: new Date(status.createdAt),
-          updatedAt: new Date(status.updatedAt)
+          status: status.status,
+          guestCount: status.guestCount,
+          rsvpedAt: new Date(status.rsvpedAt)
         })
       }
     } catch (err) {
