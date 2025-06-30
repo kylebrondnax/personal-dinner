@@ -4,6 +4,7 @@ import React, { useState } from 'react'
 import { PublicDinnerEvent } from '@/types'
 import { cn, formatCurrency } from '@/lib/utils'
 import { useAuth } from '@/contexts/ClerkAuthContext'
+import { useToast } from '@/components/Toast'
 
 interface RSVPFlowProps {
   event: PublicDinnerEvent
@@ -26,6 +27,7 @@ interface ReservationFormData {
 
 export function RSVPFlow({ event, isOpen, onClose, onSuccess }: RSVPFlowProps) {
   const { user, isAuthenticated } = useAuth()
+  const { showToast } = useToast()
   const [step, setStep] = useState(1)
   const [formData, setFormData] = useState<ReservationFormData>({
     attendeeName: user?.name || '',
@@ -37,35 +39,43 @@ export function RSVPFlow({ event, isOpen, onClose, onSuccess }: RSVPFlowProps) {
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
 
-  // Require authentication for RSVP
-  if (!isAuthenticated) {
+  // Handle polled events differently
+  if (event.useAvailabilityPoll && event.pollStatus !== 'FINALIZED') {
     return (
       <div className="fixed inset-0 bg-theme-overlay flex items-center justify-center p-4 z-50">
         <div className="bg-theme-elevated rounded-xl max-w-md w-full p-6">
           <div className="text-center">
-            <h2 className="text-2xl font-bold text-theme-primary mb-4">Sign In Required</h2>
+            <h2 className="text-2xl font-bold text-theme-primary mb-4">
+              {event.pollStatus === 'ACTIVE' ? 'Poll In Progress' : 'Poll Closed'}
+            </h2>
             <p className="text-theme-muted mb-6">
-              Please sign in to make a reservation for this dinner.
+              {event.pollStatus === 'ACTIVE' 
+                ? 'This event is still collecting availability responses. Please respond to the poll to help determine the best time.'
+                : 'The poll for this event is closed. The chef is reviewing responses and will finalize the date soon.'
+              }
             </p>
             <div className="flex gap-4">
               <button
                 onClick={onClose}
                 className="flex-1 px-4 py-2 text-theme-primary border border-theme-primary rounded-lg hover:bg-theme-secondary transition-colors"
               >
-                Cancel
+                Close
               </button>
-              <button
-                onClick={() => window.location.href = '/sign-in'}
-                className="flex-1 px-4 py-2 btn-primary rounded-lg"
-              >
-                Sign In
-              </button>
+              {event.pollStatus === 'ACTIVE' && (
+                <button
+                  onClick={() => window.location.href = `/poll/${event.id}`}
+                  className="flex-1 px-4 py-2 btn-primary rounded-lg"
+                >
+                  Respond to Poll
+                </button>
+              )}
             </div>
           </div>
         </div>
       </div>
     )
   }
+
 
   const spotsAvailable = event.maxCapacity - event.currentReservations
   const totalCost = event.estimatedCostPerPerson * formData.guestCount
@@ -101,6 +111,12 @@ export function RSVPFlow({ event, isOpen, onClose, onSuccess }: RSVPFlowProps) {
           eventId: event.id,
           guestCount: formData.guestCount,
           dietaryRestrictions: formData.dietaryRestrictions || undefined,
+          // Include guest info for non-authenticated users
+          ...(isAuthenticated ? {} : {
+            guestName: formData.attendeeName,
+            guestEmail: formData.attendeeEmail,
+            phoneNumber: formData.phoneNumber
+          })
         })
       })
 
@@ -123,13 +139,13 @@ export function RSVPFlow({ event, isOpen, onClose, onSuccess }: RSVPFlowProps) {
     } catch (error) {
       console.error('Reservation error:', error)
       // Show error to user instead of calling onSuccess
-      alert(error instanceof Error ? error.message : 'Failed to create reservation. Please try again.')
+      showToast(error instanceof Error ? error.message : 'Failed to create reservation. Please try again.', 'error')
     } finally {
       setIsSubmitting(false)
     }
   }
 
-  const isStep1Valid = true // For authenticated users, step 1 is always valid
+  const isStep1Valid = formData.attendeeName.trim().length > 0 && formData.attendeeEmail.trim().length > 0
   const isStep2Valid = formData.guestCount >= 1 && formData.guestCount <= spotsAvailable
   const isStep3Valid = formData.agreedToCost
 
@@ -141,7 +157,9 @@ export function RSVPFlow({ event, isOpen, onClose, onSuccess }: RSVPFlowProps) {
           <div>
             <h2 className="text-2xl font-bold text-theme-primary">Reserve Your Spot</h2>
             <p className="text-theme-muted">{event.title} by {event.chefName}</p>
-            <p className="text-sm text-theme-subtle">Reserving as {user?.name}</p>
+            {isAuthenticated && user && (
+              <p className="text-sm text-theme-subtle">Reserving as {user.name}</p>
+            )}
           </div>
           <button
             onClick={onClose}
@@ -183,26 +201,65 @@ export function RSVPFlow({ event, isOpen, onClose, onSuccess }: RSVPFlowProps) {
           {step === 1 && (
             <div className="space-y-6">
               <div>
-                <h3 className="text-lg font-semibold text-theme-primary mb-4">Additional Information</h3>
+                <h3 className="text-lg font-semibold text-theme-primary mb-4">
+                  {isAuthenticated ? 'Additional Information' : 'Your Information'}
+                </h3>
                 
-                <div className="bg-theme-accent-bg border border-theme-accent-border rounded-lg p-4 mb-6">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm text-theme-primary font-medium">
-                        ✓ Your basic info is ready from your profile
-                      </p>
-                      <p className="text-xs text-theme-muted mt-1">
-                        {user?.name} • {user?.email}
-                      </p>
+                {isAuthenticated && user && (
+                  <div className="bg-theme-accent-bg border border-theme-accent-border rounded-lg p-4 mb-6">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-sm text-theme-primary font-medium">
+                          ✓ Your basic info is ready from your profile
+                        </p>
+                        <p className="text-xs text-theme-muted mt-1">
+                          {user.name} • {user.email}
+                        </p>
+                      </div>
+                      <button 
+                        onClick={() => window.open('/profile', '_blank')}
+                        className="text-xs text-theme-subtle hover:text-theme-primary underline transition-colors"
+                      >
+                        Update Profile
+                      </button>
                     </div>
-                    <button 
-                      onClick={() => window.open('/profile', '_blank')}
-                      className="text-xs text-theme-subtle hover:text-theme-primary underline transition-colors"
-                    >
-                      Update Profile
-                    </button>
                   </div>
-                </div>
+                )}
+
+                {!isAuthenticated && (
+                  <div className="space-y-4 mb-6">
+                    <div>
+                      <label htmlFor="name" className="block text-sm font-medium text-theme-primary mb-2">
+                        Full Name *
+                      </label>
+                      <input
+                        id="name"
+                        type="text"
+                        value={formData.attendeeName}
+                        onChange={(e) => handleInputChange('attendeeName', e.target.value)}
+                        placeholder="Enter your full name"
+                        className="w-full px-3 py-3 input-theme rounded-lg"
+                        required
+                      />
+                    </div>
+
+                    <div>
+                      <label htmlFor="email" className="block text-sm font-medium text-theme-primary mb-2">
+                        Email Address *
+                      </label>
+                      <input
+                        id="email"
+                        type="email"
+                        value={formData.attendeeEmail}
+                        onChange={(e) => handleInputChange('attendeeEmail', e.target.value)}
+                        placeholder="Enter your email address"
+                        className="w-full px-3 py-3 input-theme rounded-lg"
+                        required
+                      />
+                      <p className="text-xs text-theme-muted mt-1">We&apos;ll use this to send you event updates and confirmation.</p>
+                    </div>
+                  </div>
+                )}
                 
                 <div className="space-y-4">
                   <div>
@@ -235,15 +292,29 @@ export function RSVPFlow({ event, isOpen, onClose, onSuccess }: RSVPFlowProps) {
                     <p className="text-xs text-theme-muted mt-1">Help the chef prepare a meal that&apos;s perfect for you.</p>
                   </div>
 
-                  <div className="mt-6 p-3 bg-theme-secondary rounded-lg text-center">
-                    <p className="text-xs text-theme-muted mb-2">Want to save this info for future reservations?</p>
-                    <button 
-                      onClick={() => window.open('/profile', '_blank')}
-                      className="text-sm text-theme-subtle hover:text-theme-primary font-medium transition-colors"
-                    >
-                      → Update your profile
-                    </button>
-                  </div>
+                  {isAuthenticated && (
+                    <div className="mt-6 p-3 bg-theme-secondary rounded-lg text-center">
+                      <p className="text-xs text-theme-muted mb-2">Want to save this info for future reservations?</p>
+                      <button 
+                        onClick={() => window.open('/profile', '_blank')}
+                        className="text-sm text-theme-subtle hover:text-theme-primary font-medium transition-colors"
+                      >
+                        → Update your profile
+                      </button>
+                    </div>
+                  )}
+
+                  {!isAuthenticated && (
+                    <div className="mt-6 p-3 bg-theme-secondary rounded-lg text-center">
+                      <p className="text-xs text-theme-muted mb-2">Want to save your info for future reservations?</p>
+                      <button 
+                        onClick={() => window.location.href = '/sign-up'}
+                        className="text-sm text-theme-subtle hover:text-theme-primary font-medium transition-colors"
+                      >
+                        → Create a free account
+                      </button>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -312,7 +383,7 @@ export function RSVPFlow({ event, isOpen, onClose, onSuccess }: RSVPFlowProps) {
                           day: 'numeric',
                           hour: 'numeric',
                           minute: '2-digit'
-                        }).format(event.date)}
+                        }).format(new Date(event.date))}
                       </span>
                     </div>
                     <div className="flex justify-between">

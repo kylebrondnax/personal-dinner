@@ -477,7 +477,7 @@ export default function CreateEventPage() {
 										name='estimatedCostPerPerson'
 										value={formData.estimatedCostPerPerson}
 										onChange={handleInputChange}
-										min='10'
+										min='0'
 										max='200'
 										step='5'
 										className='w-full px-3 py-3 border rounded-lg input-theme'

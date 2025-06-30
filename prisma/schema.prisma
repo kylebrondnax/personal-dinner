@@ -1,162 +1,208 @@
-// Family Dinner App Database Schema
-// Domain-driven design with clean separation for future microservices
-
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("POSTGRES_PRISMA_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
   directUrl = env("POSTGRES_URL_NON_POOLING")
 }
 
-// ================================
-// USER DOMAIN
-// ================================
-
 model User {
-  id        String   @id @default(cuid())
-  email     String   @unique
-  password  String?  // Hashed password (optional for existing users)
-  name      String
-  role      UserRole @default(ATTENDEE)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  // Profile information
-  profile UserProfile?
-
-  // Chef-specific relationships
-  events Event[] @relation("ChefEvents")
-
-  // Attendee-specific relationships
-  reservations Reservation[]
-  reviews      Review[]
+  id                    String                 @id @default(cuid())
+  email                 String                 @unique
+  password              String?
+  name                  String
+  role                  UserRole               @default(ATTENDEE)
+  createdAt             DateTime               @default(now())
+  updatedAt             DateTime               @updatedAt
   availabilityResponses AvailabilityResponse[]
+  events                Event[]                @relation("ChefEvents")
+  reservations          Reservation[]
+  reviews               Review[]
+  profile               UserProfile?
 
   @@map("users")
 }
 
 model UserProfile {
-  id     String @id @default(cuid())
-  userId String @unique
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  // Contact information
-  phoneNumber String?
-  avatarUrl   String?
-
-  // Preferences (JSON for SQLite compatibility)
-  dietaryRestrictions String? // JSON string array
-  preferredCuisines   String? // JSON string array
-  maxBudget          Float?
-
-  // Chef-specific fields
-  venmoUsername String?
-  venmoLink     String?
-  bio           String?
-  cookingStyle  String?
-
-  // Location
-  city         String?
-  neighborhood String?
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id                  String   @id @default(cuid())
+  userId              String   @unique
+  phoneNumber         String?
+  avatarUrl           String?
+  dietaryRestrictions String?
+  preferredCuisines   String?
+  maxBudget           Float?
+  venmoUsername       String?
+  venmoLink           String?
+  bio                 String?
+  cookingStyle        String?
+  city                String?
+  neighborhood        String?
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+  user                User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("user_profiles")
+}
+
+model Event {
+  id                     String                 @id @default(cuid())
+  title                  String
+  description            String?
+  date                   DateTime
+  duration               Int
+  maxCapacity            Int
+  status                 EventStatus            @default(OPEN)
+  estimatedCostPerPerson Float
+  actualCostPerPerson    Float?
+  chefId                 String
+  cuisineTypes           String?
+  dietaryAccommodations  String?
+  reservationDeadline    DateTime
+  allowWaitlist          Boolean                @default(true)
+  useAvailabilityPoll    Boolean                @default(false)
+  pollStatus             PollStatus?
+  pollDeadline           DateTime?
+  finalizedDate          DateTime?
+  createdAt              DateTime               @default(now())
+  updatedAt              DateTime               @updatedAt
+  availabilityResponses  AvailabilityResponse[]
+  ingredients            EventIngredient[]
+  location               EventLocation?
+  chef                   User                   @relation("ChefEvents", fields: [chefId], references: [id])
+  proposedDates          ProposedDate[]
+  receipts               Receipt[]
+  reservations           Reservation[]
+  reviews                Review[]
+
+  @@map("events")
+}
+
+model EventLocation {
+  id              String  @id @default(cuid())
+  eventId         String  @unique
+  address         String?
+  neighborhood    String
+  city            String
+  state           String?
+  zipCode         String?
+  showFullAddress Boolean @default(false)
+  event           Event   @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  @@map("event_locations")
+}
+
+model EventIngredient {
+  id            String   @id @default(cuid())
+  eventId       String
+  name          String
+  estimatedCost Float
+  actualCost    Float?
+  category      String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  event         Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  @@map("event_ingredients")
+}
+
+model Reservation {
+  id                  String            @id @default(cuid())
+  eventId             String
+  userId              String?
+  status              ReservationStatus @default(CONFIRMED)
+  guestCount          Int               @default(1)
+  dietaryRestrictions String?
+  specialRequests     String?
+  guestName           String?
+  guestEmail          String?
+  phoneNumber         String?
+  amountOwed          Float?
+  amountPaid          Float             @default(0)
+  paidAt              DateTime?
+  createdAt           DateTime          @default(now())
+  updatedAt           DateTime          @updatedAt
+  event               Event             @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  user                User?             @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([eventId, userId])
+  @@map("reservations")
+}
+
+model ProposedDate {
+  id        String                 @id @default(cuid())
+  eventId   String
+  date      DateTime
+  time      String
+  createdAt DateTime               @default(now())
+  responses AvailabilityResponse[]
+  event     Event                  @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  @@map("proposed_dates")
+}
+
+model AvailabilityResponse {
+  id             String       @id @default(cuid())
+  eventId        String
+  proposedDateId String
+  userId         String?
+  guestEmail     String?
+  guestName      String?
+  available      Boolean
+  tentative      Boolean      @default(false)
+  createdAt      DateTime     @default(now())
+  event          Event        @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  proposedDate   ProposedDate @relation(fields: [proposedDateId], references: [id], onDelete: Cascade)
+  user           User?        @relation(fields: [userId], references: [id])
+
+  @@unique([proposedDateId, userId])
+  @@unique([proposedDateId, guestEmail])
+  @@map("availability_responses")
+}
+
+model Receipt {
+  id          String   @id @default(cuid())
+  eventId     String
+  filename    String
+  fileUrl     String
+  fileSize    Int?
+  mimeType    String?
+  ocrText     String?
+  parsedItems Json?
+  processed   Boolean  @default(false)
+  uploadedAt  DateTime @default(now())
+  event       Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  @@map("receipts")
+}
+
+model Review {
+  id            String   @id @default(cuid())
+  eventId       String
+  userId        String
+  overallRating Int
+  foodRating    Int
+  hostRating    Int
+  valueRating   Int
+  title         String?
+  content       String?
+  photos        String?
+  approved      Boolean  @default(false)
+  flagged       Boolean  @default(false)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  event         Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([eventId, userId])
+  @@map("reviews")
 }
 
 enum UserRole {
   CHEF
   ATTENDEE
   ADMIN
-}
-
-// ================================
-// EVENT DOMAIN
-// ================================
-
-model Event {
-  id          String      @id @default(cuid())
-  title       String
-  description String?
-  date        DateTime
-  duration    Int // minutes
-  maxCapacity Int
-  status      EventStatus @default(OPEN)
-
-  // Cost information
-  estimatedCostPerPerson Float
-  actualCostPerPerson    Float?
-
-  // Chef relationship
-  chefId String
-  chef   User   @relation("ChefEvents", fields: [chefId], references: [id])
-
-  // Location
-  location EventLocation?
-
-  // Cuisine and dietary info (JSON for SQLite compatibility)
-  cuisineTypes            String? // JSON string array
-  dietaryAccommodations  String? // JSON string array
-
-  // Reservation management
-  reservationDeadline DateTime
-  allowWaitlist      Boolean @default(true)
-
-  // Availability polling
-  useAvailabilityPoll Boolean @default(false)
-  pollStatus         PollStatus?
-  pollDeadline       DateTime?
-  finalizedDate      DateTime? // Different from original date during polling
-
-  // Relationships
-  reservations Reservation[]
-  ingredients  EventIngredient[]
-  receipts     Receipt[]
-  reviews      Review[]
-  proposedDates ProposedDate[]
-  availabilityResponses AvailabilityResponse[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@map("events")
-}
-
-model EventLocation {
-  id      String @id @default(cuid())
-  eventId String @unique
-  event   Event  @relation(fields: [eventId], references: [id], onDelete: Cascade)
-
-  address      String?
-  neighborhood String
-  city         String
-  state        String?
-  zipCode      String?
-
-  // Privacy settings
-  showFullAddress Boolean @default(false)
-
-  @@map("event_locations")
-}
-
-model EventIngredient {
-  id      String @id @default(cuid())
-  eventId String
-  event   Event  @relation(fields: [eventId], references: [id], onDelete: Cascade)
-
-  name         String
-  estimatedCost Float
-  actualCost   Float?
-  category     String? // "protein", "vegetables", "beverages", etc.
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@map("event_ingredients")
 }
 
 enum EventStatus {
@@ -175,139 +221,8 @@ enum PollStatus {
   FINALIZED
 }
 
-// ================================
-// RESERVATION DOMAIN
-// ================================
-
-model Reservation {
-  id      String            @id @default(cuid())
-  eventId String
-  userId  String
-  status  ReservationStatus @default(CONFIRMED)
-
-  // Reservation details
-  guestCount          Int    @default(1)
-  dietaryRestrictions String?
-  specialRequests     String?
-
-  // Payment tracking
-  amountOwed Float?
-  amountPaid Float   @default(0)
-  paidAt     DateTime?
-
-  // Relationships
-  event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
-  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@unique([eventId, userId])
-  @@map("reservations")
-}
-
-// ================================
-// AVAILABILITY POLLING DOMAIN
-// ================================
-
-model ProposedDate {
-  id       String   @id @default(cuid())
-  eventId  String
-  date     DateTime
-  time     String   // e.g., "18:00"
-
-  // Relationships
-  event    Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
-  responses AvailabilityResponse[]
-
-  createdAt DateTime @default(now())
-
-  @@map("proposed_dates")
-}
-
-model AvailabilityResponse {
-  id              String  @id @default(cuid())
-  eventId         String
-  proposedDateId  String
-  userId          String?  // Optional for guest responses
-  guestEmail      String?  // For non-registered users
-  guestName       String?
-  available       Boolean
-  tentative       Boolean @default(false)
-
-  // Relationships
-  event           Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
-  proposedDate    ProposedDate @relation(fields: [proposedDateId], references: [id], onDelete: Cascade)
-  user            User? @relation(fields: [userId], references: [id])
-
-  createdAt       DateTime @default(now())
-
-  @@unique([proposedDateId, userId])
-  @@unique([proposedDateId, guestEmail])
-  @@map("availability_responses")
-}
-
 enum ReservationStatus {
   CONFIRMED
   WAITLIST
   CANCELLED
-}
-
-// ================================
-// PAYMENT DOMAIN
-// ================================
-
-model Receipt {
-  id      String @id @default(cuid())
-  eventId String
-  event   Event  @relation(fields: [eventId], references: [id], onDelete: Cascade)
-
-  filename    String
-  fileUrl     String
-  fileSize    Int?
-  mimeType    String?
-
-  // OCR processing
-  ocrText     String?
-  parsedItems Json? // Structured data from OCR
-  processed   Boolean @default(false)
-
-  uploadedAt DateTime @default(now())
-
-  @@map("receipts")
-}
-
-// ================================
-// REVIEW DOMAIN
-// ================================
-
-model Review {
-  id      String @id @default(cuid())
-  eventId String
-  userId  String
-
-  // Ratings (1-5 scale)
-  overallRating Int
-  foodRating    Int
-  hostRating    Int
-  valueRating   Int
-
-  // Content
-  title   String?
-  content String?
-  photos  String? // JSON string array of URLs
-
-  // Moderation
-  approved Boolean   @default(false)
-  flagged  Boolean   @default(false)
-
-  // Relationships
-  event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
-  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@unique([eventId, userId]) // One review per user per event
-  @@map("reviews")
 }

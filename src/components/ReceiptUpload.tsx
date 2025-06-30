@@ -3,6 +3,7 @@
 import { useState, useRef } from 'react'
 import { Receipt } from '@/types'
 import { cn } from '@/lib/utils'
+import { useToast } from '@/components/Toast'
 
 // Dynamic import for heic2any (browser-only)
 const convertHeicToJpeg = async (file: File): Promise<Blob> => {
@@ -25,6 +26,7 @@ export function ReceiptUpload({
   onReceiptParsed,
   className
 }: ReceiptUploadProps) {
+  const { showToast } = useToast()
   const [isUploading, setIsUploading] = useState(false)
   const [dragActive, setDragActive] = useState(false)
   const [currentFile, setCurrentFile] = useState<File | null>(null)
@@ -50,7 +52,7 @@ export function ReceiptUpload({
                        file.name.toLowerCase().endsWith('.heif')
     
     if (!isSupported) {
-      alert('Please upload a PDF, JPEG, PNG, or HEIC file')
+      showToast('Please upload a PDF, JPEG, PNG, or HEIC file', 'error')
       return
     }
 
@@ -106,7 +108,7 @@ export function ReceiptUpload({
         } catch (error) {
           console.error('Error processing receipt:', error)
           setIsUploading(false)
-          alert('Error processing receipt. Please try again.')
+          showToast('Error processing receipt. Please try again.', 'error')
         }
       }
 
@@ -115,7 +117,7 @@ export function ReceiptUpload({
     } catch (error) {
       console.error('Error converting HEIC file:', error)
       setIsUploading(false)
-      alert('Error converting HEIC file. Please try again or use a different format.')
+      showToast('Error converting HEIC file. Please try again or use a different format.', 'error')
     }
   }
 

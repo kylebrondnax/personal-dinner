@@ -38,6 +38,8 @@ export default function DashboardPage() {
   const [activeTab, setActiveTab] = useState<'hosting' | 'attending'>('hosting')
   const [showCancelModal, setShowCancelModal] = useState<string | null>(null)
   const [cancelLoading, setCancelLoading] = useState(false)
+  const [showDeleteModal, setShowDeleteModal] = useState<string | null>(null)
+  const [deleteLoading, setDeleteLoading] = useState(false)
 
   const formatDate = (date: string | null | undefined) => {
     if (!date) return 'Date TBD'
@@ -125,6 +127,30 @@ export default function DashboardPage() {
       // TODO: Add toast notification
     } finally {
       setCancelLoading(false)
+    }
+  }
+
+  const handleDeleteEvent = async (eventId: string) => {
+    setDeleteLoading(true)
+    try {
+      const response = await fetch(`/api/events/${eventId}`, {
+        method: 'DELETE',
+      })
+
+      if (response.ok) {
+        // Refresh the events list
+        await loadUserEvents()
+        setShowDeleteModal(null)
+      } else {
+        const errorData = await response.json()
+        console.error('Failed to delete event:', errorData.message)
+        // TODO: Add toast notification
+      }
+    } catch (error) {
+      console.error('Error deleting event:', error)
+      // TODO: Add toast notification
+    } finally {
+      setDeleteLoading(false)
     }
   }
 
@@ -377,24 +403,55 @@ export default function DashboardPage() {
                                   >
                                     Cancel
                                   </button>
+                                  <button 
+                                    onClick={() => setShowDeleteModal(event.id)}
+                                    className="px-3 py-2 text-xs sm:text-sm bg-red-600 hover:bg-red-700 text-white rounded-md"
+                                  >
+                                    Delete
+                                  </button>
                                 </>
                               )}
                               
                               {event.status === 'POLL_ACTIVE' && (
-                                <button 
-                                  onClick={() => handleViewResponses(event.id)}
-                                  className="px-3 py-2 text-xs sm:text-sm badge-purple rounded-md"
-                                >
-                                  View Responses
-                                </button>
+                                <>
+                                  <button 
+                                    onClick={() => handleViewResponses(event.id)}
+                                    className="px-3 py-2 text-xs sm:text-sm badge-purple rounded-md"
+                                  >
+                                    View Responses
+                                  </button>
+                                  <button 
+                                    onClick={() => setShowDeleteModal(event.id)}
+                                    className="px-3 py-2 text-xs sm:text-sm bg-red-600 hover:bg-red-700 text-white rounded-md"
+                                  >
+                                    Delete
+                                  </button>
+                                </>
                               )}
                               
                               {event.status === 'COMPLETED' && (
+                                <>
+                                  <button 
+                                    onClick={() => handleViewReceipt(event.id)}
+                                    className="px-3 py-2 text-xs sm:text-sm badge-success rounded-md"
+                                  >
+                                    View Receipt
+                                  </button>
+                                  <button 
+                                    onClick={() => setShowDeleteModal(event.id)}
+                                    className="px-3 py-2 text-xs sm:text-sm bg-red-600 hover:bg-red-700 text-white rounded-md"
+                                  >
+                                    Delete
+                                  </button>
+                                </>
+                              )}
+                              
+                              {event.status === 'CANCELLED' && (
                                 <button 
-                                  onClick={() => handleViewReceipt(event.id)}
-                                  className="px-3 py-2 text-xs sm:text-sm badge-success rounded-md"
+                                  onClick={() => setShowDeleteModal(event.id)}
+                                  className="px-3 py-2 text-xs sm:text-sm bg-red-600 hover:bg-red-700 text-white rounded-md"
                                 >
-                                  View Receipt
+                                  Delete
                                 </button>
                               )}
                               
@@ -518,6 +575,41 @@ export default function DashboardPage() {
                 className="btn-danger px-4 py-2 rounded-lg transition-colors disabled:opacity-50"
               >
                 {cancelLoading ? 'Cancelling...' : 'Cancel Event'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Event Modal */}
+      {showDeleteModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-theme-card rounded-lg p-6 max-w-md w-full mx-4">
+            <h3 className="text-lg font-semibold text-theme-primary mb-4">
+              Delete Event
+            </h3>
+            <p className="text-theme-muted mb-6">
+              Are you sure you want to permanently delete this event? This action cannot be undone.
+              {(events.find(e => e.id === showDeleteModal)?.currentReservations ?? 0) > 0 && (
+                <span className="block mt-2 font-medium text-orange-600 dark:text-orange-400">
+                  ⚠️ This event has confirmed reservations. All attendees will be notified of the cancellation and deletion.
+                </span>
+              )}
+            </p>
+            <div className="flex space-x-4 justify-end">
+              <button
+                onClick={() => setShowDeleteModal(null)}
+                disabled={deleteLoading}
+                className="btn-cancel px-4 py-2 rounded-lg transition-colors"
+              >
+                Keep Event
+              </button>
+              <button
+                onClick={() => handleDeleteEvent(showDeleteModal)}
+                disabled={deleteLoading}
+                className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition-colors disabled:opacity-50"
+              >
+                {deleteLoading ? 'Deleting...' : 'Delete Event'}
               </button>
             </div>
           </div>

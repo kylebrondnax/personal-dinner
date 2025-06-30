@@ -4,10 +4,14 @@ import { ReservationStatus } from '@prisma/client'
 
 export interface CreateReservationData {
   eventId: string
-  userId: string
+  userId: string | null // null for guest reservations
   guestCount: number
   dietaryRestrictions?: string
   specialRequests?: string
+  // Guest-specific fields
+  guestName?: string
+  guestEmail?: string
+  phoneNumber?: string
 }
 
 export class ReservationRepository {
@@ -16,11 +20,15 @@ export class ReservationRepository {
     return await prisma.reservation.create({
       data: {
         eventId: data.eventId,
-        userId: data.userId,
+        userId: data.userId, // null for guest reservations
         guestCount: data.guestCount,
         dietaryRestrictions: data.dietaryRestrictions,
         specialRequests: data.specialRequests,
-        status: 'CONFIRMED'
+        status: 'CONFIRMED',
+        // Guest-specific fields
+        guestName: data.guestName,
+        guestEmail: data.guestEmail,
+        phoneNumber: data.phoneNumber
       },
       include: {
         event: {
@@ -33,13 +41,13 @@ export class ReservationRepository {
             }
           }
         },
-        user: {
+        user: data.userId ? {
           select: {
             id: true,
             name: true,
             email: true
           }
-        }
+        } : undefined
       }
     })
   }

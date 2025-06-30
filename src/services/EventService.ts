@@ -473,6 +473,44 @@ export class EventService {
     return { currentReservations: confirmedReservations, maxCapacity: event.maxCapacity }
   }
 
+  // Get event attendees list
+  static async getEventAttendees(eventId: string) {
+    const event = await prisma.event.findUnique({
+      where: { id: eventId },
+      include: {
+        reservations: {
+          where: {
+            status: {
+              in: ['CONFIRMED', 'WAITLIST']
+            }
+          },
+          include: {
+            user: {
+              include: {
+                profile: true
+              }
+            }
+          }
+        }
+      }
+    })
+
+    if (!event) {
+      throw new Error('Event not found')
+    }
+
+    // Transform reservations to EventAttendee format
+    return event.reservations.map(reservation => ({
+      id: reservation.id,
+      name: reservation.user?.name || reservation.guestName || 'Guest',
+      email: reservation.user?.email || reservation.guestEmail || '',
+      guestCount: reservation.guestCount,
+      status: reservation.status as 'CONFIRMED' | 'WAITLIST',
+      dietaryRestrictions: reservation.dietaryRestrictions || undefined,
+      userPhoto: reservation.user?.profile?.avatarUrl || undefined
+    }))
+  }
+
   // Delete event
   static async deleteEvent(eventId: string) {
     const event = await EventRepository.findById(eventId)
@@ -480,10 +518,19 @@ export class EventService {
       throw new Error('Event not found')
     }
 
-    // Check if event has confirmed reservations
+    // If event has confirmed reservations, notify guests before deletion
     const confirmedReservations = event.reservations.filter(r => r.status === 'CONFIRMED')
     if (confirmedReservations.length > 0) {
-      throw new Error('Cannot delete event with confirmed reservations. Cancel the event instead.')
+      // TODO: Send cancellation/deletion notifications to guests
+      // This would typically involve sending emails/SMS to guests
+      // For now, we'll log the notification requirement
+      console.log(`Event ${eventId} with ${confirmedReservations.length} confirmed reservations is being deleted. Guests should be notified.`)
+      
+      // In a production system, you would:
+      // 1. Send email notifications to all confirmed guests
+      // 2. Send SMS notifications if phone numbers are available
+      // 3. Create notification records in the database
+      // 4. Possibly create a cancellation reason/message
     }
 
     // Delete the event (cascade will handle related data)

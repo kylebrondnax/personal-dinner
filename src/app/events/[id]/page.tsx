@@ -5,18 +5,23 @@ import { useParams } from 'next/navigation'
 import { Navigation } from '@/components/Navigation'
 import { EventCard } from '@/components/EventCard'
 import { RSVPFlow } from '@/components/RSVPFlow'
-import { PublicDinnerEvent, RSVPStatus } from '@/types'
+import { EventAttendeeList } from '@/components/EventAttendeeList'
+import { PublicDinnerEvent, RSVPStatus, EventAttendee } from '@/types'
 import { useAuth } from '@/contexts/ClerkAuthContext'
+import { useToast } from '@/components/Toast'
 
 export default function EventDetailPage() {
   const params = useParams()
   const eventId = params.id as string
   const { isAuthenticated } = useAuth()
+  const { showToast } = useToast()
   const [event, setEvent] = useState<PublicDinnerEvent | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState('')
   const [showRSVP, setShowRSVP] = useState(false)
   const [rsvpStatus, setRsvpStatus] = useState<RSVPStatus | null>(null)
+  const [attendees, setAttendees] = useState<EventAttendee[]>([])
+  const [attendeesLoading, setAttendeesLoading] = useState(false)
 
   // Fetch RSVP status for authenticated users
   const fetchRSVPStatus = useCallback(async () => {
@@ -43,14 +48,37 @@ export default function EventDetailPage() {
     }
   }, [isAuthenticated, eventId])
 
+  // Fetch attendees for the event
+  const fetchAttendees = useCallback(async () => {
+    if (!eventId) return
+    
+    setAttendeesLoading(true)
+    try {
+      const response = await fetch(`/api/events/${eventId}/attendees`)
+      const result = await response.json()
+      
+      if (response.ok && result.success) {
+        setAttendees(result.data)
+      } else {
+        console.error('Failed to fetch attendees:', result.message)
+        setAttendees([])
+      }
+    } catch (err) {
+      console.error('Error fetching attendees:', err)
+      setAttendees([])
+    } finally {
+      setAttendeesLoading(false)
+    }
+  }, [eventId])
+
   const handleReserve = () => {
     // Check if user already has an RSVP for this event
     if (rsvpStatus) {
       const status = rsvpStatus.status
       if (status === 'CONFIRMED') {
-        alert(`You already have a confirmed reservation for ${event?.title}.`)
+        showToast(`You already have a confirmed reservation for ${event?.title}.`, 'info')
       } else if (status === 'WAITLIST') {
-        alert(`You're already on the waitlist for ${event?.title}.`)
+        showToast(`You're already on the waitlist for ${event?.title}.`, 'info')
       }
       return
     }
@@ -67,14 +95,15 @@ export default function EventDetailPage() {
     const status = reservationData.status
     
     if (status === 'WAITLIST') {
-      alert(`${message} for ${event?.title}. You're on the waitlist and will be notified if spots become available.`)
+      showToast(`${message} for ${event?.title}. You're on the waitlist and will be notified if spots become available.`, 'success', 6000)
     } else {
-      alert(`${message} for ${event?.title}! You'll receive a confirmation email shortly.`)
+      showToast(`${message} for ${event?.title}! You'll receive a confirmation email shortly.`, 'success', 6000)
     }
     
-    // Refresh event and RSVP status
+    // Refresh event, RSVP status, and attendees
     fetchEvent()
     fetchRSVPStatus()
+    fetchAttendees()
   }
 
   const handleRSVPClose = () => {
@@ -131,8 +160,9 @@ export default function EventDetailPage() {
   useEffect(() => {
     if (eventId) {
       fetchEvent()
+      fetchAttendees()
     }
-  }, [eventId, fetchEvent])
+  }, [eventId, fetchEvent, fetchAttendees])
 
   useEffect(() => {
     if (eventId && isAuthenticated) {
@@ -177,8 +207,23 @@ export default function EventDetailPage() {
   return (
     <>
       <Navigation />
-      <div className="max-w-4xl mx-auto p-4 pt-24">
+      <div className="max-w-4xl mx-auto p-4 pt-24 space-y-6">
         <EventCard event={event} onReserve={handleReserve} />
+        
+        {/* Attendee List */}
+        {!attendeesLoading && (
+          <EventAttendeeList 
+            attendees={attendees}
+            maxCapacity={event.maxCapacity}
+          />
+        )}
+        
+        {attendeesLoading && (
+          <div className="bg-theme-secondary rounded-lg p-6 text-center">
+            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600 mx-auto mb-2"></div>
+            <p className="text-sm text-theme-muted">Loading attendees...</p>
+          </div>
+        )}
       </div>
       
       {/* RSVP Modal */}

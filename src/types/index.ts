@@ -70,6 +70,11 @@ export interface PublicDinnerEvent {
 	updatedAt: Date;
 	// User's RSVP status (populated when fetching with user context)
 	userRsvpStatus?: RSVPStatus;
+	// Polling-related fields
+	useAvailabilityPoll?: boolean;
+	pollStatus?: 'ACTIVE' | 'CLOSED' | 'FINALIZED';
+	pollDeadline?: Date;
+	proposedDates?: ProposedDateTime[];
 }
 
 export interface RSVPStatus {
@@ -88,6 +93,16 @@ export interface Reservation {
 	reservedAt: Date;
 	status: 'confirmed' | 'waitlist' | 'cancelled';
 	guestCount: number;
+}
+
+export interface EventAttendee {
+	id: string;
+	name: string;
+	email: string;
+	guestCount: number;
+	status: 'CONFIRMED' | 'WAITLIST';
+	dietaryRestrictions?: string;
+	userPhoto?: string;
 }
 
 export interface Attendee {

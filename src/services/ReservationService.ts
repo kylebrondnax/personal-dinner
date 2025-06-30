@@ -6,14 +6,16 @@ import { EventService } from './EventService'
 export class ReservationService {
   // Create new reservation with business logic
   static async createReservation(data: CreateReservationData) {
-    // Business validation
-    const existingReservation = await ReservationRepository.existsForUserAndEvent(
-      data.userId, 
-      data.eventId
-    )
-    
-    if (existingReservation) {
-      throw new Error('You already have a reservation for this event')
+    // Business validation - skip duplicate check for guest reservations
+    if (data.userId) {
+      const existingReservation = await ReservationRepository.existsForUserAndEvent(
+        data.userId, 
+        data.eventId
+      )
+      
+      if (existingReservation) {
+        throw new Error('You already have a reservation for this event')
+      }
     }
 
     // Check capacity

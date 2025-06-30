@@ -1,6 +1,7 @@
 // Reservations API endpoint (like Laravel ReservationController)
 import { NextRequest, NextResponse } from 'next/server'
 import { ReservationService } from '@/services/ReservationService'
+import { UserService } from '@/services/UserService'
 import { emailService } from '@/lib/email'
 import { getAuth } from '@clerk/nextjs/server'
 
@@ -9,22 +10,31 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
     
-    // Get authenticated user from Clerk
+    // Get authenticated user from Clerk (optional for guest reservations)
     const { userId: clerkUserId } = getAuth(request)
     
-    if (!clerkUserId) {
+    // Check if this is a guest reservation
+    const isGuestReservation = !clerkUserId && body.guestName && body.guestEmail
+    
+    if (!clerkUserId && !isGuestReservation) {
       return NextResponse.json(
         {
           success: false,
-          error: 'Authentication required',
-          message: 'You must be logged in to make a reservation'
+          error: 'Authentication or guest info required',
+          message: 'You must be logged in or provide guest information to make a reservation'
         },
         { status: 401 }
       )
     }
     
     // Validation (like Laravel FormRequest)
-    const requiredFields = ['eventId', 'guestCount']
+    let requiredFields = ['eventId', 'guestCount']
+    
+    // Add guest-specific validation
+    if (isGuestReservation) {
+      requiredFields = [...requiredFields, 'guestName', 'guestEmail']
+    }
+    
     const missingFields = requiredFields.filter(field => !body[field])
     
     if (missingFields.length > 0) {
@@ -36,6 +46,21 @@ export async function POST(request: NextRequest) {
         },
         { status: 400 }
       )
+    }
+
+    // Email validation for guests
+    if (isGuestReservation) {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+      if (!emailRegex.test(body.guestEmail)) {
+        return NextResponse.json(
+          {
+            success: false,
+            error: 'Validation failed',
+            message: 'Please provide a valid email address'
+          },
+          { status: 400 }
+        )
+      }
     }
 
     // Guest count validation
@@ -50,37 +75,55 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Create reservation using Clerk user ID directly
+    // Ensure authenticated user exists in database
+    if (clerkUserId) {
+      await UserService.ensureUserExists(clerkUserId)
+    }
+
+    // Create reservation for authenticated user or guest
     const reservation = await ReservationService.createReservation({
       eventId: body.eventId,
-      userId: clerkUserId, // Use Clerk user ID directly
+      userId: clerkUserId || null, // null for guest reservations
       guestCount: Number(body.guestCount),
       dietaryRestrictions: body.dietaryRestrictions || undefined,
-      specialRequests: body.specialRequests || undefined
+      specialRequests: body.specialRequests || undefined,
+      // Guest-specific fields
+      ...(isGuestReservation ? {
+        guestName: body.guestName,
+        guestEmail: body.guestEmail,
+        phoneNumber: body.phoneNumber || undefined
+      } : {})
     })
 
     // Send confirmation email if reservation was successful (not waitlisted)
     if (reservation.status === 'CONFIRMED') {
       try {
-        // Get user info from Clerk and event details for the email
-        const { clerkClient } = await import('@clerk/nextjs/server')
         const { EventService } = await import('@/services/EventService')
+        const event = await EventService.getEventDetails(body.eventId)
         
-        const client = await clerkClient()
-        const [clerkUser, event] = await Promise.all([
-          client.users.getUser(clerkUserId),
-          EventService.getEventDetails(body.eventId)
-        ])
-        
-        if (event && clerkUser) {
+        if (event) {
           const location = event.location 
             ? `${event.location.neighborhood}, ${event.location.city}` 
             : 'Location TBD'
           
-          const userEmail = clerkUser.emailAddresses.find(email => email.id === clerkUser.primaryEmailAddressId)?.emailAddress
-          const userName = clerkUser.fullName || clerkUser.firstName || 'User'
+          let userEmail: string | undefined
+          let userName: string
           
-          if (userEmail) {
+          if (isGuestReservation) {
+            // Use guest information
+            userEmail = body.guestEmail
+            userName = body.guestName
+          } else if (clerkUserId) {
+            // Get user info from Clerk
+            const { clerkClient } = await import('@clerk/nextjs/server')
+            const client = await clerkClient()
+            const clerkUser = await client.users.getUser(clerkUserId)
+            
+            userEmail = clerkUser.emailAddresses.find(email => email.id === clerkUser.primaryEmailAddressId)?.emailAddress
+            userName = clerkUser.fullName || clerkUser.firstName || 'User'
+          }
+          
+          if (userEmail && userName) {
             await emailService.sendReservationConfirmation(
               userEmail,
               userName,

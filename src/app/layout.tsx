@@ -5,6 +5,7 @@ import { ThemeProvider } from '@/contexts/ThemeContext';
 import { ClerkAuthProvider } from '@/contexts/ClerkAuthContext';
 import { ClerkProvider } from '@clerk/nextjs';
 import { ThemeWrapper } from '@/components/ThemeWrapper';
+import { ToastProvider } from '@/components/Toast';
 
 const geistSans = Geist({
 	variable: '--font-geist-sans',
@@ -75,7 +76,9 @@ export default function RootLayout({
 				>
 					<ThemeProvider>
 						<ClerkAuthProvider>
-							<ThemeWrapper>{children}</ThemeWrapper>
+							<ToastProvider>
+								<ThemeWrapper>{children}</ThemeWrapper>
+							</ToastProvider>
 						</ClerkAuthProvider>
 					</ThemeProvider>
 				</body>

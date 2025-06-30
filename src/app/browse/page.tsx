@@ -6,6 +6,7 @@ import { RSVPFlow } from '@/components/RSVPFlow'
 import { Navigation } from '@/components/Navigation'
 import { PublicDinnerEvent, RSVPStatus } from '@/types'
 import { useAuth } from '@/contexts/ClerkAuthContext'
+import { useToast } from '@/components/Toast'
 
 // API response type
 interface EventsResponse {
@@ -21,6 +22,7 @@ interface EventsResponse {
 
 export default function BrowsePage() {
   const { isAuthenticated } = useAuth()
+  const { showToast } = useToast()
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedCuisine, setSelectedCuisine] = useState('')
   const [maxPrice, setMaxPrice] = useState<number | null>(null)
@@ -146,9 +148,9 @@ export default function BrowsePage() {
       if (rsvpStatuses[eventId]) {
         const status = rsvpStatuses[eventId].status
         if (status === 'CONFIRMED') {
-          alert(`You already have a confirmed reservation for ${event.title}.`)
+          showToast(`You already have a confirmed reservation for ${event.title}.`, 'info')
         } else if (status === 'WAITLIST') {
-          alert(`You're already on the waitlist for ${event.title}.`)
+          showToast(`You're already on the waitlist for ${event.title}.`, 'info')
         }
         return
       }
@@ -171,9 +173,9 @@ export default function BrowsePage() {
     const status = reservationData.status
     
     if (status === 'WAITLIST') {
-      alert(`${message} for ${selectedEvent?.title}. You're on the waitlist and will be notified if spots become available.`)
+      showToast(`${message} for ${selectedEvent?.title}. You're on the waitlist and will be notified if spots become available.`, 'success', 6000)
     } else {
-      alert(`${message} for ${selectedEvent?.title}! You'll receive a confirmation email shortly.`)
+      showToast(`${message} for ${selectedEvent?.title}! You'll receive a confirmation email shortly.`, 'success', 6000)
     }
     
     // Refresh events and RSVP statuses
