@@ -163,7 +163,7 @@ export function HomePage() {
 								href='mailto:buford@familydinner.com'
 								className='text-blue-600 hover:text-blue-700 font-medium underline transition-colors'
 							>
-								buford@familydinner.me
+								skydragon0927@gmail.com
 							</a>
 						</p>
 					</div>
