@@ -160,7 +160,7 @@ export function HomePage() {
 						<p className='text-base'>
 							I&apos;d love to hear from you! Reach out at{' '}
 							<a
-								href='mailto:buford@familydinner.com'
+								href='mailto:skydragon0927@gmail.com'
 								className='text-blue-600 hover:text-blue-700 font-medium underline transition-colors'
 							>
 								skydragon0927@gmail.com
